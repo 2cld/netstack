@@ -10,7 +10,7 @@ The netstack storage infrastructure pattern uses ZFS storage mounted via NFS, SM
 2. [backups.ns.lan](https://192.168.2.7) - Enterprise storage for ZFS volume replication
 3. [offsite.ns.lan](https://192.168.8.8) - DeepStorage and Disaster Recovery
 
-### Snapshot, Replication and Recover
+## Snapshot, Replication and Recover
 
 1. [projects.ns.lan](https://192.168.2.6)
     1. ZFS Volumes
@@ -26,7 +26,20 @@ The netstack storage infrastructure pattern uses ZFS storage mounted via NFS, SM
     1. ZFS Volumes
       - Projects
 
-### Reference
+## Reference
+Various information resources
+
+### Best TrueNAS 12 Complete walkthrough
+- [88TB TrueNAS CORE Build - Craft Computing](https://www.youtube.com/watch?v=nQiWP8T9R60)
+- [TrueNAS CORE 12.0 Install Tutorial - Craft Computing](https://www.youtube.com/watch?v=nVRWpV2xyds)
+- [TrueNAS Data Migration Tutorial - Craft Computing](https://www.youtube.com/watch?v=uVllnnozmFc)
+- [TrueNAS CORE 12.0 Tutorial - Datasets, Permissions, Snapshots - Craft Computing](https://www.youtube.com/watch?v=k0X0geU6NOA)
+- [12-Bay, 1U Storage Server for $120 - Craft Computing](https://www.youtube.com/watch?v=F1xX3V_n0kw)
+- [Three Server HomeLab for less than $1,000 - Craft Computing](https://www.youtube.com/watch?v=onMD8tvnLbs)
+- [Youtube Index - Craft Computing](https://www.youtube.com/c/CraftComputing/videos)
+- [ - Craft Computing]()
+
+### Other FreeNAS resources
 - [ZFS Replication and Recovery with FreeNAS](http://storagegaga.com/zfs-replication-and-recovery-with-freenas/)
 - [FreeNAS 11.2 - Datasets & Snapshots - iXsystems](https://www.youtube.com/watch?v=4hXjA5rNVSg)
 - [Lawrence Systems - FreeNAS 11.2 Snapshots / Replication](https://www.youtube.com/watch?v=Ge8eLR2FvDU&list=PLjGQNuuUzvmug2-LMfh43ehP9nt8gmCSf&index=36)
