@@ -32,6 +32,13 @@ Various information resources
 ### Best TrueNAS 12 Complete walkthrough
 - [88TB TrueNAS CORE Build - Craft Computing](https://www.youtube.com/watch?v=nQiWP8T9R60)
 - [TrueNAS CORE 12.0 Install Tutorial - Craft Computing](https://www.youtube.com/watch?v=nVRWpV2xyds)
+    - [First Pool: Storage -> Pool](https://youtu.be/nVRWpV2xyds?t=323)
+    - [SSD Cache to Pool: Storage -> Pool -> Add -> Add VDev -> Cache](https://youtu.be/nVRWpV2xyds?t=360)
+    - [First SMB Share: Sharing -> SMB](https://youtu.be/nVRWpV2xyds?t=406)
+    - [Add User for SMB Share: Accounts -> Users -> Add](https://youtu.be/nVRWpV2xyds?t=479)
+    - [Set SMB User to Wheel Group for SMB](https://youtu.be/nVRWpV2xyds?t=501)
+    - [Cleanup SMB Share permissions using shell](https://youtu.be/nVRWpV2xyds?t=555)
+    - [Connect to SMB Share using Windows 10 client](https://youtu.be/nVRWpV2xyds?t=633)
 - [TrueNAS Data Migration Tutorial - Craft Computing](https://www.youtube.com/watch?v=uVllnnozmFc)
 - [TrueNAS CORE 12.0 Tutorial - Datasets, Permissions, Snapshots - Craft Computing](https://www.youtube.com/watch?v=k0X0geU6NOA)
 - [12-Bay, 1U Storage Server for $120 - Craft Computing](https://www.youtube.com/watch?v=F1xX3V_n0kw)
