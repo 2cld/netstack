@@ -40,6 +40,23 @@ Various information resources
     - [Cleanup SMB Share permissions using shell](https://youtu.be/nVRWpV2xyds?t=555)
     - [Connect to SMB Share using Windows 10 client](https://youtu.be/nVRWpV2xyds?t=633)
 - [TrueNAS Data Migration Tutorial - Craft Computing](https://www.youtube.com/watch?v=uVllnnozmFc)
+    - [Push data from old FreeNAS to new TrueNAS using Replication](https://youtu.be/uVllnnozmFc?t=106)
+    - [Verify Data Replication](https://youtu.be/uVllnnozmFc?t=447)
+    - [Use dir and fc to verify file replication](https://youtu.be/uVllnnozmFc?t=471)
+        1. Mount oldshare as Z drive on Windows client
+        ```
+        Z:\>dir /s > oldshare.txt
+        ```
+        2. Mount newshare as Z drive on Windows client
+        ```
+        Z:\>dir /s > newshare.txt
+        ```
+        3. Compare difference
+        ```
+        Z:\>fc newshare.txt oldshare.txt > newolddiffernces.txt
+        ```
+    - [Moving Physical Drives to new Server](https://youtu.be/uVllnnozmFc?t=614)
+    - [Import old drives into new TrueNAS Server](https://youtu.be/uVllnnozmFc?t=664)
 - [TrueNAS CORE 12.0 Tutorial - Datasets, Permissions, Snapshots - Craft Computing](https://www.youtube.com/watch?v=k0X0geU6NOA)
 - [12-Bay, 1U Storage Server for $120 - Craft Computing](https://www.youtube.com/watch?v=F1xX3V_n0kw)
 - [Three Server HomeLab for less than $1,000 - Craft Computing](https://www.youtube.com/watch?v=onMD8tvnLbs)
