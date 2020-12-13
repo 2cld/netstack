@@ -31,11 +31,26 @@
         - Flags: Inherit
     - Apply permissions recursively
 5. Create Windows (SMB) Share [youtube tc-11:25](https://youtu.be/BGinwiHPllA?t=685)
-    - Add Share
-        - /mnt/ghPool/synctest
-        - tbd
-X. tbd [youtube tc-]()
-X. tbd [youtube tc-]()
-X. tbd [youtube tc-]()
+    - Add Share /mnt/ghPool/synctest
+    - Edit Share ACL
+        - Domain: SG
+        - Name: ghadmin
+        - Permission: FULL
+        - Type: ALLOWED
+    - Test SMB share by connecting and writing some new folders and files
+6. Add Share to plexServerCAT /mnt [youtube tc-13:14](https://youtu.be/BGinwiHPllA?t=794)
+    - Stop Plex Plugin
+    - Click on MOUNT POINTS
+    - Add Mount Point
+    - Source: /mnt/ghPool/synctest
+    - Destination: /mnt/MediaVolume/iocage/jails/plexServerCAT/root/mnt/synctest
+    - Save
+    - Restsart Plex Plugin
+7. Add new share as Lib in Plex [youtube tc-16:27](https://youtu.be/BGinwiHPllA?t=987)
+    - Web browse to <plexserver>:32400 and sign-in
+    - CLick on + next to PLEXSERVERCAT
+    - Add Other name: ghlearn Videos
+    - Add Folder /mnt/synctest/ghlearnVideos
+8. Plex should auto scan and index [youtube tc-20:10](https://youtu.be/BGinwiHPllA?t=1210)
 X. tbd [youtube tc-]()
 X. tbd [youtube tc-]()
