@@ -17,14 +17,24 @@ Current default netstack proceedure for public domain interface setup.
           185.199.110.153
           185.199.111.153
     ```
-  - Create www (subdomain) Resource Record
+  - Create base domain Resource Record that points to your github user.  In this case the [2cld github netstack repo](https://github.com/2cld/netstack) is hosting the main landing page for netstack.org.
+    ```
+    Name: 2cld.github.io 
+    Type: A 
+    TTL: 1h 
+    Data: 185.199.108.153
+          185.199.109.153
+          185.199.110.153
+          185.199.111.153
+    ```
+  - Create www (subdomain) Resource Record.  Not required as the www subdomain is just traditional.
     ```
     Name: www 
     Type: CNAME
     TTL: 1h 
     Data: netstack.org.
     ```
-  - Create yoursubdomain (subdomian) Resource Record
+  - Create yoursubdomain (subdomian) Resource Record. For "yoursubdomain.netstack.org" you would enter the following:
     ```
     Name: yoursubdomain 
     Type: CNAME
@@ -34,7 +44,7 @@ Current default netstack proceedure for public domain interface setup.
 2. Static Web management using [https://github.com/](https://github.com/)
   - Login to a github account and create a new repo [https://github.com/2cld/netstack](https://github.com/2cld/netstack)
   - Add a [README.md](https://github.com/2cld/netstack/blob/master/README.md)
-  - Add file [CNAME](https://github.com/2cld/netstack/blob/master/CNAME) with the domain
+  - Add file [CNAME](https://github.com/2cld/netstack/blob/master/CNAME) with the domain "netstack.org"
   - Enable [github pages custom domain](https://docs.github.com/en/github/working-with-github-pages/managing-a-custom-domain-for-your-github-pages-site)
   - Browse your domain to view static website info [https://netstack.org/](https://netstack.org/)
 3. Create site reference documents
