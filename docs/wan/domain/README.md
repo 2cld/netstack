@@ -17,6 +17,7 @@ Current default netstack proceedure for public domain interface setup.
           185.199.110.153
           185.199.111.153
     ```
+    This directs DNS request to github servers for resolution.
   - Create base domain Resource Record that points to your github user.  In this case the [2cld github netstack repo](https://github.com/2cld/netstack) is hosting the main landing page for netstack.org.
     ```
     Name: 2cld.github.io 
