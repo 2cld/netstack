@@ -17,8 +17,8 @@ Current default netstack proceedure for public domain interface setup.
           185.199.110.153
           185.199.111.153
     ```
-    This directs DNS request to github servers for resolution.
-  - Create base domain Resource Record that points to your github user.  In this case the [2cld github netstack repo](https://github.com/2cld/netstack) is hosting the main landing page for netstack.org.
+    This directs DNS request for this domain to github servers for resolution.
+  - Create base domain Resource Record that points to your github user.  
     ```
     Name: 2cld.github.io 
     Type: A 
@@ -28,6 +28,7 @@ Current default netstack proceedure for public domain interface setup.
           185.199.110.153
           185.199.111.153
     ```
+    In this case the [2cld github netstack repo](https://github.com/2cld/netstack) is hosting the main landing page for netstack.org.  This repo has a CNAME file that will allow the github DNS servers to resolve the DNS request to a specific github user repo.
   - Create yoursubdomain (subdomian) Resource Record. For "yoursubdomain.netstack.org" you would enter the following:
     ```
     Name: yoursubdomain 
@@ -35,7 +36,7 @@ Current default netstack proceedure for public domain interface setup.
     TTL: 1h 
     Data: netstack.github.io.
     ```
-2. Static Web management using [https://github.com/](https://github.com/)
+2. Static Web management using CNAME on a [https://github.com/](https://github.com/) user repo.
   - Login to a github account and create a new repo [https://github.com/2cld/netstack](https://github.com/2cld/netstack)
   - Add a [README.md](https://github.com/2cld/netstack/blob/master/README.md)
   - Add file [CNAME](https://github.com/2cld/netstack/blob/master/CNAME) with the domain "netstack.org"
