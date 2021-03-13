@@ -27,13 +27,6 @@ Current default netstack proceedure for public domain interface setup.
           185.199.110.153
           185.199.111.153
     ```
-  - Create www (subdomain) Resource Record.  Not required as the www subdomain is just traditional.
-    ```
-    Name: www 
-    Type: CNAME
-    TTL: 1h 
-    Data: netstack.org.
-    ```
   - Create yoursubdomain (subdomian) Resource Record. For "yoursubdomain.netstack.org" you would enter the following:
     ```
     Name: yoursubdomain 
