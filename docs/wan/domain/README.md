@@ -46,3 +46,10 @@ Current default netstack proceedure for public domain interface setup.
 3. Create site reference documents
   - Add file [docs/README.md](https://github.com/2cld/netstack/blob/master/docs/README.md) to repo [https://github.com/2cld/netstack](https://github.com/2cld/netstack)
   - Repeat with additional public proceedural documentation
+
+
+### Monitoring and Maintainance
+
+- [Review your Security logs - Github](https://docs.github.com/en/github/authenticating-to-github/reviewing-your-security-log)
+- [Rename and Move files on Github](https://github.blog/2013-03-15-moving-and-renaming-files-on-github/)
+- [tbd]()
