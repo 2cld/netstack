@@ -32,7 +32,7 @@ Current default netstack proceedure for public domain interface setup.
     Name: yoursubdomain 
     Type: CNAME
     TTL: 1h 
-    Data: netstack.org.
+    Data: netstack.github.io.
     ```
 2. Static Web management using [https://github.com/](https://github.com/)
   - Login to a github account and create a new repo [https://github.com/2cld/netstack](https://github.com/2cld/netstack)
