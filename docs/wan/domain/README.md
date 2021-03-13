@@ -34,8 +34,9 @@ Current default netstack proceedure for public domain interface setup.
     Name: yoursubdomain 
     Type: CNAME
     TTL: 1h 
-    Data: netstack.github.io.
+    Data: 2cld.github.io.
     ```
+    In this case the 2cld github user would host the "yoursubdomain" repo containing web pages for yoursubdomain.netstack.org.  This repo has a CNAME file with "yoursubdomain.netstack.org" that will allow the github DNS servers to resolve the DNS request to a specific github user repo.
 2. Static Web management using CNAME on a [https://github.com/](https://github.com/) user repo.
   - Login to a github account and create a new repo [https://github.com/2cld/netstack](https://github.com/2cld/netstack)
   - Add a [README.md](https://github.com/2cld/netstack/blob/master/README.md)
