@@ -4,6 +4,8 @@
 
 The netstack storage infrastructure pattern uses ZFS storage mounted via NFS, SMB and iSCSI via a FreeNAS server.  Storage allocation, snapshots and recovery are determined via project / customer SLA and maintained through management of ZFS snapshot, replication and rsync tools via the FreeNAS server.
 
+[TrueNAS - Scale](https://www.truenas.com/truenas-scale/) [TrueNAS - Docs](https://www.truenas.com/docs/)
+
 ## Netstack Storage Infrastructure
 
 1. [projects.ns.lan](https://192.168.2.6) - Production Project Storage
