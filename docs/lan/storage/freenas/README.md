@@ -60,6 +60,8 @@ Various information resources
 - [TrueNAS CORE 12.0 Tutorial - Datasets, Permissions, Snapshots - Craft Computing](https://www.youtube.com/watch?v=k0X0geU6NOA)
 - [12-Bay, 1U Storage Server for $120 - Craft Computing](https://www.youtube.com/watch?v=F1xX3V_n0kw)
 - [Three Server HomeLab for less than $1,000 - Craft Computing](https://www.youtube.com/watch?v=onMD8tvnLbs)
+- [EPYC TrueNAS Scale Build and VM Install](https://www.youtube.com/watch?v=Vi-ZdJOenWc&t=799s)
+    - [TrueNAS Scale new Install](https://youtu.be/Vi-ZdJOenWc?t=907)
 - [Youtube Index - Craft Computing](https://www.youtube.com/c/CraftComputing/videos)
 - [ - Craft Computing]()
 
