@@ -5,15 +5,19 @@
 - [Youtube - Proxmox vGPU Gaming Tutorial - Share Your GPU With Multiple VMs](https://www.youtube.com/watch?v=cPrOoeMxzu0)
 - [Youtube - Virtualizing An Internal Network With pfSense In ProxMox](https://www.youtube.com/watch?v=V6di1EAovN8)
 - [Youtube - Virtualize Windows 10 with Proxmox VE](https://www.youtube.com/watch?v=6c-6xBkD2J4)
-- [Youtube - ]()
+- [Youtube - Proxmox Full Course](https://www.youtube.com/playlist?list=PLT98CRl2KxKHnlbYhtABg6cF50bYa8Ulo)
 - [Youtube - ]()
 - [Youtube - ]()
 - [Youtube - ]()
 - [Youtube - ]()
 
-
+## Network
+- [ng - ASUS - http://192.168.2.1/Advanced_DHCP_Content.asp](http://192.168.2.1/Advanced_DHCP_Content.asp)
+- [sg - truenas scale - http://192.168.2.2/ui/dashboard](http://192.168.2.2/ui/dashboard)
+- [cg - proxmox - https://192.168.2.3:8006/](https://192.168.2.3:8006/)
+- 
 ## Setup
-- [Youtube - Before I do anything on Proxmox, I do this first](https://www.youtube.com/watch?v=GoZaMgEgrHw) [Techno Tim - Document](https://docs.technotim.live/posts/first-11-things-proxmox/)
+- [Youtube - Before I do anything on Proxmox, I do this first](https://www.youtube.com/watch?v=GoZaMgEgrHw) commandline document [Techno Tim - Document](https://docs.technotim.live/posts/first-11-things-proxmox/) quickstart documents [Techno Tim - launchpad](https://github.com/techno-tim/launchpad)
 
 - [01:26](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=86s) Install the latest version of [Proxmox - iso-images-pve](https://www.proxmox.com/en/downloads/category/iso-images-pve)
 - [01:51](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=111s) How to update Proxmox without a subscription
@@ -105,6 +109,7 @@
 - [09:54](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=594s)  - How to schedule backups with Proxmox
 - [10:53](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=653s)  - How to back up a virtual machine on Proxmox (initial backup)
 - [11:13](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=673s)  - How to upload the VirtIO ISO to Proxmox
+   - [Proxmox Windows VirtIO Drivers](https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers) download [virtio-win latest stable](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso)
 - [11:45](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=705s)  - How to upload Windows / Ubuntu ISO to Proxmox
 - [11:52](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=712s)  - How to create a NIC team (LACP, LAG) on Proxmox
 - [13:51](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=831s)  - How to set up an aggregate (LACP, Team) on Unifi Switch Pro
@@ -113,3 +118,62 @@
 - [17:59](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=1079s)  - How to clone a virtual machine in Proxmox
 - [18:42](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=1122s)  - How to fix Proxmox Linux clone NIC, machine ID, and ssh keys after cloning
 - [19:46](https://www.youtube.com/watch?v=GoZaMgEgrHw&t=1186s)  - How to create a Proxmox Cluster
+
+
+## Ubuntu nsweb100 - VM 100
+- After first boot
+    ```
+    nsadmin@nsweb100:~$ sudo apt update && sudo apt dist-upgrade
+    nsadmin@nsweb100:~$ sudo dpkg --configure -a
+    nsadmin@nsweb100:~$ systemctl status qemu-guest-agent.service 
+    ● qemu-guest-agent.service - QEMU Guest Agent
+         Loaded: loaded (/lib/systemd/system/qemu-guest-agent.service; static; vendor preset: enabled)
+         Active: inactive (dead)
+    nsadmin@nsweb100:~$ sudo poweroff
+    ```
+- In VM 100 Options -> OEMU Guest Agent Enabled
+- Restart VM
+
+## Ubuntu nsweb100 - VM 100 [Create Template](https://www.youtube.com/watch?v=t3Yv4OOYcLs&list=PLT98CRl2KxKHnlbYhtABg6cF50bYa8Ulo&index=7)
+- Verify cloud-init is installed
+   ```
+   nsadmin@nsweb100:~$ apt search cloud-init
+   ```
+- Remove ssh host keys
+   ```
+   nsadmin@nsweb100:~$ cd /etc/ssh
+   nsadmin@nsweb100:/etc/ssh$ sudo rm ssh_host_*
+   [sudo] password for nsadmin: 
+   nsadmin@nsweb100:/etc/ssh$ 
+   ```
+- Empty the machine-id verify dbus is link
+   ```
+   nsadmin@nsweb100:/etc/ssh$ cat /etc/machine-id 
+   685018d745174d9e95f638d501a91d42
+   nsadmin@nsweb100:/etc/ssh$ sudo truncate -s 0 /etc/machine-id
+   nsadmin@nsweb100:/etc/ssh$ ls -l /var/lib/dbus/machine-id 
+   lrwxrwxrwx 1 root root 15 Feb 22 22:25 /var/lib/dbus/machine-id -> /etc/machine-id
+   ```
+- Cleanup
+   ```
+   nsadmin@nsweb100:/etc/ssh$ sudo apt clean
+   nsadmin@nsweb100:/etc/ssh$ sudo apt autoremove
+   Reading package lists... Done
+   Building dependency tree       
+   Reading state information... Done
+   0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+   nsadmin@nsweb100:/etc/ssh$ sudo poweroff
+   ```
+- In Proxmox UI right-click vm 100 -> Convert to Template
+- Hardware -> Remove CD/DVD with install iso
+- Hardware -> Add -> CloudInit Drive use same storage as old vm
+- Cloud-Init -> Edit User and Password -> Regenerate Image
+
+---
+
+- [tbd]()
+   ```
+   ```
+- [tbd]()
+   ```
+   ```
