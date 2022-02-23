@@ -398,8 +398,55 @@
    ```
 - [tbd]()
    ```
+
 ---
 
+
+## Force VM quit [https://bobcares.com/blog/proxmox-cant-stop-vm/](https://bobcares.com/blog/proxmox-cant-stop-vm/)
+
+- List VM's
+   ```
+    root@cg:~# cat /etc/pve/.vmlist 
+    {
+    "version": 1,
+    "ids": {
+    "100": { "node": "cg", "type": "qemu", "version": 2 },
+    "901": { "node": "cg", "type": "qemu", "version": 1 }}
+
+    }
+   ```
+- Get PID and kill
+   ```
+    root@cg:~# ps aux | grep "/usr/bin/kvm -id 901"
+    root       53380 20.8 12.8 5116484 4234736 ?     SLl  15:02  
+    
+    root@cg:~# kill -9 53380
+    root@cg:~# qm unlock 901
+    root@cg:~# qm stop 901
+    root@cg:~# 
+   ```
+   
+---
+---
+
+## Windows 11 install [Windows 11 on Proxmox](https://www.youtube.com/watch?v=fupuTkkKPDU)
+
+[03:11](https://www.youtube.com/watch?v=fupuTkkKPDU&t=191s) - Get the latest [VirtIO Drive Disk]()
+
+[03:29]( - Create our Windows 11 VM and all settings
+[06:48]( - Installing Windows 11 on a VM
+[08:49]( - Windows 11 First Boot & Configuration
+[10:48]( - Installing VirtIO drives on Windows 11
+[12:02]( - Windows 11 with all drivers
+
+[Declutter Windows 11](https://github.com/builtbybel/ThisIsWin11)
+
+- [tbd]()
+   ```
+   ```
+- [tbd]()
+   
+   
 ## New Topic [tbd]()
 
 - [tbd]()
