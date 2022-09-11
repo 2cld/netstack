@@ -9,6 +9,7 @@
 - [Network Domain Setup](./wan/domain/)
 - [OpenVPN](./wan/openvpn/)
 - [zerotier](./wan/zerotier/)
+- [Lambda Labs](https://lambdalabs.com/cloud/dashboard/instances) 
 
 ### LAN [overview](./lan/)
 - [Network IPAM and Subnets](./lan/ipam/)
