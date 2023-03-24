@@ -389,6 +389,11 @@ tracert cf.christrees.com
 - [https://hub.docker.com/r/jlesage/makemkv/](https://hub.docker.com/r/jlesage/makemkv/)
 - [https://github.com/automatic-ripping-machine/automatic-ripping-machine](https://github.com/automatic-ripping-machine/automatic-ripping-machine)
 
+- proxmox iso template storage
+```bash
+root@cg:~# ls /var/lib/vz/template/iso/
+```
+
 ---
 ---
 ---
