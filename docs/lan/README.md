@@ -36,7 +36,7 @@
   
 | web proxy    |   Link  | type | description |
 |--------------|---------|------|-------------|
-| ngMikrotik | [http://192.168.2.1/](http://192.168.2.1/) | static | mikrotik vrrp ns gw |
+| [https://ng.ns.lan/](https://ng.ns.lan/) | [http://192.168.2.1/](http://192.168.2.1/) | static | [docs ng.ns.lan](./compute/mikrotik/) mikrotik vrrp ns gw |
 | truenas | [http://192.168.2.2/](http://192.168.2.2/) | static | truenas sg on subnet |
 | proxmox | [https://192.168.2.3:8006/](https://192.168.2.3:8006/) | static | proxmox cg subnet |
 | ~~nginx default~~ | [http://192.168.2.103/](http://192.168.2.103/) | static | ~~default nginx proxy page running in portainer~~ |
