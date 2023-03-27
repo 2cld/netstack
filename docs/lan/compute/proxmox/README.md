@@ -28,7 +28,131 @@
 - /var/lib/vzdump/vzdump_qemu_102_YYYY_MM_DD-HH_MM_SS.vma .log
 - map IP to IPA plan
 - [http://192.168.252.12/](http://192.168.252.12/)
+- [https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_(VM)](https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_(VM))
+- [VM disk passthrough video](https://youtu.be/MkK-9_-2oko?t=274)
+- Install on proxmox node
+```
+apt install lshw
+```
+```
+lshw -class disk -class storage
+```
+```
+lsblk |awk 'NR==1{print $0" DEVICE-ID(S)"}NR>1{dev=$1;printf $0" ";system("find /dev/disk/by-id -lname \"*"dev"\" -printf \" %p\"");print "";}'|grep -v -E 'part|lvm'
+```
+- copy disk info
 
+```
+root@cg:~# lshw -class disk -class storage
+  *-sata
+       description: SATA controller
+       product: 88SE9128 PCIe SATA 6 Gb/s RAID controller with HyperDuo
+       vendor: Marvell Technology Group Ltd.
+       physical id: 0
+       bus info: pci@0000:08:00.0
+       logical name: scsi7
+       logical name: scsi13
+       version: 11
+       width: 32 bits
+       clock: 33MHz
+       capabilities: sata pm msi pciexpress ahci_1.0 bus_master cap_list rom emulated
+       configuration: driver=ahci latency=0
+       resources: irq:33 ioport:c040(size=8) ioport:c030(size=4) ioport:c020(size=8) ioport:c010(size=4) ioport:c000(size=16) memory:fb410000-fb4107ff memory:fb400000-fb40ffff
+     *-disk
+          description: ATA Disk
+          product: WDC  WDBNCE5000P
+          vendor: Western Digital
+          physical id: 0
+          bus info: scsi@7:0.0.0
+          logical name: /dev/sde
+          version: 00WD
+          serial: 19272Q446913
+          size: 465GiB (500GB)
+          capabilities: gpt-1.00 partitioned partitioned:gpt
+          configuration: ansiversion=5 guid=d49c6931-4d94-4061-928f-e93b31b01298 logicalsectorsize=512 sectorsize=512
+  *-sata
+       description: SATA controller
+       product: C600/X79 series chipset 6-Port SATA AHCI Controller
+       vendor: Intel Corporation
+       physical id: 1f.2
+       bus info: pci@0000:00:1f.2
+       logical name: scsi2
+       logical name: scsi3
+       logical name: scsi4
+       logical name: scsi5
+       version: 06
+       width: 32 bits
+       clock: 66MHz
+       capabilities: sata msi pm ahci_1.0 bus_master cap_list emulated
+       configuration: driver=ahci latency=0
+       resources: irq:32 ioport:f090(size=8) ioport:f080(size=4) ioport:f070(size=8) ioport:f060(size=4) ioport:f020(size=32) memory:fb625000-fb6257ff
+     *-disk:0
+          description: ATA Disk
+          product: ST4000DM005-2DP1
+          physical id: 0
+          bus info: scsi@2:0.0.0
+          logical name: /dev/sda
+          version: 0001
+          serial: ZDH1XZRW
+          size: 3726GiB (4TB)
+          configuration: ansiversion=5 logicalsectorsize=512 sectorsize=4096
+     *-disk:1
+          description: ATA Disk
+          product: WDC WD40EZRZ-00G
+          vendor: Western Digital
+          physical id: 1
+          bus info: scsi@3:0.0.0
+          logical name: /dev/sdb
+          version: 0A80
+          serial: WD-WCC7K7ZHJNLJ
+          size: 3726GiB (4TB)
+          configuration: ansiversion=5 logicalsectorsize=512 sectorsize=4096
+     *-disk:2
+          description: ATA Disk
+          product: ST4000DM005-2DP1
+          physical id: 2
+          bus info: scsi@4:0.0.0
+          logical name: /dev/sdc
+          version: 0001
+          serial: ZGY0H6BY
+          size: 3726GiB (4TB)
+          configuration: ansiversion=5 logicalsectorsize=512 sectorsize=4096
+     *-disk:3
+          description: ATA Disk
+          product: ST4000DM005-2DP1
+          physical id: 3
+          bus info: scsi@5:0.0.0
+          logical name: /dev/sdd
+          version: 0001
+          serial: ZGY0H29Y
+          size: 3726GiB (4TB)
+          configuration: ansiversion=5 logicalsectorsize=512 sectorsize=4096
+root@cg:~#
+```
+- create mapping
+  - sda ZDH1XZRW ata-ST4000DM005-2DP166_ZDH1XZRW
+  - sdb WD-WCC7K7ZHJNLJ ata-WDC_WD40EZRZ-00GXCB0_WD-WCC7K7ZHJNLJ
+  - sdc ZGY0H6BY ata-ST4000DM005-2DP166_ZGY0H6BY
+  - sdd ZGY0H29Y ata-ST4000DM005-2DP166_ZGY0H29Y
+- add drives to vm 102 (truenas vm id)
+  - qm set 102 -scsi1 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZDH1XZRW
+  - qm set 102 -scsi2 /dev/disk/by-id/ata-WDC_WD40EZRZ-00GXCB0_WD-WCC7K7ZHJNLJ
+  - qm set 102 -scsi3 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZGY0H6BY
+  - qm set 102 -scsi4 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZGY0H29Y
+- proxmox cli
+```
+root@cg:~# qm set 102 -scsi1 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZDH1XZRW
+update VM 102: -scsi1 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZDH1XZRW
+root@cg:~# qm set 102 -scsi2 /dev/disk/by-id/ata-WDC_WD40EZRZ-00GXCB0_WD-WCC7K7ZHJNLJ
+update VM 102: -scsi2 /dev/disk/by-id/ata-WDC_WD40EZRZ-00GXCB0_WD-WCC7K7ZHJNLJ
+root@cg:~# qm set 102 -scsi3 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZGY0H6BY
+update VM 102: -scsi3 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZGY0H6BY
+root@cg:~# qm set 102 -scsi4 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZGY0H29Y
+update VM 102: -scsi4 /dev/disk/by-id/ata-ST4000DM005-2DP166_ZGY0H29Y
+root@cg:~#
+```
+- proxmox vm 101 [https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:](https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:)
+- put serial numbers in 
 ---
 ---
 ---
