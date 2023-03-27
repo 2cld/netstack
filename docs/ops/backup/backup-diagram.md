@@ -1,58 +1,76 @@
-# netstack project data lifecycle
+# netstack filerepo data lifecycle
 
 - repo tree active or creation of new repo
 ```mermaid
 sequenceDiagram
     participant user
-    participant server
-    participant projects
-    participant garage
-    participant parking
-    participant lot in parking
-    server->>projects: project creation active
-    user->>projects: project changes
-    projects->>projects: project zfs snapshot 2hr
-    projects->>garage: project zfs sync daily
-    garage->>garage: garage zfs snapshot weekly
-    garage->>parking: garage zfs sync weekly
-    parking->>parking: parking zfs snapshot monthly
+    participant buadmin
+    participant fileserver
+    participant buserver
+    participant archserver
+    participant lot in archserver
+    buadmin->>fileserver: filerepo creation active
+    user->>fileserver: filerepo changes
+    fileserver->>fileserver: filerepo zfs snapshot 2hr
+    fileserver->>buserver: filerepo zfs sync daily
+    buserver->>buserver: buserver zfs snapshot weekly
+    buserver->>archserver: buserver zfs sync weekly
+    archserver->>archserver: archserver zfs snapshot monthly
 ```
-- project inactive and/or project release
+- filerepo inactive and/or filerepo release
 ```mermaid
 sequenceDiagram
-    user->>projects: project final changes
-    user->>server: project final checkin
-    server->>projects: project dailies / reviews / final
-    server->>projects: project inactive
-    projects->>garage: project zfs sync daily
-    garage->>parking: garage zfs sync weekly
-    parking->>lot in parking: project rsync archive
-    parking->>server: project archive parking lot assignment logs
+    participant user
+    participant buadmin
+    participant fileserver
+    participant buserver
+    participant archserver
+    participant lot in archserver
+    user->>fileserver: filerepo final changes
+    buadmin->>fileserver: filerepo dailies / reviews / final
+    user->>buadmin: filerepo final checkin
+    buadmin->>fileserver: filerepo inactive
+    fileserver->>buserver: filerepo zfs sync daily
+    buserver->>archserver: buserver zfs sync weekly
+    archserver->>archmediaUID: filerepo rsync archive
+    archserver->>buadmin: filerepo archive archserver lot assignment logs
 ```
-- project hidden
+- filerepo hidden
 ```mermaid
 sequenceDiagram
-    server->>projects: project hidden request process
-    projects->>projects: project directory log and pointer update
-    projects->>garage: active project remove data process
-    garage->>garage: project directory log and pointer update
-    garage->>parking: active project remove data process
-    parking->>parking: project directory log and pointer update
-    parking->>lot in parking: archive project confirmation check
-    parking->>parking: archive project lot confirmation local
-    parking->>server: project hidden lot confirmation done
-    parking->>server: project archive parking lot assignment logs
+    participant user
+    participant buadmin
+    participant fileserver
+    participant buserver
+    participant archserver
+    participant lot in archserver
+    buadmin->>fileserver: filerepo hidden request process
+    fileserver->>fileserver: filerepo directory log and pointer update
+    fileserver->>buserver: active filerepo remove data process
+    buserver->>buserver: filerepo directory log and pointer update
+    buserver->>archserver: active filerepo remove data process
+    archserver->>archserver: filerepo directory log and pointer update
+    archserver->>archmediaUID: archive filerepo confirmation check
+    archserver->>archserver: archive filerepo lot confirmation local
+    archserver->>buadmin: filerepo hidden lot confirmation done
+    archserver->>buadmin: filerepo archive archserver lot assignment logs
 ```
-- project archive resource reclaim
+- filerepo archive resource reclaim
 ```mermaid
 sequenceDiagram 
-    server->>projects: project storage reclaim
-    projects->>projects: project storage reclaim process
-    projects->>garage: project storage reclaim
-    garage->>garage: project storage reclaim process
-    garage->>parking: project storage reclaim
-    parking->>lot in parking: project storage archive lot3 check
-    parking->>parking: lot1 and lot2 check
-    parking->>parking: lot volume mirror break and offline disk
-    parking->>server: project hidden lots offline done
+    participant user
+    participant buadmin
+    participant fileserver
+    participant buserver
+    participant archserver
+    participant lot in archserver
+    buadmin->>fileserver: filerepo storage reclaim
+    fileserver->>fileserver: filerepo storage reclaim process
+    fileserver->>buserver: filerepo storage reclaim
+    buserver->>buserver: filerepo storage reclaim process
+    buserver->>archserver: filerepo storage reclaim
+    archserver->>archmediaUID: filerepo storage archive lot3 check
+    archserver->>archserver: lot1 and lot2 check
+    archserver->>archserver: lot volume mirror break and offline disk
+    archserver->>buadmin: filerepo hidden lots offline done
 ```
