@@ -154,6 +154,14 @@ root@cg:~#
 - proxmox vm 101 [https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:](https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:)
 - put serial numbers in 
 
+## proxmox truenas import existing pool
+- [https://www.truenas.com/docs/core/coretutorials/storage/importdisk/](https://www.truenas.com/docs/core/coretutorials/storage/importdisk/)
+- [https://www.truenas.com/docs/core/coretutorials/storage/pools/poolimport/](https://www.truenas.com/docs/core/coretutorials/storage/pools/poolimport/)
+- map drives to vm see above [./#proxmox-truenas-install](./#proxmox-truenas-install)
+- Storage > Pools > ADD
+- tbd
+
+
 ## proxmox backup and restore vm
 - [https://pve.proxmox.com/wiki/Backup_and_Restore](https://pve.proxmox.com/wiki/Backup_and_Restore)
 - qm list
