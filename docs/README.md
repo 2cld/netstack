@@ -2,7 +2,7 @@
 
 ## Operations [overview](./ops/)
 - [DR - Disaster Recovery](./ops/recovery/)
-- [BU - Backups](./ops/backups/)
+- [BU - Backup](./ops/backup/)
 - [WF - Workflows](./ops/workflows/)
 
 ### WAN [overview](./wan/)
