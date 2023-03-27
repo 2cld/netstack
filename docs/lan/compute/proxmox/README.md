@@ -1,6 +1,38 @@
 [edit](https://github.com/2cld/netstack/tree/master/docs/lan/compute/proxmox)
 # Proxmox
 
+- Identify static IP for proxmox node
+- Boot Ventoy USB - select proxmox install
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) 
+  - github [https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh](https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh)
+  - run from cg node console shell
+  ```
+  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/misc/post-pve-install.sh)"
+  ```
+  - github [https://github.com/tteck/Proxmox/blob/main/ct/ubuntu.sh](https://github.com/tteck/Proxmox/blob/main/ct/ubuntu.sh)
+  - ran from cg node console shell
+  - set static IP 192.168.2.3/24 (or IP via IPA plan)
+  ```
+  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/ubuntu.sh)"
+  ```
+  - github [https://github.com/tteck/Proxmox/blob/main/ct/docker-v5.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker-v5.sh)
+  - ran from cg node console shell
+  - set static IP 192.168.2.103/24 (or IP via IPA plan)
+  ```
+  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/docker-v5.sh)"
+  ```
+
+## Proxmox TrueNAS install
+- qm list
+- vzdump 102
+- /var/lib/vzdump/vzdump_qemu_102_YYYY_MM_DD-HH_MM_SS.vma .log
+- map IP to IPA plan
+- [http://192.168.252.12/](http://192.168.252.12/)
+
+---
+---
+---
+
 ## proxmox [https://192.168.2.3:8006/](https://192.168.2.3:8006/) phy and virtio
 
 | cg Name |   CIDR            |  gw          | pt/slv/brg  | ID   |  type          | description |
