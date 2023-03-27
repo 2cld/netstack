@@ -69,8 +69,9 @@ sequenceDiagram
     fileserver->>buserver: filerepo storage reclaim
     buserver->>buserver: filerepo storage reclaim process
     buserver->>archserver: filerepo storage reclaim
-    archserver->>archmediaUID: filerepo storage archive archmedia3_123_UID check and log
-    archserver->>archserver: archmedia2_123_UID and archmedia1_123_UID check and log
-    archserver->>archserver: archmedia123UID volume mirror break and offline archmedia123UID location update
+    archserver->>archmediaUID: filerepo archive archmedia3_123_UID write and log
+    archserver->>archserver: archmedia2_123_UID and archmedia1_123_UID verify and log
+    archserver->>buadmin: archmedia123UID location update
+    archserver->>archserver: archmedia1_123_UID remove and scan
     archserver->>buadmin: filerepo hidden archmedia123UID offline done
 ```
