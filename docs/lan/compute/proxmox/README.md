@@ -153,6 +153,15 @@ root@cg:~#
 ```
 - proxmox vm 101 [https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:](https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:)
 - put serial numbers in 
+
+## proxmox backup and restore vm
+- [https://pve.proxmox.com/wiki/Backup_and_Restore](https://pve.proxmox.com/wiki/Backup_and_Restore)
+- qm list
+- vzdump 400
+- /var/lib/vzdump/vzdump_qemu_400_YYYY_MM_DD-HH_MM_SS.vma .log
+- scp /var/lib/vzdump/vzdump...x.vma root@192.168.2.2:/var/lib/vzdump/
+- qmrestore /mnt/backup/vzdump-qemu-400.vma 400
+
 ---
 ---
 ---
