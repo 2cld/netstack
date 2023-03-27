@@ -1,6 +1,6 @@
 # netstack filerepo data lifecycle
 
-- repo tree active or creation of new repo
+- repo tree active or creation of new repo tree
 ```mermaid
 sequenceDiagram
     participant user
@@ -8,16 +8,16 @@ sequenceDiagram
     participant fileserver
     participant buserver
     participant archserver
-    participant lot in archserver
+    participant archmediaUID
     buadmin->>fileserver: filerepo creation active
     user->>fileserver: filerepo changes
-    fileserver->>fileserver: filerepo zfs snapshot 2hr
-    fileserver->>buserver: filerepo zfs sync daily
+    fileserver->>fileserver: fileserver zfs snapshot 2hr
+    fileserver->>buserver: fileserver zfs sync daily
     buserver->>buserver: buserver zfs snapshot weekly
     buserver->>archserver: buserver zfs sync weekly
     archserver->>archserver: archserver zfs snapshot monthly
 ```
-- filerepo inactive and/or filerepo release
+- filerepo inactive and/or filerepo release to archive
 ```mermaid
 sequenceDiagram
     participant user
@@ -25,17 +25,17 @@ sequenceDiagram
     participant fileserver
     participant buserver
     participant archserver
-    participant lot in archserver
+    participant archmediaUID
     user->>fileserver: filerepo final changes
     buadmin->>fileserver: filerepo dailies / reviews / final
     user->>buadmin: filerepo final checkin
     buadmin->>fileserver: filerepo inactive
-    fileserver->>buserver: filerepo zfs sync daily
+    fileserver->>buserver: fileserver zfs sync daily
     buserver->>archserver: buserver zfs sync weekly
     archserver->>archmediaUID: filerepo rsync archive
     archserver->>buadmin: filerepo archive archserver lot assignment logs
 ```
-- filerepo hidden
+- filerepo request to offline (hide repo and mark to create offline archmedia_123 pack)
 ```mermaid
 sequenceDiagram
     participant user
@@ -43,8 +43,8 @@ sequenceDiagram
     participant fileserver
     participant buserver
     participant archserver
-    participant lot in archserver
-    buadmin->>fileserver: filerepo hidden request process
+    participant archmediaUID
+    buadmin->>fileserver: filerepo offline request process
     fileserver->>fileserver: filerepo directory log and pointer update
     fileserver->>buserver: active filerepo remove data process
     buserver->>buserver: filerepo directory log and pointer update
@@ -55,7 +55,7 @@ sequenceDiagram
     archserver->>buadmin: filerepo hidden lot confirmation done
     archserver->>buadmin: filerepo archive archserver lot assignment logs
 ```
-- filerepo archive resource reclaim
+- filerepo archmedia offline and notify resource reclaim
 ```mermaid
 sequenceDiagram 
     participant user
@@ -63,14 +63,14 @@ sequenceDiagram
     participant fileserver
     participant buserver
     participant archserver
-    participant lot in archserver
+    participant archmediaUID
     buadmin->>fileserver: filerepo storage reclaim
     fileserver->>fileserver: filerepo storage reclaim process
     fileserver->>buserver: filerepo storage reclaim
     buserver->>buserver: filerepo storage reclaim process
     buserver->>archserver: filerepo storage reclaim
-    archserver->>archmediaUID: filerepo storage archive lot3 check
-    archserver->>archserver: lot1 and lot2 check
-    archserver->>archserver: lot volume mirror break and offline disk
-    archserver->>buadmin: filerepo hidden lots offline done
+    archserver->>archmediaUID: filerepo storage archive archmedia3_123_UID check and log
+    archserver->>archserver: archmedia2_123_UID and archmedia1_123_UID check and log
+    archserver->>archserver: archmedia123UID volume mirror break and offline archmedia123UID location update
+    archserver->>buadmin: filerepo hidden archmedia123UID offline done
 ```
