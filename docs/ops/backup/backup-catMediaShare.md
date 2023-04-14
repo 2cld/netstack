@@ -4,49 +4,59 @@
 # CopyA - D: NASbu01  1.91 TB NFS
 # CopyB - E: NASbu02  1.91 TB NFS
 # CopyC - 
-
+########## CopyA
 # CopyA \\SHARESERVER to D: catNASbu01
 #$sourceDirPath = "\\SHARESERVER\SHARENAME\"
 #$destinationPath =  "D:\SHARENAME\"
-#$destinationPath =  "E:\SHARENAME\"
-
-# TODO robocopy
+###------- TODO robocopy
 #-status- -DirSize g- $sourceDirName = "SHAREDIR01-2-BACKUP-NAME"
 #-status- -DirSize g- $sourceDirName = "SHAREDIR01-2-BACKUP-NAME"
-
+#DONE 17.801 g $sourceDirName = "10_Downloads"
+#DONE 15.446 g $sourceDirName = "11_CAT_Services"
+###------- DEBUG
 #debug Write-Output "mkdir $destinationPath$sourceDirName"
 #debug Write-Output "robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /s /e /z /log:D:\CATMediaShare\$sourceDirName-log.txt"
-
+###------- Copy Commands
 #mkdir $destinationPath$sourceDirName
-#robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /s /e /z /TS /NP /TEE /log:D:\CATMediaShareLogs\$sourceDirName-B-log.txt
+#robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /s /e /z /TS /NP /TEE /log:D:\CATMediaShareLogs\$sourceDirName-A-log.txt
 
-#####
+########## CopyB
 # CopyB to D: to E: catNASbu01
 #$sourceDirPath   =  "D:\SHARENAME\"
 #$destinationPath =  "E:\SHARENAME\"
+###------- TODO robocopy
+#-status- -DirSize g- $sourceDirName = "SHAREDIR01-2-BACKUP-NAME"
+#-status- -DirSize g- $sourceDirName = "SHAREDIR01-2-BACKUP-NAME"
+#DONE 17.801 g $sourceDirName = "10_Downloads"
+#DONE 15.446 g $sourceDirName = "11_CAT_Services"
+###------- Copy Commands
+#mkdir $destinationPath$sourceDirName
+#robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /s /e /z /TS /NP /TEE /log:D:\CATMediaShareLogs\$sourceDirName-B-log.txt
 
-# Verify NASbu02 NASbu01
-$sourceDirPath =  "D:\SHARENAME\"
-$destinationPath =  "E:\SHARENAME\"
-
+########## Verify CopyA CopyB
+# Verify CopyA and CopyB E:NASbu02 E:NASbu01
+#$sourceDirPath =  "D:\SHARENAME\"
+#$destinationPath =  "E:\SHARENAME\"
+###------- TODO robocopy
 #-status- -DirSize g- $sourceDirName = "SHAREDIR-2-BACKUP-NAME"
 #-status- -DirSize g- $sourceDirName = "SHAREDIR-2-BACKUP-NAME"
 #Verifed 17.801 g 17.801 g $sourceDirName = "10_Downloads"
 #Verifed 15.446 g 15.446 g $sourceDirName = "11_CAT_Services"
-
-### check should detect no files should be transfered
+##########
+# check should detect no files should be transfered
 #robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /e /ts /l /TEE /log:D:\CATMediaShareLogs\$sourceDirName-Verify-log.txt
 ### taget blank dir to get listing of source
 #robocopy $sourceDirPath$sourceDirName $destinationPath\CATMediaShareLogs\_0blanktarget\ /e /ts /l /TEE /log+:D:\CATMediaShareLogs\$sourceDirName-Verify-log.txt
 
-### copy logs
-$sourceDirPath   =  "D:\SHARENAME\"
-$destinationPath =  "E:\SHARENAME\"
-
+########## Copy Logs
+#### copy logs to both backups
+#$sourceDirPath   =  "D:\SHARENAME\"
+#$destinationPath =  "E:\SHARENAME\"
 #robocopy $sourceDirPath $destinationPath /s /e /z /TS /NP /TEE /log:D:\SHARELOGSDIR\$sourceDirName-B-log.txt
 ```
 
 PowerShell Config Notes
+
 ```powershell
 #############
 #info robocopy man
