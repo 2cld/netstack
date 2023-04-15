@@ -19,11 +19,11 @@
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/ubuntu.sh)"
   ```
-  - github [https://github.com/tteck/Proxmox/blob/main/ct/docker-v5.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker-v5.sh)
+  - github [https://github.com/tteck/Proxmox/blob/main/ct/docker.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker.sh)
   - ran from cg node console shell
   - set static IP 192.168.2.103/24 (or IP via IPA plan)
   ```
-  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/docker-v5.sh)"
+  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/docker.sh)"
   ```
 
 ## Proxmox TrueNAS Install
