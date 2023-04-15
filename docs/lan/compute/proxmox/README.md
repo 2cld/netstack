@@ -1,8 +1,8 @@
 [edit](https://github.com/2cld/netstack/tree/master/docs/lan/compute/proxmox)
 
-- Proxmox [Core Install](#Proxmox-Install)
-- Proxmox [TrueNAS Install](#Proxmox-TrueNAS-Install)
-  - proxmox truenas import existing pool
+- [Proxmox Install](#Proxmox-Install)
+- [Proxmox TrueNAS Install](#Proxmox-TrueNAS-Install)
+  - [proxmox truenas import existing pool](#proxmox-truenas-import-existing-pool)
 
 # Proxmox Install
 - Identify static IP for proxmox node
