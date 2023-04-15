@@ -1,3 +1,5 @@
+
+Main CopyA Backup
 ```
 #catrobocopy yyyy-mm-dd-hh
 # \\SHARESERVER TrueNAS server with "SHARENAME" https://192.168.252.2/ zfs1
@@ -19,7 +21,10 @@
 ###------- Copy Commands
 #mkdir $destinationPath$sourceDirName
 #robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /s /e /z /TS /NP /TEE /log:D:\CATMediaShareLogs\$sourceDirName-A-log.txt
+```
 
+Copy B Backup
+```
 ########## CopyB
 # CopyB to D: to E: catNASbu01
 #$sourceDirPath   =  "D:\SHARENAME\"
@@ -32,7 +37,10 @@
 ###------- Copy Commands
 #mkdir $destinationPath$sourceDirName
 #robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /s /e /z /TS /NP /TEE /log:D:\CATMediaShareLogs\$sourceDirName-B-log.txt
+```
 
+Verify CopyA and CopyB
+```
 ########## Verify CopyA CopyB
 # Verify CopyA and CopyB E:NASbu02 E:NASbu01
 #$sourceDirPath =  "D:\SHARENAME\"
@@ -47,7 +55,10 @@
 #robocopy $sourceDirPath$sourceDirName $destinationPath$sourceDirName /e /ts /l /TEE /log:D:\CATMediaShareLogs\$sourceDirName-Verify-log.txt
 ### taget blank dir to get listing of source
 #robocopy $sourceDirPath$sourceDirName $destinationPath\CATMediaShareLogs\_0blanktarget\ /e /ts /l /TEE /log+:D:\CATMediaShareLogs\$sourceDirName-Verify-log.txt
+```
 
+Copy the logs
+```
 ########## Copy Logs
 #### copy logs to both backups
 #$sourceDirPath   =  "D:\SHARENAME\"
