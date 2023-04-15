@@ -13,29 +13,45 @@ resource maps based on [https://netstack.org/docs/lan/README.md](https://netstac
 - Review [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) to find resources you want to run on proxmox
 - Identify static IP for proxmox node example 192.168.2.3/24
 - Boot Ventoy USB - select proxmox install
-- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/)
-  - [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Proxmox VE Tools -> Proxmox VE 7 Post Install 
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Proxmox VE Tools -> Proxmox VE 7 Post Install 
   - github [https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh](https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh)
   - run from cg node console shell
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/misc/post-pve-install.sh)"
   ```
-  - [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Operating System -> Ubuntu
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Operating System -> Ubuntu
   - github [https://github.com/tteck/Proxmox/blob/main/ct/ubuntu.sh](https://github.com/tteck/Proxmox/blob/main/ct/ubuntu.sh)
   - ran from cg node console shell
   - set static IP 192.168.2.3/24 (or IP via IPA plan)
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/ubuntu.sh)"
   ```
-  - [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Docker - Kubernetes -> Docker LXC
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Docker - Kubernetes -> Docker LXC
   - github [https://github.com/tteck/Proxmox/blob/main/ct/docker.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker.sh)
   - ran from cg node console shell
   - set static IP 192.168.2.103/24 (or IP via IPA plan)
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/docker.sh)"
   ```
-
-## 192.168.2.0/24 gw [http://192.168.2.1/](http://192.168.2.1/)
+  - Portainer UI at [http://192.168.2.103:9000/](http://192.168.6.103:9000/) 
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Server - Networking -> Mikrotik RouterOS VM
+  - github [https://github.com/tteck/Proxmox/raw/main/vm/mikrotik-routeros.sh](https://github.com/tteck/Proxmox/raw/main/vm/mikrotik-routeros.sh)
+  - ran from cg node console shell
+  ```
+  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/vm/mikrotik-routeros.sh)"
+  ```
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Docker - Kubernetes -> Docker LXC
+  - github [https://github.com/tteck/Proxmox/blob/main/ct/docker.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker.sh)
+  - ran from cg node console shell
+  - set static IP 192.168.2.105/24 (or IP via IPA plan)
+  ```
+  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/plex.sh)"
+  ```
+  - Plex UI at [http://192.168.2.105:3400/](http://192.168.6.105:9000/)
+  - Claim webserver
+  - Add storage
+ 
+## Proxmox service map for 192.168.2.0/24 gw [http://192.168.2.1/](http://192.168.2.1/)
   
 | web proxy    |   Link  | type | description |
 |--------------|---------|------|-------------|
