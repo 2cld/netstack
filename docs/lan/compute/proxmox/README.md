@@ -40,8 +40,8 @@ resource maps based on [https://netstack.org/docs/lan/README.md](https://netstac
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/vm/mikrotik-routeros.sh)"
   ```
-- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Docker - Kubernetes -> Docker LXC
-  - github [https://github.com/tteck/Proxmox/blob/main/ct/docker.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker.sh)
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Media - Photo -> Plex Media Server LXC
+  - github [https://github.com/tteck/Proxmox/raw/main/ct/plex.sh)](https://github.com/tteck/Proxmox/blob/main/ct/plex.sh)
   - ran from cg node console shell
   - set static IP 192.168.2.105/24 (or IP via IPA plan)
   ```
