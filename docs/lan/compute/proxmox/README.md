@@ -1,6 +1,8 @@
 [edit](https://github.com/2cld/netstack/tree/master/docs/lan/compute/proxmox)
 
-- [Proxmox Install](./README/#Proxmox-Install)
+- Proxmox [Core Install](./README/#Proxmox-Install)
+- Proxmox [TrueNAS Install](./README/#Proxmox-TrueNAS-Install)
+  - proxmox truenas import existing pool
 
 # Proxmox Install
 - Identify static IP for proxmox node
@@ -24,7 +26,7 @@
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/docker-v5.sh)"
   ```
 
-## Proxmox TrueNAS install
+## Proxmox TrueNAS Install
 - qm list
 - vzdump 102
 - /var/lib/vzdump/vzdump_qemu_102_YYYY_MM_DD-HH_MM_SS.vma .log
@@ -156,7 +158,7 @@ root@cg:~#
 - proxmox vm 101 [https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:](https://192.168.252.3:8006/#v1:0:=qemu%2F102:4:=jsconsole::::7:9:)
 - put serial numbers in 
 
-## proxmox truenas import existing pool
+### proxmox truenas import existing pool
 - [https://www.truenas.com/docs/core/coretutorials/storage/importdisk/](https://www.truenas.com/docs/core/coretutorials/storage/importdisk/)
 - [https://www.truenas.com/docs/core/coretutorials/storage/pools/poolimport/](https://www.truenas.com/docs/core/coretutorials/storage/pools/poolimport/)
 - map drives to vm see above [./#proxmox-truenas-install](./#proxmox-truenas-install)
