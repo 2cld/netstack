@@ -10,26 +10,31 @@ resource maps based on [https://netstack.org/docs/lan/README.md](https://netstac
 - gh [https://gh.2cld.net/docs/](https://gh.2cld.net/docs/)
 
 # Proxmox Install
+- Review [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) to find resources you want to run on proxmox
 - Identify static IP for proxmox node example 192.168.2.3/24
 - Boot Ventoy USB - select proxmox install
-- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) 
+- From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/)
+  - [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Proxmox VE Tools -> Proxmox VE 7 Post Install 
   - github [https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh](https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh)
   - run from cg node console shell
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/misc/post-pve-install.sh)"
   ```
+  - [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Operating System -> Ubuntu
   - github [https://github.com/tteck/Proxmox/blob/main/ct/ubuntu.sh](https://github.com/tteck/Proxmox/blob/main/ct/ubuntu.sh)
   - ran from cg node console shell
   - set static IP 192.168.2.3/24 (or IP via IPA plan)
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/ubuntu.sh)"
   ```
+  - [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Docker - Kubernetes -> Docker LXC
   - github [https://github.com/tteck/Proxmox/blob/main/ct/docker.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker.sh)
   - ran from cg node console shell
   - set static IP 192.168.2.103/24 (or IP via IPA plan)
   ```
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/docker.sh)"
   ```
+
 ## 192.168.2.0/24 gw [http://192.168.2.1/](http://192.168.2.1/)
   
 | web proxy    |   Link  | type | description |
