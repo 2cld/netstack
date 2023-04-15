@@ -1,6 +1,8 @@
 [edit](https://github.com/2cld/netstack/tree/master/docs/lan/compute/proxmox)
-# Proxmox
 
+- [Proxmox Install](./README/#Proxmox-Install)
+
+# Proxmox Install
 - Identify static IP for proxmox node
 - Boot Ventoy USB - select proxmox install
 - From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) 
