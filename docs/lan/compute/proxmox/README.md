@@ -6,8 +6,8 @@
 
 # ns proxmox deployments 
 resource maps based on [https://netstack.org/docs/lan/README.md](https://netstack.org/docs/lan/README.md)
-- cf [cf.christrees.com]()
-- grasshorse [gh.lan]()
+- cf [https://cf.christrees.com/ns/](https://cf.christrees.com/ns/)
+- gh [https://gh.2cld.net/docs/](https://gh.2cld.net/docs/)
 
 # Proxmox Install
 - Identify static IP for proxmox node example 192.168.2.3/24
