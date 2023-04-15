@@ -4,8 +4,13 @@
 - [Proxmox TrueNAS Install](#Proxmox-TrueNAS-Install)
   - [proxmox truenas import existing pool](#proxmox-truenas-import-existing-pool)
 
+# ns proxmox deployments 
+resource maps based on [https://netstack.org/docs/lan/README.md](https://netstack.org/docs/lan/README.md)
+- cf [cf.christrees.com]()
+- grasshorse [gh.lan]()
+
 # Proxmox Install
-- Identify static IP for proxmox node
+- Identify static IP for proxmox node example 192.168.2.3/24
 - Boot Ventoy USB - select proxmox install
 - From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) 
   - github [https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh](https://github.com/tteck/Proxmox/blob/main/misc/post-pve-install.sh)
