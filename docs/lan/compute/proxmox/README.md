@@ -1,7 +1,7 @@
 [edit](https://github.com/2cld/netstack/tree/master/docs/lan/compute/proxmox)
 
-- Proxmox [Core Install](./README/#Proxmox-Install)
-- Proxmox [TrueNAS Install](./README/#Proxmox-TrueNAS-Install)
+- Proxmox [Core Install](# Proxmox Install)
+- Proxmox [TrueNAS Install](# Proxmox TrueNAS Install)
   - proxmox truenas import existing pool
 
 # Proxmox Install
