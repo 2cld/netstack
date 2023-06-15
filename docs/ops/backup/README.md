@@ -8,9 +8,17 @@ Use rsync on windows via bash to move nstestShare (on c:) to network volume
 rsync -avzP /mnt/c/nstestShare 'ssh -p22' buadmin@192.168.128.3:/volume1/bg/rsync
 ```
 ```
-rsync -rv -e 'ssh -p 2020'  /mnt/d/cattvDVR/Hogan* buadmin@192.168.2.105:/volume1/pshare/tvOld/
+rsync -azrvP -e 'ssh -p 2020'  /mnt/d/cattvDVR/Hogan* buadmin@192.168.2.105:/volume1/pshare/tvOld/
 ```
-
+- r recursive
+- v verbose
+- n or --dry-run do not sync, just list what it would do
+- P or --partial --progress allow partial show progress
+- e environment
+- dir test/ - transfer file within the directory into target dir, just the files
+- dir test  - transfer file directory into target dir, test and the files in test
+- [sync-local-and-remote-directories](https://www.digitalocean.com/community/tutorials/how-to-use-rsync-to-sync-local-and-remote-directories)
+rsync -avz -e "ssh -p 2232" SRC/ user@remote.host:/DEST/ 
 ```
 df -lk  | grep D: | awk '{print "B0010B "$2" "$3" "$4}' >> /cygdrive/z/_backupLogs/B0010B.txt; du -sk --time * | awk '{print $4" "$1" "$2" B0010B"}' >> /cygdrive/z/_backupLogs/B0010B.txt
 ```
