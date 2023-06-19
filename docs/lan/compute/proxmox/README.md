@@ -36,6 +36,21 @@ resource maps based on [https://netstack.org/docs/lan/README.md](https://netstac
   bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/docker.sh)"
   ```
   - Portainer UI at [http://192.168.2.103:9000/](http://192.168.6.103:9000/) 
+- __Nginx Proxy Manager LXC__ From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Server -> Nginx Proxy Manager LXC
+  - github [https://github.com/tteck/Proxmox/blob/main/ct/docker.sh](https://github.com/tteck/Proxmox/blob/main/ct/docker.sh)
+  - ran from cg node console shell
+  ```
+  bash -c "$(wget -qLO - https://github.com/tteck/Proxmox/raw/main/ct/nginxproxymanager.sh)"
+  ```
+  - Forward port 80 and 443 from your router to your Nginx Proxy Manager LXC IP.
+  - Add the command below to your configuration.yaml in Home Assistant.
+  ```yaml
+  http:
+    use_x_forwarded_for: true
+    trusted_proxies:
+    - 192.168.2.113 ###(Nginx Proxy Manager LXC IP)###
+  ```
+  - Management UI at [http://192.168.2.113:81/](http://192.168.6.113:81/) 
 - __Plex__ From [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) -> Media - Photo -> Plex Media Server LXC
   - github [https://github.com/tteck/Proxmox/raw/main/ct/plex.sh)](https://github.com/tteck/Proxmox/blob/main/ct/plex.sh)
   - ran from cg node console shell
