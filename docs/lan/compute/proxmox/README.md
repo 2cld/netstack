@@ -4,6 +4,24 @@
 - [Proxmox TrueNAS Install](#Proxmox-TrueNAS-Install)
   - [proxmox truenas import existing pool](#proxmox-truenas-import-existing-pool)
 
+# Proxmox move IP
+DONOT move if in a cluster
+- Edit IP address /etc/net
+```bash
+vi /etc/network/interfaces
+```
+- Edit hosts table 
+```bash
+vi /etc/hosts
+```
+- Edit display
+```bash
+vi /etc/issue
+```
+- Reboot
+```bash
+reboot
+```
 # ns proxmox deployments 
 resource maps based on [https://netstack.org/docs/lan/README.md](https://netstack.org/docs/lan/README.md)
 - cf [https://cf.christrees.com/ns/](https://cf.christrees.com/ns/)
