@@ -6,15 +6,23 @@
 
 # Proxmox move IP
 DONOT move if in a cluster
-- Edit IP address /etc/net
+- Edit IP address 
 ```bash
 vi /etc/network/interfaces
 ```
-- Edit hosts table 
+- Edit / verify hostname
+```bash
+vi /etc/hostname
+```
+- Verify hostname
+```bash
+hostname -f
+```
+- Edit hosts table IP and name
 ```bash
 vi /etc/hosts
 ```
-- Edit display
+- Edit display (should not be required should auto gen based on $pvelocal
 ```bash
 vi /etc/issue
 ```
@@ -22,6 +30,14 @@ vi /etc/issue
 ```bash
 reboot
 ```
+- Debug stuff
+- systemctl status -l pve-cluster
+- journalctl -f
+- hostname -f
+
+## blind mount vm node
+- vi /etc/pve/nodes/cg/qemu-server/102.conf
+- add md
 # ns proxmox deployments 
 resource maps based on [https://netstack.org/docs/lan/README.md](https://netstack.org/docs/lan/README.md)
 - cf [https://cf.christrees.com/ns/](https://cf.christrees.com/ns/)
