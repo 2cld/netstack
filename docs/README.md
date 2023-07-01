@@ -2,7 +2,7 @@
 
 ## Operations [overview](./ops/)
 - [BU - Backup](./ops/backup/)
-  - [backup-diagram](./ops/backup/backup-diagram)
+  - [backup-diagram.mc](./ops/backup/backup-diagram.md)
 - [monitor](./ops/monitor/)
 - [tools](./ops/tools/)
 
