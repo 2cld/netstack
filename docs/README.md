@@ -1,10 +1,10 @@
 # Documents for netstack.org
 
 ## Operations [overview](./ops/)
-- [DR - Disaster Recovery](./ops/recovery/)
 - [BU - Backup](./ops/backup/)
   - [backup-diagram](./ops/backup/backup-diagram)
-- [WF - Workflows](./ops/workflows/)
+- [monitor](./ops/monitor/)
+- [tools](./ops/tools/)
 
 ### WAN [overview](./wan/)
 - [Network Domain Setup](./wan/domain/)
@@ -32,3 +32,7 @@
 ## Service Portals
 - [plex](./portals/plex/)
 - [homeassistant](./portals/homeassistant/)
+
+#### suggestions not created
+- [WF - Workflows](./ops/workflows/)
+- [DR - Disaster Recovery](./ops/recovery/)
