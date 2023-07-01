@@ -23,3 +23,7 @@
 - [Compute Setup](./lan/compute/)
   -  [proxmox](./lan/compute/proxmox/)
   -  [eve-ng](https://github.com/2cld/eve-ng)
+
+## Service Portals
+- [plex](./portals/plex/)
+- [homeassistant](./portals/homeassistant/)
