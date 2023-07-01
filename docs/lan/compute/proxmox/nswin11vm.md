@@ -1,3 +1,5 @@
+[edit](https://github.com/2cld/netstack/blob/master/docs/lan/compute/proxmox/nswin11vm.md)
+
 ## proxmox windows11 vm nswin11
 - References
   - [proxmox-windows11-vm](https://gulowsen.com/post/proxmox/proxmox-windows11-vm/)
