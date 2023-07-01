@@ -22,6 +22,11 @@
   - [freenas-setup](./lan/storage/freenas/setup)
 - [Compute Setup](./lan/compute/)
   -  [proxmox](./lan/compute/proxmox/)
+  -  [ngix](./lan/compute/nginx/)
+  -  [workstation](./lan/compute/workstation/)
+     - [nswin10](./lan/compute/workstation/nswin10)
+     - [nswin10vm](./lan/compute/workstation/nswin10vm)
+  -  [xcp-ng](./lan/compute/xcp-ng/)
   -  [eve-ng](https://github.com/2cld/eve-ng)
 
 ## Service Portals
