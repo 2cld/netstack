@@ -3,6 +3,8 @@
 - [Proxmox Install](#Proxmox-Install)
 - [Proxmox TrueNAS Install](#Proxmox-TrueNAS-Install)
   - [proxmox truenas import existing pool](#proxmox-truenas-import-existing-pool)
+- [Proxmox WebUI via Nginx Proxy](https://pve.proxmox.com/wiki/Web_Interface_Via_Nginx_Proxy)
+- tbd
 
 # Proxmox move IP
 DONOT move if in a cluster
