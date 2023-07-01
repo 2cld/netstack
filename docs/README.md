@@ -3,6 +3,7 @@
 ## Operations [overview](./ops/)
 - [DR - Disaster Recovery](./ops/recovery/)
 - [BU - Backup](./ops/backup/)
+  - [backup-diagram](./ops/backup/backup-diagram/)
 - [WF - Workflows](./ops/workflows/)
 
 ### WAN [overview](./wan/)
@@ -12,6 +13,13 @@
 - [Lambda Labs](https://lambdalabs.com/cloud/dashboard/instances) 
 
 ### LAN [overview](./lan/)
-- [Network IPAM and Subnets](./lan/ipam/)
+- [Network and Subnets](./lan/network/)
+  - [pfsense](./lan/network/pfsense/)
+  - [pfsense-setup](./lan/network/pfsense/setup/)
+  - [mikrotik](https://github.com/2cld/mikrotik)
 - [Storage Setup](./lan/storage/)
+  - [freenas](./lan/storage/freenas/)
+  - [freenas-setup](./lan/storage/freenas/setup/)
 - [Compute Setup](./lan/compute/)
+  -  [proxmox](./lan/compute/proxmox/)
+  -  [eve-ng](https://github.com/2cld/eve-ng)
