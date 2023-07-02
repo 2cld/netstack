@@ -102,4 +102,7 @@ root@cg2:/var/lib/vz/dump#
 - System tab [Craft Computing youtube tc12:50](https://youtu.be/8ReoMuCUdKE?t=770)
 - Apps tab [Craft Computing youtube tc15:50](https://youtu.be/8ReoMuCUdKE?t=950)
 - Automate tasks [Craft Computing youtube tc18:50](https://youtu.be/8ReoMuCUdKE?t=1130)
-- backup vzdump-qemu-104-2023_07_01-23_36_07.vma.zst 12.40GB
+- backup vzdump-qemu-104-2023_07_02-09_46_06.vma.zst 13.63GB
+
+## GPU Passthrough [Craft Computing](https://www.youtube.com/watch?v=cPrOoeMxzu0)
+- Install depends on proxmox [Craft Computing](https://youtu.be/cPrOoeMxzu0?t=308)
