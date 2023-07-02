@@ -60,78 +60,13 @@ New stuff
 - half the time I cant get channel matching ui to save
 - It's like certian channels will not save 074.10 075.1
 - [plex docker on synology - good dockercompose file](https://www.wundertech.net/how-to-install-plex-on-a-synology-nas/)
-- tbd
-
-### 2023.02.02 3pm PST 5pm CST
-- [brave talk](https://talk.brave.com/eiIGZbj5QJ7Z60sw10spTjwNghZjsXqeMrc2U7zb7Dk)
-- Review trink helix testbench progress
-- Chris: ~~finish USDA Survey,~~ look at 1099 tax stuff
-- Chris: ~~fix tnasplex permissions issue~~
-- Chris: ~~test tnasplex dvr~~
-- Chris: Document docker volume mappings with ~~tnasplex app~~ and dockerplex
-  - added pshare user UID 1000 and pshare group GID 1000
-  - Use pshare user for smb login
-  - Add apps (UID 568) to pshare group (this alone did not do it for plex app)
-  - Changed plexmedia share to pshare owner and group 
-  - Added User apps (UID 568) Allow | Special to plexmedia Dataset Permissions (this seemed to do it)
-- Chris: review ns, gs and cf documents and merge
-- Chris: document theory of plex.tv ip port / server stuff - netflix doing 30 day IP 'sign-on' per public IP
-  - Seems servers are not unique, it is the public IP and port response
-  - syncing info on each server to cloud and client... I think
-- Chris: maybe [setup win11](https://youtu.be/2Ja_e6CMkNY) and ubuntu 22.04 on proxmox for gus remote testing
-- Chris: update [https://gus.conversehouse.com/](https://gus.conversehouse.com/) on HD mappings and 5G backup route
-
-### 2023.02.01 3pm PST 5pm CST
-- [brave talk](https://talk.brave.com/eiIGZbj5QJ7Z60sw10spTjwNghZjsXqeMrc2U7zb7Dk)
-- distroyed old nas setup true nas
-- setup ssh to nas 24.149.22.11:2020 for rsync
-- plex on truenas via k3s name: tnasplex
+- [definitive_plex_pfsense_config_post](https://www.reddit.com/r/PleX/comments/10ud1q9/definitive_plex_pfsense_config_post/)
+- [2_dvr_tuners_hdhr_antenna_iptv_xteve_with_xml_epg](https://www.reddit.com/r/PleX/comments/nqb67e/2_dvr_tuners_hdhr_antenna_iptv_xteve_with_xml_epg/)
+- [integrate_youtubetv_or_plutotv_into_plex_as_livetv](https://www.reddit.com/r/PleX/comments/fc3qod/integrate_youtubetv_or_plutotv_into_plex_as_livetv/)
+- [4-things-to-know-before-you-sign-up-for-youtube-tv](https://clark.com/technology/tvsatellite-cable/4-things-to-know-before-you-sign-up-for-youtube-tv/)
+- Added plexapp to bs01ds411 synology NAS on 192.168.2.105
 - plex volume issue on truenas [config access truenas-scale-cannot-deploy-plex](https://www.truenas.com/community/threads/truenas-scale-cannot-deploy-plex.100397/)
-- review current [pr review request helix](https://github.com/helix-editor/helix/pull/5751#pullrequestreview-1277856760)
-- review this doc and move to gitea.trink.com ??
-- DanK band _HKH and the Imponderables_ [https://losaltosfirstfriday.org/](https://losaltosfirstfriday.org/)
-- share tuner mapping with HD indication
-- TrueNAS, Portainer, Tailscale example - [document](https://forum.level1techs.com/t/truenas-scale-ultimate-home-setup-incl-tailscale/186444) - [youtube](https://www.youtube.com/watch?v=R7BXEuKjJ0k)
-- tbd
-
-### 2023.01.30 3pm PST 5pm CST
-- [brave talk](https://talk.brave.com/eiIGZbj5QJ7Z60sw10spTjwNghZjsXqeMrc2U7zb7Dk)
-- setup ssh to nas 24.149.22.11:2020
-- review [pr helix](https://github.com/helix-editor/helix/pull/5738)
-- tbd
-
-## Trink think things to review
-
-- [Nestack for homelab](https://netstack.org/docs/)
-   - Document trinktv home media model
-   - Document storage sharing model
-   - Docuemtn security storage model
-- [Home Assistant](https://www.home-assistant.io/)
-- [Home Assistant Release Review](https://www.youtube.com/watch?v=Ts-_BdFsvxI)
-- [Home Assist Dashboard](https://www.youtube.com/watch?v=yy_GBQ5dhKw)
-- [OpenSource security AI - frigate ai](https://github.com/blakeblackshear/frigate)
-- [https://frigate.video/](https://frigate.video/)
-- [Amazon Dash Button Rescure](https://blog.christophermullins.com/2019/12/20/rescue-your-amazon-dash-buttons/)
-- [Amazon Dash Button Hack repo](https://github.com/Nekmo/amazon-dash)
-- Setup Test network model on eve that models cf.lan and gh.lan
-- Setup Test ipv6 network on eve
-
-### TrinkCat Remote DataCenter
-- It seem with robot simulation, plex dvr and transcode, OpenCI object recon ML and general AI having a DC with gpu is worth the effort.
-- ProxMox server with shared GPU machine is my suggestion. [Proxmox vGPU Gaming Tutorial](https://www.youtube.com/watch?v=cPrOoeMxzu0)
-    - Plex DVR and Transcoding.  There was about 30 stations
-    - Private network extensions to Trink and Cat home TV networks using pfSense.
-    - Remote rendering for robot simulations
-    - Remote GPU and stoarge for AI/ML
-- Grasshorse has lots of robot and robot kits.  
-    - They had a grant for protomotion - stop motion animation robots
-    - They have multiple robot kits: gantry robonova old school factory robot proto arms
-- We chat about [https://www.coridium.us/coridium/shop](https://www.coridium.us/coridium/shop) 
-    - BruceE company to integrate sensors into co.bot ?
-    - MikeR did a lot of the embedded networking and they also did custom compilers for arm
-
-## TrinkTV
-Goal: Stable Plex server running in CF maintainable by mdt and cat.
+- [tbd]()
 
 ### Plex Rebuilds 2022.08.12-14
 Synopsys --
