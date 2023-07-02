@@ -1,6 +1,10 @@
 # backup proceedure for netstack ops
 - [backup-catMediaShare](backup-catMediaShare.md) powershell
 - [backup-diagram](backup-diagram.md)
+- scripts
+- [backup powershell script](https://netstack.org/docs/ops/backup/backup-powershell-script)
+- [robocopy backup for powershell](https://netstack.org/docs/ops/backup/#robocopy)
+
 
 ## rsync
 Use rsync on windows via bash to move nstestShare (on c:) to network volume
