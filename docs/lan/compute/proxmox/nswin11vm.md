@@ -80,7 +80,7 @@
     - Node (nswin11) Options -> QEMU Guest Agent : Enabled
     - run virtio-win-0.1.229/guest-agent/qemu-ga-x86-64.msi
   - tbd
-- Backup vzdump-qemu-104-2023_07_01-17_21_19.vma.zst
+- Backup vzdump-qemu-104-2023_07_01-17_21_19.vma.zst 7.80GB
 ```
 root@cg2:/var/lib/vz/dump# ls
 vzdump-qemu-104-2023_07_01-17_21_19.log
@@ -88,3 +88,18 @@ vzdump-qemu-104-2023_07_01-17_21_19.vma.zst
 vzdump-qemu-104-2023_07_01-17_21_19.vma.zst.notes
 root@cg2:/var/lib/vz/dump#
 ```
+## Installs
+- chrome ghadmin
+- brave ghadmin
+- zerotier ghadmin
+- plex ghadmin (gusadmin)
+- chrome remote desktop
+- map \\192.168.2.6\cgplexdata -> Drive O:
+- map \\192.168.2.2\plexmedia -> Drive P:
+- backup vzdump-qemu-104-2023_07_01-23_36_07.vma.zst 12.40GB
+
+## Debloat [ThisIsWin11 - github](https://github.com/builtbybel/ThisIsWin11)
+- System tab [Craft Computing youtube tc12:50](https://youtu.be/8ReoMuCUdKE?t=770)
+- Apps tab [Craft Computing youtube tc15:50](https://youtu.be/8ReoMuCUdKE?t=950)
+- Automate tasks [Craft Computing youtube tc18:50](https://youtu.be/8ReoMuCUdKE?t=1130)
+- backup vzdump-qemu-104-2023_07_01-23_36_07.vma.zst 12.40GB
