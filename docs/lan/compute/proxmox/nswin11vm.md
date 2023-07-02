@@ -5,6 +5,7 @@
   - [proxmox-windows11-vm](https://gulowsen.com/post/proxmox/proxmox-windows11-vm/)
   - [proxmox win11 drivers iso copy link](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso)
   - [github for win11 driver](https://github.com/virtio-win/virtio-win-pkg-scripts)
+  - [proxmox qemu guest agent](https://pve.proxmox.com/wiki/Qemu-guest-agent)
 - Create VM
   - Machine
     - Machine: Make sure machine is set to q35.
