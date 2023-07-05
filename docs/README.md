@@ -1,3 +1,4 @@
+[edit](https://github.com/2cld/netstack/edit/master/docs/README.md)
 # Documents for netstack.org
 
 ## Operations [overview](./ops/)
@@ -22,6 +23,8 @@
   - [freenas-setup](./lan/storage/freenas/setup)
 - [Compute Setup](./lan/compute/)
   -  [proxmox](./lan/compute/proxmox/)
+     - proxmox [nswin11vm](./lan/compute/proxmox/nswin11vm)
+     - proxmox [gpupassthrough](./lan/compute/proxmox/gpupassthrough)
   -  [ngix](./lan/compute/nginx/)
   -  [workstation](./lan/compute/workstation/)
      - [nswin10](./lan/compute/workstation/nswin10)
