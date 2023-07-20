@@ -6,6 +6,7 @@
   - [backup-diagram.md mermaid](./ops/backup/backup-diagram.md)
 - [monitor](./ops/monitor/)
 - [tools](./ops/tools/)
+- [users](./ops/users/)
 
 ### WAN [overview](./wan/)
 - [Network Domain Setup](./wan/domain/)
