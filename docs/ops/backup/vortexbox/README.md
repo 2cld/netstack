@@ -1,3 +1,4 @@
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/backup/vortexbox/README.md)
 
 - [vortexbox download for ovf template](https://wiki.vortexbox.org/available_images#vortexbox_23_ovf_templates)
 
