@@ -1,5 +1,19 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/portals/streamstudio/README.md)
 
+## OBS
+
+## Blender Video Edit
+- Blender GPU enable
+  - Preferences -> System -> Cycles -> Cuda
+  - Use defaults, but Video Sequencer
+    - Memory Cache Limit 6000
+    - Disk Cache Checked
+    - Cache Limit 100
+    - Compression None
+    - Proxy Automatic
+- [Blender Video Editing Tutorial](https://www.youtube.com/playlist?list=PLalVdRk2RC6qo7oHp5OO8e7RMe46nYdOY)
+- Issue with file permissions
+- 
 
 ### Config Notes
 - Verify GPU in chrome
