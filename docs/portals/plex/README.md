@@ -19,7 +19,27 @@
 - [cattvwin10 channel map](https://docs.google.com/spreadsheets/d/1wjN1_N5Vjji6NQgE3DXi4D-S76sAHppQrdXsqh5qX2E/edit#gid=0) 
 - [tbd]()
 
+## Windows 11 permissions
 
+```
+Remove "Everyone", then add it back like this:
+Right click the Folder containing your media.
+Click Properties
+Click "Security" tab
+Click ADVANCED
+Click ADD
+Click "select a principal"
+Enter Everyone, click "Check Names" to ensure correct spelling
+Click OK
+Click "Full Control"
+Click OK
+Tick "Replace all child object permission entries with inheritable permission entries from this object"
+Click OK
+Click OK to close the properties window.
+Restart Plex Media Server, or better yet, restart windows entirely because sometimes it's a little bitch with file permissions.
+
+Retest
+```
 ---
 ---
 ### Reference
