@@ -1,28 +1,31 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/README.md)
 # Documents for netstack.org
 
+## Portals
+- [portals](./portals/)
+  - [homeassistant](./portals/homeassistant/)
+  - [plex](./portals/plex/)
+  - [streamstudio](./portals/streamstudio/)
+
 ## Operations [overview](./ops/)
-- [BU - Backup](./ops/backup/)
+- [backup](./ops/backup/)
+  - [vortexbox](./ops/backup/vortexbox/)
   - [backup-diagram.md mermaid](./ops/backup/backup-diagram.md)
+  - [backup-catMediaShare.md](./ops/backup/backup-catMediaShare)
+  - [backup-powershell-script](./ops/backup/backup-powershell-script)
 - [monitor](./ops/monitor/)
 - [tools](./ops/tools/)
 - [users](./ops/users/)
 
-### WAN [overview](./wan/)
-- [Network Domain Setup](./wan/domain/)
-- [OpenVPN](./wan/openvpn/)
-- [zerotier](./wan/zerotier/)
-- [Lambda Labs](https://lambdalabs.com/cloud/dashboard/instances) 
-
-### LAN [overview](./lan/)
-- [Network and Subnets](./lan/network/)
+### LAN [0 Overview Subnet](./lan/)
+- [1 ng Network Gateway and Subnets](./lan/network/)
   - [pfsense](./lan/network/pfsense/)
   - [pfsense-setup](./lan/network/pfsense/setup)
   - [mikrotik](https://github.com/2cld/mikrotik)
-- [Storage Setup](./lan/storage/)
+- [2 sg Storage Gateway Setup](./lan/storage/)
   - [freenas](./lan/storage/freenas/)
   - [freenas-setup](./lan/storage/freenas/setup)
-- [Compute Setup](./lan/compute/)
+- [3 cg Compute Gateway Setup](./lan/compute/)
   -  [proxmox](./lan/compute/proxmox/)
      - proxmox [nswin11vm](./lan/compute/proxmox/nswin11vm)
      - proxmox [gpupassthrough](./lan/compute/proxmox/gpupassthrough)
@@ -32,6 +35,17 @@
      - [nswin10vm](./lan/compute/workstation/nswin10vm)
   -  [xcp-ng](./lan/compute/xcp-ng/)
   -  [eve-ng](https://github.com/2cld/eve-ng)
+- [4 tbd](./lan/)
+- [5 ng2 bu-ng backup network gateway](./lan/network/)
+- [6 sg2 bu-cg backup storage gateway](./lan/storage/)
+- [7 cg2 bu-cg backup compute gateway](./lan/compute/)
+
+### WAN [overview](./wan/)
+- [Network Domain Setup](./wan/domain/)
+- [OpenVPN](./wan/openvpn/)
+- [zerotier](./wan/zerotier/)
+- [Lambda Labs](https://lambdalabs.com/cloud/dashboard/instances) 
+
 
 ## Service Portals
 - [plex](./portals/plex/)
