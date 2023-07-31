@@ -1,7 +1,11 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/portals/streamstudio/README.md)
 
-## OBS
-
+# OBS
+## OBS Sound Sync
+- click cog next to audio source
+- set audio delay
+  
+# Blender
 ## Blender Video Edit
 - Blender GPU enable
   - Preferences -> System -> Cycles -> Cuda
