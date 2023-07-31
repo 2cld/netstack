@@ -1,13 +1,13 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/README.md)
 # Documents for netstack.org
 
-## Portals [Overview](./portals/)
+## Portals [info](./portals/)
 - [portals](./portals/)
   - [homeassistant](./portals/homeassistant/)
   - [plex](./portals/plex/)
   - [streamstudio](./portals/streamstudio/)
 
-## Operations [overview](./ops/)
+## Operations [info](./ops/)
 - [backup](./ops/backup/)
   - [vortexbox](./ops/backup/vortexbox/)
   - [backup-diagram.md mermaid](./ops/backup/backup-diagram.md)
@@ -17,7 +17,7 @@
 - [tools](./ops/tools/)
 - [users](./ops/users/)
 
-### LAN [0 Overview Subnet](./lan/)
+### LAN [0 subnet info](./lan/)
 - [1 ng Network Gateway and Subnets](./lan/network/)
   - [pfsense](./lan/network/pfsense/)
   - [pfsense-setup](./lan/network/pfsense/setup)
@@ -40,7 +40,7 @@
 - [6 sg2 bu-cg backup storage gateway](./lan/storage/)
 - [7 cg2 bu-cg backup compute gateway](./lan/compute/)
 
-### WAN [overview](./wan/)
+### WAN [info](./wan/)
 - [Network Domain Setup](./wan/domain/)
 - [OpenVPN](./wan/openvpn/)
 - [zerotier](./wan/zerotier/)
