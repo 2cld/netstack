@@ -4,7 +4,7 @@
 
 ## OVA for ProxMox
 1. Copy OVA to proxmox node
-   - scp filename.ova ghadmin@192.168.0.2:/tmp/
+   - scp filename.ova ghadmin@192.168.0.3:/tmp/
 2. On proxmox node
    - ssh ghamdin@192.168.0.2
    - tar -xvf filename.ova
