@@ -1,5 +1,12 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/ops/backup/vortexbox/README.md)
 
+## ISO for proxmox
+VBA 2.4 is based on Fedora 23 so compare processor and MOBO requirements to Fedora 23. Minimum Requirements: 
+- Processor 1 Gigahertz x86_64
+- RAM 1 Gigabyte (2-4GB)
+- Operating System 10GB HDD space (30GB)
+- Video 800 by 600
+
 - [vortexbox download for ovf template](https://wiki.vortexbox.org/available_images#vortexbox_23_ovf_templates)
 
 ## OVA for ProxMox
