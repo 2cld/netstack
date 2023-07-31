@@ -4,11 +4,11 @@
 
 ## OVA for ProxMox
 1. Copy OVA to proxmox node
-   - scp filename.ova ghadmin@192.168.0.3:/tmp/
+   - scp vortexbox23.ova ghadmin@192.168.0.3:/tmp/
 2. On proxmox node
    - ssh ghamdin@192.168.0.2
-   - tar -xvf filename.ova
-   - qm importovf <vm number> filename.ovf pvestore --format qcow2
+   - tar -xvf vortexbox23.ova
+   - qm importovf 110 vortexbox23.ovf local-lvm --format qcow2
 3. On proxmox GUI [https://192.168.0.3:8006/](https://192.168.0.3:8006/)
    - change display name
    - Hardware: add network device vmbr0
