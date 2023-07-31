@@ -2,6 +2,20 @@
 
 - [vortexbox download for ovf template](https://wiki.vortexbox.org/available_images#vortexbox_23_ovf_templates)
 
+OVA for ProxMox
+1. Copy OVA to proxmox node
+   - scp filename.ova ghadmin@192.168.0.2:/tmp/
+2. On proxmox node
+   - ssh ghamdin@192.168.0.2
+   - tar -xvf filename.ova
+   - qm importovf <vm number> filename.ovf pvestore --format qcow2
+3. On proxmox GUI
+   - change display name
+   - Hardware: add network device vmbr0
+   - Options: verify boot order
+4. boot vm
+
+   
 OVA for Hyper-V
 
 1. Convert OVA to VHD Format
