@@ -9,7 +9,7 @@
    - ssh ghamdin@192.168.0.2
    - tar -xvf filename.ova
    - qm importovf <vm number> filename.ovf pvestore --format qcow2
-3. On proxmox GUI
+3. On proxmox GUI [https://192.168.0.3:8006/](https://192.168.0.3:8006/)
    - change display name
    - Hardware: add network device vmbr0
    - Options: verify boot order
