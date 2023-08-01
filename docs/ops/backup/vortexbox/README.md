@@ -9,6 +9,17 @@ VBA 2.4 is based on Fedora 23 so compare processor and MOBO requirements to Fedo
 
 - [vortexbox download for ovf template](https://wiki.vortexbox.org/available_images#vortexbox_23_ovf_templates)
 
+## OVA for VirtualBox on win11 gusGram
+1. Copy OVA to gusGram node [vortexbox download](https://wiki.vortexbox.org/available_images#vortexbox_23_ovf_templates)
+2. On gusGram node
+   - Unzip vortexbox23.ova
+   - import vortexbox23.ovf
+3. On VirtualBox GUI 
+   - change display name
+   - Hardware: add network device vmbr0
+   - Options: verify boot order
+4. boot vm and verify
+
 ## OVA for ProxMox
 1. Copy OVA to proxmox node
    - scp vortexbox23.ova ghadmin@192.168.0.3:/tmp/
