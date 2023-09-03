@@ -5,6 +5,7 @@
 - [https://my.zerotier.com/network/d5e5fb65371eb4a4](https://my.zerotier.com/network/d5e5fb65371eb4a4)
 - 10.147.17.0/24 (LAN)	
 
+<!--
 ```
 0c82af27d7
 a6:b8:9c:98:42:2c	
@@ -178,3 +179,4 @@ cat Windows 10 Surface Pro
 1.4.6
 24.149.22.11
 ```
+-->
