@@ -52,7 +52,8 @@ Retest
   - [plex on synology and docker compose](https://www.wundertech.net/how-to-install-plex-on-a-synology-nas/)
   - [comskip github https://github.com/erikkaashoek/Comskip](https://github.com/erikkaashoek/Comskip)
   - [http://unixetc.co.uk/2020/03/16/how-to-install-comskip-on-a-raspberry-pi/](http://unixetc.co.uk/2020/03/16/how-to-install-comskip-on-a-raspberry-pi/)
-
+- [https://www.oliviertravers.com/plex-complex-libraries-ultimate-media-server/](https://www.oliviertravers.com/plex-complex-libraries-ultimate-media-server/)
+- tbd
 - cat: verify trinkdvr and trinktnas
   - CattvWin10:trinktnas plexlib on CattvWin10 N: SMB mount \\192.168.2.2\plexmedia which is \mnt\zpool-01\plexmedia\plexdvr\trinkdvr
   - CattvWin10:trinktvDVR  plexlib on CattvWin10 D:\trinktvDVR  - physical harddrive
