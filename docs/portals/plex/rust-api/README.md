@@ -1,4 +1,4 @@
-[edit]()
+[edit](https://github.com/2cld/netstack/edit/master/docs/portals/plex/rust-api/README.md)
 
 placeholder for possible rust-api
 
