@@ -13,23 +13,3 @@
   ```
   ssh -p 2020 buadmin@192.168.6.6
   ```
-- View node status
-  ```
-  docker exec -it zt zerotier-cli status
-  ```
-- Join your network
-  ```
-  docker exec -it zt zerotier-cli join e5cd7a9e1cae134f
-  ```
-- Authorize the NAS on your network. Then view the network status:
-  ```
-  docker exec -it zt zerotier-cli listnetworks
-  ```
-- Show running container (optional)
-  ```
-  docker ps
-  ```
-- Enter the container (optional)
-  ```
-  docker exec -it zt bash
-  ```
