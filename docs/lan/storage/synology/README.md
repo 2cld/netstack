@@ -13,3 +13,16 @@
   ```
   ssh -p 2020 buadmin@192.168.6.6
   ```
+- Zerotier cli [zerotier-cli docs](https://zerotier.atlassian.net/wiki/spaces/SD/pages/29065282/Command+Line+Interface+zerotier-cli)
+- zerotier status
+  ```
+  sudo zerotier-cli status
+  ```
+- zerotier join
+  ```
+  sudo zerotier-cli join
+  ```
+- zerotier status
+  ```
+  sudo zerotier-cli status
+  ```
