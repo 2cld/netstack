@@ -5,6 +5,29 @@
 - [https://my.zerotier.com/network/d5e5fb65371eb4a4](https://my.zerotier.com/network/d5e5fb65371eb4a4)
 - 10.147.17.0/24 (LAN)	
 
+
+## docker cmds
+- View node status
+  ```
+  docker exec -it zt zerotier-cli status
+  ```
+- Join your network
+  ```
+  docker exec -it zt zerotier-cli join e5cd7a9e1cae134f
+  ```
+- Authorize the NAS on your network. Then view the network status:
+  ```
+  docker exec -it zt zerotier-cli listnetworks
+  ```
+- Show running container (optional)
+  ```
+  docker ps
+  ```
+- Enter the container (optional)
+  ```
+  docker exec -it zt bash
+  ```
+
 <!--
 ```
 0c82af27d7
