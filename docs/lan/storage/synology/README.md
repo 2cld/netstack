@@ -4,7 +4,7 @@
 - User interface on port 5000 [http://192.168.6.6:5000](http://192.168.6.6:5000)
 - Control Panel -> Storage for Drive status
 
-## Zerotier on DS411+II
+## Zerotier on DS411+II from [wan/zerotier](../../wan/zerotier)
 - Instructions [https://docs.zerotier.com/synology/](https://docs.zerotier.com/synology/)
   - [http://www.homeops.tech/2020/07/15/Zero-Tier-On-Synology/](http://www.homeops.tech/2020/07/15/Zero-Tier-On-Synology/)
   - [https://www.reddit.com/r/cordcutters/comments/5877jo/hdhomerun_connect_static_ip/?rdt=36595](https://www.reddit.com/r/cordcutters/comments/5877jo/hdhomerun_connect_static_ip/?rdt=36595)
