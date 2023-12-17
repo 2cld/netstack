@@ -26,3 +26,7 @@
 ```
 /share/CACHEDEV2_DATA/plex/gusMusic
 ```
+
+- [https://discuss.zerotier.com/t/guide-setup-zerotier-to-connect-3-sites-with-ipv4-and-ipv6/14099](https://discuss.zerotier.com/t/guide-setup-zerotier-to-connect-3-sites-with-ipv4-and-ipv6/14099)
+- [zerotier not working on qnap 5.0.1](https://forum.qnap.com/viewtopic.php?t=167752)
+- tbd
