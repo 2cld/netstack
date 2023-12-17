@@ -21,3 +21,8 @@
   sudo zerotier-cli join 52b337794f721ef7
   ```
 - tbd
+
+## Plex on qnap
+```
+/share/CACHEDEV2_DATA/plex/gusMusic
+```
