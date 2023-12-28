@@ -6,9 +6,14 @@
 - set audio delay
   
 # Blender
+- [ffmpeg tutorial](https://www.youtube.com/watch?v=MPV7JXTWPWI)
 - [ffmpeg cut splice](https://superuser.com/questions/377343/cut-part-from-video-file-from-start-position-to-end-position-with-ffmpeg)
 - [ffmpeg docs](https://ffmpeg.org/ffmpeg.html)
 - [ffmpeg seeking](https://trac.ffmpeg.org/wiki/Seeking#Cuttingsmallsections)
+- [ffmpeg split](https://youtu.be/Ij-IA24U6r8?t=228)
+  ```
+  ffmpeg -i "video.mp4" -c copy -map 0 -segment_time 00:05:00 -f segment -reset_timestamps 1 output%03d.mp4
+  ```
 
 ## Blender Video Edit
 - Open Blender
