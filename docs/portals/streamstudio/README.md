@@ -6,6 +6,9 @@
 - set audio delay
   
 # Blender
+- [ffmpeg cut splice](https://superuser.com/questions/377343/cut-part-from-video-file-from-start-position-to-end-position-with-ffmpeg)
+- [ffmpeg docs](https://ffmpeg.org/ffmpeg.html)
+- [ffmpeg seeking](https://trac.ffmpeg.org/wiki/Seeking#Cuttingsmallsections)
 
 ## Blender Video Edit
 - Open Blender
@@ -50,7 +53,7 @@
     - Render -> Render Animation
 
 ## Blender Video Edit
-- Blender GPU enable
+- Blender [GPU enable](https://docs.blender.org/manual/en/latest/render/cycles/gpu_rendering.html)
   - Preferences -> System -> Cycles -> Cuda
   - Use defaults, but Video Sequencer
     - Memory Cache Limit 6000
