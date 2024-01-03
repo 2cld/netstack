@@ -1,10 +1,15 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/portals/streamstudio/README.md)
 
+### Simple Edit
+- [How to split, cut and join video without re-encoding using freeware tools](https://www.youtube.com/watch?v=7_lw-j5Pirk)
+  - [avidemux download](https://avidemux.sourceforge.net/download.html)
+  - [https://mkvtoolnix.download/downloads.html](https://mkvtoolnix.download/downloads.html)
+
 # OBS
 ## OBS Sound Sync
 - click cog next to audio source
 - set audio delay
-  
+
 # Blender
 - [ffmpeg tutorial](https://www.youtube.com/watch?v=MPV7JXTWPWI)
 - [ffmpeg cut splice](https://superuser.com/questions/377343/cut-part-from-video-file-from-start-position-to-end-position-with-ffmpeg)
@@ -14,7 +19,6 @@
   ```
   ffmpeg -i "video.mp4" -c copy -map 0 -segment_time 00:05:00 -f segment -reset_timestamps 1 output%03d.mp4
   ```
-- [https://mkvtoolnix.download/downloads.html](https://mkvtoolnix.download/downloads.html)
 
 ## Blender Video Edit
 - Open Blender
