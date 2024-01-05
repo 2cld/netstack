@@ -1,9 +1,7 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/portals/streamstudio/README.md)
 
 ### Simple Edit
-- [How to split, cut and join video without re-encoding using freeware tools](https://www.youtube.com/watch?v=7_lw-j5Pirk)
-  - [avidemux download](https://avidemux.sourceforge.net/download.html)
-  - [https://mkvtoolnix.download/downloads.html](https://mkvtoolnix.download/downloads.html)
+- [lossless-cut - github download](https://github.com/mifi/lossless-cut)
 
 # OBS
 ## OBS Sound Sync
