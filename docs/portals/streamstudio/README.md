@@ -1,7 +1,9 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/portals/streamstudio/README.md)
 
-### Simple Edit
+### Simple Edit [lossless-cut - tutorials](https://www.youtube.com/@tutortube/search?query=lossless-cut)
 - [lossless-cut - github download](https://github.com/mifi/lossless-cut)
+- [LossLessCut Tutorial - Lesson 17 - Merge Cuts](https://www.youtube.com/watch?v=_4m5IEBFyfE)
+- [LossLessCut Tutorial - Lesson 18 - Merging Videos](https://www.youtube.com/watch?v=BLIwnjLQLpg)
 
 # OBS
 ## OBS Sound Sync
