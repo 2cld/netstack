@@ -30,3 +30,15 @@
 - [https://discuss.zerotier.com/t/guide-setup-zerotier-to-connect-3-sites-with-ipv4-and-ipv6/14099](https://discuss.zerotier.com/t/guide-setup-zerotier-to-connect-3-sites-with-ipv4-and-ipv6/14099)
 - [zerotier not working on qnap 5.0.1](https://forum.qnap.com/viewtopic.php?t=167752)
 - tbd
+
+- [plex_is_eating_up_all_my_resources](https://www.reddit.com/r/qnap/comments/17rg6i9/ts462_plex_is_eating_up_all_my_resources_and_wont/)
+- Powershell on slwin11 ssh into slsg2
+```
+ssh admin@192.168.0.6
+```
+- Kill plex
+```
+sudo /etc/init.d/plex.sh stop
+```
+- Go back to [buadmin slsg2 web http://192.168.0.6:8080](http://192.168.0.6:8080)
+- Uninstall Plex Media Server app
