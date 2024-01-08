@@ -20,7 +20,9 @@
   ```
   sudo zerotier-cli join 52b337794f721ef7
   ```
-- tbd
+- zerotier cloud sees it but cannot ping or access
+- turned off
+- 
 
 ## Plex on qnap
 ```
@@ -31,6 +33,7 @@
 - [zerotier not working on qnap 5.0.1](https://forum.qnap.com/viewtopic.php?t=167752)
 - tbd
 
+## Nuke Plex on qnap
 - [plex_is_eating_up_all_my_resources](https://www.reddit.com/r/qnap/comments/17rg6i9/ts462_plex_is_eating_up_all_my_resources_and_wont/)
 - Powershell on slwin11 ssh into slsg2
 ```
