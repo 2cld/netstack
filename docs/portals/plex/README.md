@@ -32,6 +32,12 @@
   - Go to MakeMKV application
   - Help -> Registration -> Paste Key
 - [MakeMKV download](https://www.makemkv.com/download/)
+## DVD-RIP
+- Insert DVD
+- Click on DVD icon (read the DVD)
+- Verify Output folder and Title then click MakeMVK
+- Verify output file... may need to name for Plex
+- Repeat
 
 # cfPlex
 <!--
