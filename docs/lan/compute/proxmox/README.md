@@ -8,6 +8,7 @@
 - [Proxmox - gpupassthrough](./gpupassthrough)
 - [Proxmox - drivepassthrough](./drivepassthrough)
 - [Proxmox WebUI via Nginx Proxy](https://pve.proxmox.com/wiki/Web_Interface_Via_Nginx_Proxy)
+- [Proxmox VE Helper-Scripts](https://tteck.github.io/Proxmox/)
 - tbd
 
 # Proxmox move IP
