@@ -24,4 +24,4 @@ Replace [VM-ID] with the actual VM ID and [DISK-ID] with the disk ID obtained ea
     - Once configured, you'll be able to access the passed-through disk within the Windows VM.
 Remember that this process prevents live migration of the VM and may impact host system I/O performance when running disk-intensive tasks on the VM . Always ensure backups and test thoroughly before implementing this in a production environment. 🚀
 
-- [Passing a Physical Drive throught to VM in ProxMox - youtube](https://youtu.be/U-UTMuhmC1U)
+- [Proxmox doc - Passing a Physical Drive throught to VM](https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_%28VM%29)
