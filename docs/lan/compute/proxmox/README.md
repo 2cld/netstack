@@ -1,5 +1,6 @@
 [edit](https://github.com/2cld/netstack/tree/master/docs/lan/compute/proxmox)
 
+- [Proxmox helpfull References](./proxmox-references)
 - [Proxmox Install](#Proxmox-Install)
 - [Proxmox TrueNAS Install](#Proxmox-TrueNAS-Install)
   - [proxmox truenas import existing pool](#proxmox-truenas-import-existing-pool)
