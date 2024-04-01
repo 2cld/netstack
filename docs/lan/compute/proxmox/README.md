@@ -4,6 +4,9 @@
 - [Proxmox Install](#Proxmox-Install)
 - [Proxmox TrueNAS Install](#Proxmox-TrueNAS-Install)
   - [proxmox truenas import existing pool](#proxmox-truenas-import-existing-pool)
+- [Proxmox - win11vm Install](./ns2win11vm)
+- [Proxmox - gpupassthrough](./gpupassthrough)
+- [Proxmox - drivepassthrough](./drivepassthrough)
 - [Proxmox WebUI via Nginx Proxy](https://pve.proxmox.com/wiki/Web_Interface_Via_Nginx_Proxy)
 - tbd
 
