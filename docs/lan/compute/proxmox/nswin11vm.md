@@ -8,14 +8,25 @@
   - [proxmox qemu guest agent](https://pve.proxmox.com/wiki/Qemu-guest-agent)
 - Create VM
   - Machine
-    - Machine: Make sure machine is set to q35.
+  - General
+    - Node: cg2
+    - VM ID: 901
+    - Name: win11sg2vm901
+    - Start at boot: checked
+  - OS
+    - Storage: local
+    - ISO image: Select Windows install ISO
+    - Type: Microsoft Windows
+    - Version: Select version
+  - System
+    - Machine: q35.
     - BIOS: Microsoft requires UEFI so use OVMF (UEFI).
     - Add EFI Disk and EFI Storage: EFI Disk should to be checked for Windows. It is a backup in case the boot part of windows gets corrupted. For EFI Disk you Should use the same storage as VM disk local-lvm.
     - SCSI Controller: Set this to VirtIO SCSI if not already.
     - Add TPM TPM is required for Windows 11 and Proxmox can virtualize it.
     - TPM Storage As EFI Storage this should point to local-lvm same disk for the VM on.
     - Version Make sure V2.0 is selected if you are installing Windows 11.
-  - Drive
+  - Disk
     - Bus Device: SCSI for compatibility.
     - Storage: local-lvm SSD same drive used in the previous steps.
     - Disk size: Microsoft minimum required drive size is 64 Gigabytes so give it that or more.
