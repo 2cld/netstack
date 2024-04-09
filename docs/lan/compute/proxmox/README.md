@@ -2,6 +2,7 @@
 
 - [Proxmox helpfull References](./proxmox-references)
 - [Proxmox Install](#Proxmox-Install)
+  - [cg2.cf.2cld.net Install](./cg2-cf-2cld-net_Install)
 - [Proxmox TrueNAS Install](#Proxmox-TrueNAS-Install)
   - [proxmox truenas import existing pool](#proxmox-truenas-import-existing-pool)
 - [Proxmox - win11vm Install](./ns2win11vm)
