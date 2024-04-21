@@ -52,3 +52,17 @@ mysql -u guacamole_user -p guacamole_db < initdb.sql
 - [NetworkChuck - Guacamole - Windows RDP - tc 25:46](https://youtu.be/gsvS2M5knOw?t=1546)
 - [Using Guacamole docs](https://guacamole.apache.org/doc/gug/using-guacamole.html)
 
+---
+---
+---
+Guacamole
+
+- [Craft Computing - Guacamole Install](https://www.youtube.com/watch?v=Sq-irDBauvo)
+- [TechoTim 0 Guacamole](https://www.youtube.com/watch?v=LWdxhZyHT_8)
+- [https://tteck.github.io/Proxmox/](https://tteck.github.io/Proxmox/) - proxmox scripts
+- [Network Chuck - youtube](https://www.youtube.com/watch?v=gsvS2M5knOw)
+	- Apache [Guacamole - Install Docs](https://guacamole.apache.org/doc/gug/guacamole-docker.html)
+	- tbd
+- tbd
+
+---
