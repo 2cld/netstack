@@ -1,3 +1,26 @@
 # Home Assistant
+- [ ] [https://www.home-assistant.io/](https://www.home-assistant.io/)
+	- [ ] [Install Dedicated x86](https://www.home-assistant.io/installation/generic-x86-64)
+	- [ ] [Install on Windows](https://www.home-assistant.io/installation/windows)
+	- [ ] [Budget DIY Home Surveillance - Hardware Haven - youtube](https://www.youtube.com/watch?v=6ahtCpIoWU4)
+- [Home Assistant Setup - Crosstalk youtube](https://youtu.be/Y38qRYYAwAI)
+- [Step guide](https://www.crosstalksolutions.com/home-assistant-the-ultimate-setup-guide-a-step-by-step-tutorial/)
 
-- [https://www.home-assistant.io/](https://www.home-assistant.io/)
+# Configs
+- tuya (lots of iot gets it's code from)
+- [https://github.com/rospogrigio/localtuyav](https://github.com/rospogrigio/localtuya) - OpenSource local
+- tuya
+- ESPHome
+- [ESPHome 2023.9 - Libretiny - youtube](https://www.youtube.com/watch?v=zDXL1BMPhcA)
+- [DigiblurDIY - youtube - lots of IOT and embedded](https://www.youtube.com/@digiblurDIY/videos)
+- [Hacking the Belken BK7231](https://www.youtube.com/watch?v=t0o8nMbqOSA)
+- [Energizer reddit link](https://www.reddit.com/r/smarthome/comments/17h9nq5/never_buy_energizer_smart_bulbs/)
+- [Home Assistant setup - Handyman - youtube](https://www.youtube.com/watch?v=xOLj4FOY-QI)
+- [Tuya and Local Tuya](https://community.home-assistant.io/t/use-tuya-or-local-tuya/545718)
+- [Home-Assistant.io - tuya docs](https://www.home-assistant.io/integrations/tuya/)
+- [Crosstalksolutions - HomeAssistant - youtube](https://www.crosstalksolutions.com/home-assistant-the-ultimate-setup-guide-a-step-by-step-tutorial/)
+- [ESP32 Camera Design 2](https://www.youtube.com/watch?v=Ul0h5Maeoeg)
+- tbd [ESP32 Camera Design](https://www.youtube.com/watch?v=k_PJLkfqDuI)
+- tbd [tbd](tbd)
+- tbd [tbd](tbd)
+- tbd [tbd](tbd)
