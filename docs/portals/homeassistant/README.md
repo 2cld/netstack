@@ -5,7 +5,8 @@
 	- [ ] [Budget DIY Home Surveillance - Hardware Haven - youtube](https://www.youtube.com/watch?v=6ahtCpIoWU4)
 - [Home Assistant Setup - Crosstalk youtube](https://youtu.be/Y38qRYYAwAI)
 - [Step guide](https://www.crosstalksolutions.com/home-assistant-the-ultimate-setup-guide-a-step-by-step-tutorial/)
-
+- [Home Assistant Tuya](https://www.youtube.com/watch?v=k9_SyfToDEw)
+- [Home Assistant with Home Kit - Apple](https://www.youtube.com/watch?v=9G2f_c3fnyc)
 # Configs
 - tuya (lots of iot gets it's code from)
 - [https://github.com/rospogrigio/localtuyav](https://github.com/rospogrigio/localtuya) - OpenSource local
