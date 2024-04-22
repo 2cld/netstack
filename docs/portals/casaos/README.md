@@ -21,6 +21,11 @@
 	systemctl status sshd
 	```
 	- end ssh enable
+- issue with smb mounts on CasaOS [reddit - casaos_doesnt_see_network_storage_content](https://www.reddit.com/r/CasaOS/comments/179g3r2/casaos_doesnt_see_network_storage_content_and/)
+  - Stop your CasaOS container
+  - backup -> "Backup now" 
+  - then restore CasaOS and make sure you tick the privileged box.
+  - Then start it up again.
 - [HardwareHaven - CasaOS Setup](https://www.youtube.com/watch?v=w44CypRO5l4)
 - casaos - Time2Invest (user for terminal)
 
