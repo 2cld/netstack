@@ -34,3 +34,17 @@ ssh [remote_username]@[server_ip_address]
 ```
 ssh [remote_username]@[server_ip_address] "chmod 700 .ssh; chmod 640 .ssh/authorized_keys"
 ```
+
+### git user setup
+1. setup git name and email
+```
+git config --global user.name "Mona Lisa"
+git config --global user.email "Mona@example.com"
+```
+2. tbd
+3. tbd
+4. tbd
+
+### ssh for gitea.trink.com
+- https://gitea.trink.com/user/settings/keys
+- add ssh key
