@@ -71,3 +71,31 @@ Guacamole
 - tbd
 
 ---
+---
+zerotier - [youtube](https://www.youtube.com/watch?v=nxyQTIPwzJQ)
+- [zerotier - dockerhub](https://hub.docker.com/r/zerotier/zerotier)
+- ssh into casa lvm on slcg [tc 6:46](https://youtu.be/nxyQTIPwzJQ?t=406)
+```
+cat@catSurface:~$ ssh root@192.168.0.70
+root@192.168.0.70's password:
+CasaOS LXC provided by https://tteck.github.io/Proxmox/
+
+Last login: Mon May 20 15:25:47 2024 from 127.0.0.1
+root@casaos:~#
+```
+- cd /home
+- sudo mkdir docker
+- cd docker
+- sudo mkdir zerotier
+- cd zerotier
+- vi docker-compose.yml
+- add docker-compose to lvm [tc 9:50](https://youtu.be/nxyQTIPwzJQ?t=590)
+  - sudo apt-get install libffi-dev libssl-dev
+  - sudo apt install python3-dev
+  - sudo apt-get install -y python3 python3-pip
+  - sudo pip3 install docker-compose
+  - sudo systemctl enable docker
+- sudo docker-compose up -d
+- sudo docker exec zerotier-one zerotier-cli join <yourzerotiernetid>
+- sudo docker exec zerotier-one zerotier-cli status
+- tbd
