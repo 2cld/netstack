@@ -3,6 +3,7 @@
 
 ## Portals [info](./portals/)
 - [portals](./portals/)
+  - [casaos](./protals/casaos/)
   - [homeassistant](./portals/homeassistant/)
   - [plex](./portals/plex/)
   - [streamstudio](./portals/streamstudio/)
