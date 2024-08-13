@@ -9,6 +9,8 @@
 
 ### Install
 - used i3 8gb old bklop tower
+- setup and permissions Lawrence Systems https://www.youtube.com/watch?v=59NGNZ0kO04
+
 - https://dash.cloudflare.com/
 - https://account.squarespace.com/
 
