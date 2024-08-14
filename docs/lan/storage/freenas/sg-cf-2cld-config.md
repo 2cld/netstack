@@ -27,4 +27,12 @@
 - https://www.crosstalksolutions.com/cloudflare-tunnel-easy-setup/
 - https://casa.bradnordyke.com/
 - casaos install https://www.youtube.com/watch?v=6cu0kfP50Jg
+- o share your screen using Guacamole, you can do the following:
+'''
+Open the Guacamole Menu
+Click Share
+Select Share Desktop
+Choose the Read-only option
+Copy the generated URL and share it with others
+'''
 - tbd
