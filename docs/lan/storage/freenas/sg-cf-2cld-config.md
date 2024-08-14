@@ -24,3 +24,4 @@
 ### Notes
 - possible rust static web server https://github.com/static-web-server/static-web-server
 - https://account.squarespace.com/domains/managed/klopfenstein.org/dns/dns-settings
+- https://www.crosstalksolutions.com/cloudflare-tunnel-easy-setup/
