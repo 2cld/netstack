@@ -20,8 +20,11 @@
 
 # reverse proxy using nginx
 - https://www.youtube.com/watch?v=JrqJjNSlHJs
-- 
+- tbd
 ### Notes
 - possible rust static web server https://github.com/static-web-server/static-web-server
 - https://account.squarespace.com/domains/managed/klopfenstein.org/dns/dns-settings
 - https://www.crosstalksolutions.com/cloudflare-tunnel-easy-setup/
+- https://casa.bradnordyke.com/
+- casaos install https://www.youtube.com/watch?v=6cu0kfP50Jg
+- tbd
