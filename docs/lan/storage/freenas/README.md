@@ -1,13 +1,13 @@
 [documents](../../) [lan](../)
 
 ### freenas index
-- [backup-solutions](./backup-solutions/)
-- [gitlabPluginInstall](./gitlabPluginInstall/)
-- [ops-relocate](./ops-relocate/)
-- [plexPluginInstall](./plexPluginInstall/)
-- [setup](./setup/)
-- [sg-cf-2cld-config](./sg-cf-2cld-config/)
-- [ttuenas-virtualbox](./truenas-virtualbox/)
+
+- [gitlabPluginInstall](./gitlabPluginInstall)
+- [ops-relocate](./ops-relocate)
+- [plexPluginInstall](./plexPluginInstall)
+- [setup](./setup)
+- [sg-cf-2cld-config](./sg-cf-2cld-config)
+- [ttuenas-virtualbox](./truenas-virtualbox)
 - [tbd]()
   
 # FreeNAS now TrueNAS
