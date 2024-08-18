@@ -26,7 +26,11 @@
 - Plex [server settings](#plex-server)
 - Plex [client settings](#plex-client)
 - Plex [remote ssh](#remote-ssh-management)
--
+- Plex monitor [https://github.com/Tautulli/Tautulli](https://github.com/Tautulli/Tautulli) - [install docs](https://github.com/Tautulli/Tautulli/wiki/Installation)
+- Plex tunnel with tailscale [lawence systems](https://forums.lawrencesystems.com/t/plex-tunnel-with-reverse-proxy-on-windows/18163/6)
+- Plex plugin [10 best](https://www.purevpn.com/blog/best-plex-plugins/)
+- tbd
+  
 # DVD to Plex
 - [MakeMKV Key](https://forum.makemkv.com/forum/viewtopic.php?t=1053)
   - Go to MakeMKV application
