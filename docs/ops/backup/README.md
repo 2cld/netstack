@@ -54,6 +54,50 @@ robocopy \\SG\CATMediaShare\11_CAT_Services D:\CATMediaShare\11_CAT_Services /s 
 ```
 - /i - test do not preform
 
+### example check
+- run on cybertruck to verify show transfer before removing
+```powsershell
+PS C:\WINDOWS\system32> robocopy "\\192.168.6.6\pshare\catShows\Family Ties (1982)\/" "C:\Video\Family Ties (1982)\/" /s /e /z /l /log:C:\Video\checkFamilyTieslog.txt
+
+ Log File : C:\Video\checkFamilyTieslog.txt
+PS C:\WINDOWS\system32> cat C:\Video\checkFamilyTieslog.txt
+
+-------------------------------------------------------------------------------
+   ROBOCOPY     ::     Robust File Copy for Windows
+-------------------------------------------------------------------------------
+
+  Started : Wednesday, August 21, 2024 8:29:22 AM
+   Source : \\192.168.6.6\pshare\catShows\Family Ties (1982)\
+     Dest : C:\Video\Family Ties (1982)\
+
+    Files : *.*
+
+  Options : *.* /L /S /E /DCOPY:DA /COPY:DAT /Z /R:1000000 /W:30
+
+------------------------------------------------------------------------------
+
+                           0    \\192.168.6.6\pshare\catShows\Family Ties (1982)\
+                          22    \\192.168.6.6\pshare\catShows\Family Ties (1982)\Family Ties (1982) S01\
+                          24    \\192.168.6.6\pshare\catShows\Family Ties (1982)\Family Ties (1982) S02\
+                          25    \\192.168.6.6\pshare\catShows\Family Ties (1982)\Family Ties (1982) S03\
+                          20    \\192.168.6.6\pshare\catShows\Family Ties (1982)\Family Ties (1982) S04\
+
+------------------------------------------------------------------------------
+
+               Total    Copied   Skipped  Mismatch    FAILED    Extras
+    Dirs :         5         0         5         0         0         0
+   Files :        91         0        91         0         0         0
+   Bytes : 102.685 g         0 102.685 g         0         0         0
+   Times :   0:00:00   0:00:00                       0:00:00   0:00:00
+   Ended : Wednesday, August 21, 2024 8:29:22 AM
+
+PS C:\WINDOWS\system32>
+```
+- run powershell
+```powsershell
+tbd
+```
+
 ### Resources
 - [rsync on synology](https://www.synology.com/en-global/knowledgebase/DSM/help/DSM/AdminCenter/application_backupserv_sharedfoldersync)
 - [rsync from windows 10](https://www.linux.com/training-tutorials/most-useful-linux-commands-you-can-run-windows-10/)
