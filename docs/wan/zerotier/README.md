@@ -1,5 +1,9 @@
 # ZeroTier 
 - [https://www.zerotier.com/](https://www.zerotier.com/)
+- [zerotier - debug no ping](https://discuss.zerotier.com/t/node-online-but-unable-to-ping-from-other-nodes/10016)  put this somewhere
+```
+zerotier-cli peers
+```
 
 ## ghadmin test
 - [https://my.zerotier.com/network/d5e5fb65371eb4a4](https://my.zerotier.com/network/d5e5fb65371eb4a4)
