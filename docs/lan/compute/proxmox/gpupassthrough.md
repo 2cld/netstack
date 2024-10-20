@@ -1,5 +1,6 @@
-[edit]()
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/proxmox/gpupassthrough.md)
 
+- bing [Passing a GPU through to a Proxmox container for Plex Transcode](https://www.bing.com/videos/riverview/relatedvideo?q=how+to+pass+gpu+to+lvm+in+proxmox&mid=67909F2363653B05C73367909F2363653B05C733&FORM=VIRE) or [youtube](https://youtu.be/-Us8KPOhOCY)
 - youtube [Proxmox PCIE Passthrough to Windows 11](https://www.youtube.com/watch?v=c4Gp1O7jQcA)
 - [pcie-passthrough-proxmox-and-windows-11](https://gulowsen.com/post/proxmox/pcie-passthrough-proxmox-and-windows-11/)
 - youtube [Proxmox GPU Passthrough To Windows 11](https://www.youtube.com/watch?v=ecFtSFCJqSg)
