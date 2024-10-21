@@ -1,6 +1,6 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/proxmox/gpupassthrough.md)
 
-# cg2.cf.2cld.net
+# cg2.cf2.2cld.net
 - bing [Passing a GPU through to a Proxmox container for Plex Transcode](https://www.bing.com/videos/riverview/relatedvideo?q=how+to+pass+gpu+to+lvm+in+proxmox&mid=67909F2363653B05C73367909F2363653B05C733&FORM=VIRE) or [youtube](https://youtu.be/-Us8KPOhOCY)
 - Article [lxc nvidia gpu passthrough](https://theorangeone.net/posts/lxc-nvidia-gpu-passthrough/)
 
