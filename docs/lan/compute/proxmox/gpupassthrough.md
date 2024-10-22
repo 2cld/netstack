@@ -20,40 +20,40 @@ apt-cache search pve-header
 apt install pve-headers-*.*.*-*-pve
 ```
 - So I used
-```
+```bash
 root@cg2:~# apt install pve-headers-6.8.12-2-pve
 ```
 - Blacklist drivers so it does not load. Edit /etc/modprobe.d/blacklist.conf
-```
+```bash
 blacklist nouveau
 ```
 - run update-initramfs -u
-```
+```bash
 update-initramfs -u
 ```
 - reboot
 - Install NVIDIA Drivers
-```
+```bash
 apt install build-essential
 ```
 - Find and pull down GTX 660 driver
-```
+```bash
 wget https://us.download.nvidia.com/XFree86/Linux-x86_64/470.256.02/NVIDIA-Linux-x86_64-470.256.02.run
 ```
 - make executable
-```
+```bash
 root@cg2:~# chmod +x NVIDIA-Linux-x86_64-470.256.02.run 
 root@cg2:~# ls -al NVIDIA-Linux-x86_64-470.256.02.run 
 -rwxr-xr-x 1 root root 272850014 May 23 10:43 NVIDIA-Linux-x86_64-470.256.02.run
 root@cg2:~#
 ```
 - run file
-```
+```bash
 ./NVIDIA-Linux-x86_64-470.256.02.run
 ```
 - some questions are asked.. I used defaults on all
 - Test by typing, see if it sees your gpu
-```
+```bash
 nvidia-smi
 ```
 - Load drivers on boot.  Edit /etc/modules-load.d/modules.conf and the following:
@@ -63,7 +63,7 @@ nvidia-modeset
 nvidia_uvm
 ```
 - run update-initramfs -u
-```
+```bash
 update-initramfs -u
 ```
 - create udev nvidia file /etc/udev/rules.d/70-nvidia.rules
@@ -74,7 +74,7 @@ KERNEL=="nvidia_uvm", RUN+="/bin/bash -c '/usr/bin/nvidia-modprobe -c0 -u && /bi
 ```
 - reboot
 - list the nvidia devices
-```
+```bash
 root@cg2:~# ls -l /dev/nv*
 crw-rw-rw- 1 root root 195,   0 Oct 20 16:33 /dev/nvidia0
 crw-rw-rw- 1 root root 195, 255 Oct 20 16:33 /dev/nvidiactl
@@ -90,15 +90,14 @@ cr--r--r-- 1 root root 239, 2 Oct 20 16:33 nvidia-cap2
 ```
 - Edit the conf for the container /etc/pve/lxc/<ID>.conf add
 ```bash
-Allow cgroup access
+# Allow cgroup access
 lxc.cgroup2.devices.allow = c 195:0 rw
 lxc.cgroup2.devices.allow = c 195:255 rw
 lxc.cgroup2.devices.allow = c 195:254 rw
 lxc.cgroup2.devices.allow = c 235:0 rw
 lxc.cgroup2.devices.allow = c 235:1 rw
 lxc.cgroup2.devices.allow = c 10:144 rw
-
-Pass through device files
+# Pass through device files
 lxc.mount.entry = /dev/nvidia0 dev/nvidia0 none bind,optional,create=file
 lxc.mount.entry = /dev/nvidiactl dev/nvidiactl none bind,optional,create=file
 lxc.mount.entry = /dev/nvidia-modeset dev/nvidia-modeset none bind,optional,create=file
