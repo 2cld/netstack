@@ -2,6 +2,7 @@
 
 # ns ops tools
 
+- [ssh webproxy](./webproxy-ssh)
 - [https://www.ventoy.net/](https://www.ventoy.net/)
   - [proxmox iso - v?? download](https://www.proxmox.com/en/downloads/category/iso-images-pve)
   
