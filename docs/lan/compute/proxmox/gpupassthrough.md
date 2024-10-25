@@ -1,6 +1,11 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/proxmox/gpupassthrough.md)
 
-# cg2.cf2.2cld.net
+---
+---
+<details>
+  <summary>cg2.cf2.2cld.net</summary>
+
+## cg2.cf2.2cld.net
 - bing [Passing a GPU through to a Proxmox container for Plex Transcode](https://www.bing.com/videos/riverview/relatedvideo?q=how+to+pass+gpu+to+lvm+in+proxmox&mid=67909F2363653B05C73367909F2363653B05C733&FORM=VIRE) or [youtube](https://youtu.be/-Us8KPOhOCY)
 - Article [lxc nvidia gpu passthrough](https://theorangeone.net/posts/lxc-nvidia-gpu-passthrough/)
 
@@ -114,17 +119,47 @@ chmod +x NVIDIA-Linux-x86_64-470.256.02.run
 ```
 - reboot
 - test by running nvidia-smi
+</details>
 
 ---
+
+<details>
+  <summary>cfPlex.cf2.2cld.net</summary>
+	
 ## cfPlex.cf2.2cld.net
----
 now installing plex on container to eval it can use the gpu
 - lxc 101 /etc/pve/lxc/101.conf
+</details>
 
+---
+<details>
+  <summary>win11cfPlex.cf2.2cld.net</summary>
+
+## win11cfPlex.cf2.2cld.net
+uses old cfPlex with ssd drive pass-through [youtube](https://www.youtube.com/watch?v=eFDcCxRS5Xk)
+Tutorial on how to virtualise an old existing Windows install you might want to recover data from.
+
+VirtIO Drivers: [https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers](https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers)
+
+- CMD to mount SATA drives to VM (-sata can be interchanged with -scsi):
+```
+qm set "VM ID" -sata1 /dev/disk/by-id/ata-"MODEL"_"SN"
+```
+- CMD I used to connect the cfPlex SSD to 301
+```
+qm set 301 -sata1 /dev/disk/by-id/ata-WDC_WDBNCE0010PNC_2017A5808811
+```
+- Run the virtio-win-gt-x64 installer for 64-bit or -x86 for 32-bit. 
+</details>
+
+---
+---
 ---
 older notes
 ----
-
+<details>
+  <summary>old notes</summary>
+	
 - youtube [Proxmox PCIE Passthrough to Windows 11](https://www.youtube.com/watch?v=c4Gp1O7jQcA)
 - [pcie-passthrough-proxmox-and-windows-11](https://gulowsen.com/post/proxmox/pcie-passthrough-proxmox-and-windows-11/)
 - youtube [Proxmox GPU Passthrough To Windows 11](https://www.youtube.com/watch?v=ecFtSFCJqSg)
@@ -368,3 +403,4 @@ https://github.com/loki-47-6F-64/sunshine
 Moonlight Streaming Client
 https://moonlight-stream.org/
 ```
+</details>
