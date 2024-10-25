@@ -119,6 +119,7 @@ chmod +x NVIDIA-Linux-x86_64-470.256.02.run
 ```
 - reboot
 - test by running nvidia-smi
+
 </details>
 
 ---
@@ -129,6 +130,7 @@ chmod +x NVIDIA-Linux-x86_64-470.256.02.run
 ## cfPlex.cf2.2cld.net
 now installing plex on container to eval it can use the gpu
 - lxc 101 /etc/pve/lxc/101.conf
+
 </details>
 
 ---
@@ -150,6 +152,7 @@ qm set "VM ID" -sata1 /dev/disk/by-id/ata-"MODEL"_"SN"
 qm set 301 -sata1 /dev/disk/by-id/ata-WDC_WDBNCE0010PNC_2017A5808811
 ```
 - Run the virtio-win-gt-x64 installer for 64-bit or -x86 for 32-bit. 
+
 </details>
 
 ---
@@ -172,6 +175,7 @@ older notes
   - proxmox [https://pve.proxmox.com/wiki/PCI_Passthrough](https://pve.proxmox.com/wiki/PCI_Passthrough)
   - [guide_to_gpu_passthrough](https://www.reddit.com/r/homelab/comments/b5xpua/the_ultimate_beginners_guide_to_gpu_passthrough/?utm_medium=android_app&utm_source=share)
 ```
+
 Edit GRUB
 nano /etc/default/grub
 
@@ -403,4 +407,5 @@ https://github.com/loki-47-6F-64/sunshine
 Moonlight Streaming Client
 https://moonlight-stream.org/
 ```
+
 </details>
