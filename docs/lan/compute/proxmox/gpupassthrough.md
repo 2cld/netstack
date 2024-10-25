@@ -3,7 +3,8 @@
 ---
 ---
 <details>
-  <summary>cg2.cf2.2cld.net - proxmox setup</summary><div></br>
+  <summary>cg2.cf2.2cld.net - proxmox setup</summary>
+  <div>
 
 ## cg2.cf2.2cld.net
 - bing [Passing a GPU through to a Proxmox container for Plex Transcode](https://www.bing.com/videos/riverview/relatedvideo?q=how+to+pass+gpu+to+lvm+in+proxmox&mid=67909F2363653B05C73367909F2363653B05C733&FORM=VIRE) or [youtube](https://youtu.be/-Us8KPOhOCY)
@@ -120,23 +121,42 @@ chmod +x NVIDIA-Linux-x86_64-470.256.02.run
 - reboot
 - test by running nvidia-smi
 
-</br>
-</div></details>
+  </br>
+  </div>
+</details>
 
 ---
 
 <details>
-  <summary>cfPlex.cf2.2cld.net - cfPlex gpu test priv lxc</summary></div></br>
+  <summary> 101 cfPlex.cf2.2cld.net - cfPlex gpu test priv lxc</summary>
+	</br>
+  <div>
 	
-## cfPlex.cf2.2cld.net
-now installing plex on container to eval it can use the gpu
-- lxc 101 /etc/pve/lxc/101.conf
+	## cfPlex.cf2.2cld.net
+	now installing plex on container to eval it can use the gpu
+	- lxc 101 /etc/pve/lxc/101.conf
 
-</br></div></details>
+  </div>
+</details>
+
+---
+
+<details>
+  <summary> 102 xxx.cf2.2cld.net - gpu test unpriv lxc</summary>
+	</br>
+  <div>
+	
+	## xxx.cf2.2cld.net
+	now installing plex on container to eval it can use the gpu
+ 	- [youtube split GPU unpriv lxc](https://www.youtube.com/watch?v=0ZDr5h52OOE)
+	- lxc 102 /etc/pve/lxc/102.conf
+
+  </div>
+</details>
 
 ---
 <details>
-  <summary>win11cfPlex.cf2.2cld.net - ssd passthrough of old cfPlex</summary>
+  <summary>301 win11cfPlex.cf2.2cld.net - ssd passthrough of old cfPlex</summary>
 
 ## win11cfPlex.cf2.2cld.net
 uses old cfPlex with ssd drive pass-through [youtube](https://www.youtube.com/watch?v=eFDcCxRS5Xk)
