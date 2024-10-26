@@ -2,84 +2,113 @@
 
 ---
 ---
+
 <details>
   <summary>cg2.cf2.2cld.net - proxmox setup</summary>
-  <div>
 
 ## cg2.cf2.2cld.net
 - bing [Passing a GPU through to a Proxmox container for Plex Transcode](https://www.bing.com/videos/riverview/relatedvideo?q=how+to+pass+gpu+to+lvm+in+proxmox&mid=67909F2363653B05C73367909F2363653B05C733&FORM=VIRE) or [youtube](https://youtu.be/-Us8KPOhOCY)
 - Article [lxc nvidia gpu passthrough](https://theorangeone.net/posts/lxc-nvidia-gpu-passthrough/)
 
 - check version
+
 ```bash
 uname -r
 ```
+
 - I got the following
+
 ```
 root@cg2:~# uname -r
 6.8.12-2-pve
 root@cg2:~# 
 ```
+
 - Install pve-headers package
+
 ```bash
 apt-cache search pve-header
 apt install pve-headers-*.*.*-*-pve
 ```
+
 - So I used
+
 ```bash
 root@cg2:~# apt install pve-headers-6.8.12-2-pve
 ```
+
 - Blacklist drivers so it does not load. Edit /etc/modprobe.d/blacklist.conf
+
 ```bash
 blacklist nouveau
 ```
+
 - run update-initramfs -u
+
 ```bash
 update-initramfs -u
 ```
+
 - reboot
 - Install NVIDIA Drivers
+
 ```bash
 apt install build-essential
 ```
+
 - Find and pull down GTX 660 driver
+
 ```bash
 wget https://us.download.nvidia.com/XFree86/Linux-x86_64/470.256.02/NVIDIA-Linux-x86_64-470.256.02.run
 ```
+
 - make executable
+
 ```bash
 root@cg2:~# chmod +x NVIDIA-Linux-x86_64-470.256.02.run 
 root@cg2:~# ls -al NVIDIA-Linux-x86_64-470.256.02.run 
 -rwxr-xr-x 1 root root 272850014 May 23 10:43 NVIDIA-Linux-x86_64-470.256.02.run
 root@cg2:~#
 ```
+
 - run file
+
 ```bash
 ./NVIDIA-Linux-x86_64-470.256.02.run
 ```
+
 - some questions are asked.. I used defaults on all
 - Test by typing, see if it sees your gpu
+
 ```bash
 nvidia-smi
 ```
+
 - Load drivers on boot.  Edit /etc/modules-load.d/modules.conf and the following:
+
 ```bash
 nvidia
 nvidia-modeset
 nvidia_uvm
 ```
+
 - run update-initramfs -u
+
 ```bash
 update-initramfs -u
 ```
+
 - create udev nvidia file /etc/udev/rules.d/70-nvidia.rules
+
 ```bash
 KERNEL=="nvidia", RUN+="/bin/bash -c '/usr/bin/nvidia-smi -L && /bin/chmod 666 /dev/nvidia*'"
 KERNEL=="nvidia_modeset", RUN+="/bin/bash -c '/usr/bin/nvidia-modprobe -c0 -m && /bin/chmod 666 /dev/nvidia-modeset*'"
 KERNEL=="nvidia_uvm", RUN+="/bin/bash -c '/usr/bin/nvidia-modprobe -c0 -u && /bin/chmod 666 /dev/nvidia-uvm*'"
 ```
+
 - reboot
 - list the nvidia devices
+
 ```bash
 root@cg2:~# ls -l /dev/nv*
 crw-rw-rw- 1 root root 195,   0 Oct 20 16:33 /dev/nvidia0
@@ -94,7 +123,9 @@ total 0
 cr-------- 1 root root 239, 1 Oct 20 16:33 nvidia-cap1
 cr--r--r-- 1 root root 239, 2 Oct 20 16:33 nvidia-cap2
 ```
+
 - Edit the conf for the container /etc/pve/lxc/<ID>.conf add
+
 ```bash
 # Allow cgroup access
 lxc.cgroup2.devices.allow = c 195:0 rw
@@ -111,50 +142,46 @@ lxc.mount.entry = /dev/nvidia-uvm dev/nvidia-uvm none bind,optional,create=file
 lxc.mount.entry = /dev/nvidia-uvm-tools dev/nvidia-uvm-tools none bind,optional,create=file
 lxc.mount.entry = /dev/nvram dev/nvram none bind,optional,create=file
 ```
+
 - Start Container, update, upgrade download nvidia drivers and install --no-kernel-module
+
 ```bash
 apt update && apt upgrade -y
 wget https://us.download.nvidia.com/XFree86/Linux-x86_64/470.256.02/NVIDIA-Linux-x86_64-470.256.02.run
 chmod +x NVIDIA-Linux-x86_64-470.256.02.run
 ./NVIDIA-Linux-x86_64-470.256.02.run --no-kernel-module
 ```
+
 - reboot
 - test by running nvidia-smi
 
-  </br>
-  </div>
 </details>
 
 ---
 
 <details>
   <summary> 101 cfPlex.cf2.2cld.net - cfPlex gpu test priv lxc</summary>
-	</br>
-  <div>
-	
-	## cfPlex.cf2.2cld.net
-	now installing plex on container to eval it can use the gpu
-	- lxc 101 /etc/pve/lxc/101.conf
 
-  </div>
+## cfPlex.cf2.2cld.net
+now installing plex on container to eval it can use the gpu
+- lxc 101 /etc/pve/lxc/101.conf
+
 </details>
 
 ---
 
 <details>
   <summary> 102 xxx.cf2.2cld.net - gpu test unpriv lxc</summary>
-	</br>
-  <div>
 	
-	## xxx.cf2.2cld.net
-	now installing plex on container to eval it can use the gpu
- 	- [youtube split GPU unpriv lxc](https://www.youtube.com/watch?v=0ZDr5h52OOE)
-	- lxc 102 /etc/pve/lxc/102.conf
+## xxx.cf2.2cld.net
+now installing plex on container to eval it can use the gpu
+- [youtube split GPU unpriv lxc](https://www.youtube.com/watch?v=0ZDr5h52OOE)
+- lxc 102 /etc/pve/lxc/102.conf
 
-  </div>
 </details>
 
 ---
+
 <details>
   <summary>301 win11cfPlex.cf2.2cld.net - ssd passthrough of old cfPlex</summary>
 
@@ -195,7 +222,8 @@ older notes
 - youtube [Proxmox GPU/PCIE passthrough](https://www.youtube.com/watch?v=5ce-CcYjqe8)
   - proxmox [https://pve.proxmox.com/wiki/PCI_Passthrough](https://pve.proxmox.com/wiki/PCI_Passthrough)
   - [guide_to_gpu_passthrough](https://www.reddit.com/r/homelab/comments/b5xpua/the_ultimate_beginners_guide_to_gpu_passthrough/?utm_medium=android_app&utm_source=share)
-```
+
+```text
 
 Edit GRUB
 nano /etc/default/grub
@@ -257,6 +285,7 @@ Make a new VM
 Bios is OMVF(UEFI)
 Machine is q35
 Start the new VM and make sure remote desktop is active and find the IP Adress
+
 ```
 
 # Nvidia vGPU on Proxmox
@@ -265,6 +294,7 @@ Start the new VM and make sure remote desktop is active and find the IP Adress
 - Craft Computing [google doc txt file](https://drive.google.com/drive/folders/1KHf-vxzUCGqsWZWOW0bXCvMhXh5EJxQl)
 
 ```
+
 ---INSTALL DEPENDENCIES---
 
 
