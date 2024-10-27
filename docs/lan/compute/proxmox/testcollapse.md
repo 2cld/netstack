@@ -8,13 +8,13 @@
   VirtIO Drivers: [https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers](https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers)
   
   - CMD to mount SATA drives to VM (-sata can be interchanged with -scsi):
-    ```bash
+    ````bash
     qm set "VM ID" -sata1 /dev/disk/by-id/ata-"MODEL"_"SN"
-    ```
+    ````
   - CMD I used to connect the cfPlex SSD to 301
-    ```bash
+    ````bash
     qm set 301 -sata1 /dev/disk/by-id/ata-WDC_WDBNCE0010PNC_2017A5808811
-    ```
+    ````
   - Run the virtio-win-gt-x64 installer for 64-bit or -x86 for 32-bit. 
 
 </details>
