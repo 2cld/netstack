@@ -1,8 +1,11 @@
 
-<details>
+<details open>
   <summary>301 win11cfPlex.cf2.2cld.net - ssd passthrough of old cfPlex</summary>
 
+<!--
 ## win11cfPlex.cf2.2cld.net
+-->
+
 uses old cfPlex with ssd drive pass-through [youtube](https://www.youtube.com/watch?v=eFDcCxRS5Xk)
 Tutorial on how to virtualise an old existing Windows install you might want to recover data from.
 
