@@ -2,7 +2,11 @@
 
 ---
 ---
-
+- [Jim's Garage](https://www.youtube.com/@Jims-Garage/videos) and [github](https://github.com/JamesTurland/JimsGarage/tree/main)
+- TechHutTV homelab [yt1](https://www.youtube.com/watch?v=zLFB6ulC0Fg) and [yt2](https://www.youtube.com/watch?v=Uzqf0qlcQlo) and [github](https://github.com/TechHutTV/homelab/tree/main/media)
+- ElectronicsWizartdy [SMB proxmox yt-videos](https://www.youtube.com/watch?v=hJHpVi9LGqc)
+- tbd
+  
 <details>
   <summary>cg2.cf2.2cld.net - proxmox setup</summary>
 
