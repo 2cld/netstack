@@ -6,6 +6,7 @@
 - keys
 - storage
 - remote access
+- [dev-win-wsl](./dev-win-wsl)
 
 ### ssh key pair
 1. Check for existing ssh keys
