@@ -1,9 +1,12 @@
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/users/dev-win-wsl.md)
+
 # dev-win-wsl
 Developer users using wsl (win subsystem for linux) on windows workstation.
 
 ## Install wsl on Windows
 - https://learn.microsoft.com/en-us/windows/wsl/install
 - Powershell cmd to check wsl version
+
   ```powershell
   PS C:\WINDOWS\system32> wsl -l -v
     NAME      STATE           VERSION
