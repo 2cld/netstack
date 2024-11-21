@@ -1,4 +1,4 @@
-[edit](https://github.com/2cld/netstack/edit/master/docs/ops/users/dev-win-wsl.md)
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/users/dev-win-wsl.md) - [users](../)
 
 # dev-win-wsl
 Developer users using wsl (win subsystem for linux) on windows workstation.
