@@ -1,4 +1,4 @@
-[edit](https://github.com/2cld/netstack/edit/master/docs/ops/users/README.md)
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/users/README.md) - [ops](../)
 
 # User Management
 
