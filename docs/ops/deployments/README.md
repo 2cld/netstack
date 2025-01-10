@@ -4,8 +4,8 @@
   - [docs](https://gh.2cld.net/docs/)
 - [cf.2cld.net](https://cf.2cld.net/)
   - [docs](https://cf.2cld.net/docs)
-  - cf.2cld.lan
+  - [cf.2cld.lan](https://cf.2cld.net/)
 - [sl.2cld.lan](https://sl.2cld.net/)
-  - [docs](https://sl.2cld.net/docs)
+  - [docs](https://sl.2cld.net/docs/)
 - [tv.2cld.lan](https://tv.2cld.net/)
-  - [docs](https://tv.2cld.net/docs)
+  - [docs](https://tv.2cld.net/docs/)
