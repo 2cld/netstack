@@ -1,4 +1,4 @@
-[edit]()
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/deployments/README.md)
 
 - [gh.2cld.lan](https://gh.2cld.net/)
   - [docs](https://gh.2cld.net/docs/)
