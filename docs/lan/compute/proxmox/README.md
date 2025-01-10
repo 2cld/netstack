@@ -10,6 +10,7 @@
 - [Proxmox - drivepassthrough](./drivepassthrough)
 - [Proxmox WebUI via Nginx Proxy](https://pve.proxmox.com/wiki/Web_Interface_Via_Nginx_Proxy)
 - [Proxmox VE Helper-Scripts](https://tteck.github.io/Proxmox/)
+- [Proxmox on Hyper-V yt](https://www.youtube.com/watch?v=Dn9CuxaZIR8)
 - tbd
 
 # Proxmox move IP
