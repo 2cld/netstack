@@ -5,6 +5,8 @@
 - [Jim's Garage](https://www.youtube.com/@Jims-Garage/videos) and [github](https://github.com/JamesTurland/JimsGarage/tree/main)
 - TechHutTV homelab [yt1](https://www.youtube.com/watch?v=zLFB6ulC0Fg) and [yt2](https://www.youtube.com/watch?v=Uzqf0qlcQlo) and [github](https://github.com/TechHutTV/homelab/tree/main/media)
 - ElectronicsWizartdy [SMB proxmox yt-videos](https://www.youtube.com/watch?v=hJHpVi9LGqc)
+- NAS Shares on LXC Unpriv [yt](https://www.youtube.com/watch?v=DMPetY4mX-c)
+- Split GPU between Unpriv LXC  [yt](https://www.youtube.com/watch?v=0ZDr5h52OOE)
 - tbd
   
 <details>
