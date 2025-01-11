@@ -21,6 +21,12 @@ https://docs.portainer.io/advanced/reverse-proxy/traefik
 https://github.com/TylerMills/tips/blob/main/proxmox/sharing-zfs.md
 https://www.reddit.com/r/Proxmox/comments/1duxh9i/guide_sharing_zfs_datasets_across_lxc_containers/
 Create ZFS Pool, Linux LXC Container for Samba/SMB in Proxmox - Home Server Network & File Sharing  https://www.youtube.com/watch?v=-GHONmT7Y8o
+
+- proxmox https://www.apalrd.net/posts/2023/ultimate_migrate/
+- SMB on proxmox good - https://www.youtube.com/watch?v=Yw8QMrTHCw4
+- Jim’s Garage https://www.youtube.com/@Jims-Garage/videos
+- gpu split on lxm unpriv https://www.youtube.com/watch?v=0ZDr5h52OOE
+- nvidia-smi commands https://www.gpu-mart.com/blog/monitor-gpu-utilization-with-nvidia-smi
 ```
 
 
