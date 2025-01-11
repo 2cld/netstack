@@ -11,7 +11,18 @@
 - [Proxmox WebUI via Nginx Proxy](https://pve.proxmox.com/wiki/Web_Interface_Via_Nginx_Proxy)
 - [Proxmox VE Helper-Scripts](https://tteck.github.io/Proxmox/)
 - [Proxmox on Hyper-V yt](https://www.youtube.com/watch?v=Dn9CuxaZIR8)
-- tbd
+- Proxmox lxc
+```
+https://forum.proxmox.com/threads/tutorial-unprivileged-lxcs-mount-cifs-shares.101795/
+https://pve.proxmox.com/wiki/Unprivileged_LXC_containers
+Lxc storage https://www.youtube.com/watch?v=jhal_wUjrJ4
+Lxc docker container storage https://www.youtube.com/watch?v=QT-WW4iczZ0
+https://docs.portainer.io/advanced/reverse-proxy/traefik
+https://github.com/TylerMills/tips/blob/main/proxmox/sharing-zfs.md
+https://www.reddit.com/r/Proxmox/comments/1duxh9i/guide_sharing_zfs_datasets_across_lxc_containers/
+Create ZFS Pool, Linux LXC Container for Samba/SMB in Proxmox - Home Server Network & File Sharing  https://www.youtube.com/watch?v=-GHONmT7Y8o
+```
+
 
 # Proxmox move IP
 DONOT move if in a cluster
