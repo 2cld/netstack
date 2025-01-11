@@ -27,6 +27,9 @@ Create ZFS Pool, Linux LXC Container for Samba/SMB in Proxmox - Home Server Netw
 - Jim’s Garage https://www.youtube.com/@Jims-Garage/videos
 - gpu split on lxm unpriv https://www.youtube.com/watch?v=0ZDr5h52OOE
 - nvidia-smi commands https://www.gpu-mart.com/blog/monitor-gpu-utilization-with-nvidia-smi
+
+ElectronicsWizartdy
+Running a NAS on Proxmox, Different Methods and What to Know https://www.youtube.com/watch?v=hJHpVi9LGqc
 ```
 
 
