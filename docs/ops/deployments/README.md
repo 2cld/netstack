@@ -10,6 +10,11 @@
 - [tv.2cld.lan](https://tv.2cld.net/)
   - [docs](https://tv.2cld.net/docs/)
 
+WIP:
+1. Look at IPv6 connectivity (goal gitea access)
+2. Get direct access to tuners working (goal no plex)
+  - Look at NAS (look at direct recording to NAS)
+ 
 ```mermaid
 mindmap
   root)internet(
