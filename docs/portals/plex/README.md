@@ -60,6 +60,20 @@
   - storage and DVR for cf
   - Used as plexDVR
 -->
+# cfTV
+Plex on CyberTruck
+# cfDVR
+Plex app on Synology
+# cfTube
+Plex docker on Synology
+- [Lon.tv Plex on Synology]()
+- docker pull linuxserver/plex
+- https://lon.tv/plex-docker-compose.txt
+- ssh -p 2020 buadmin@192.168.6.6
+- /volume1/docker/plextemp/config:/config
+- /volume1/docker/plextemp/media:/media
+- /volume1/docker/catMetube:/metube
+- got installed at http://192.168.6.6:49154/web
 
 ## Plex dvr
 - Login to [app.plex.tv](https://app.plex.tv/desktop/#!/) 
