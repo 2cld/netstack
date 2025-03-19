@@ -7,6 +7,8 @@
 - storage
 - remote access
 - [dev-win-wsl](./dev-win-wsl)
+- [dev-win-ps](./dev-win-ps)
+- [dev-linux](./dev-linux)
 
 ### ssh key pair
 1. Check for existing ssh keys
