@@ -11,10 +11,17 @@
   - https://www.crosstalksolutions.com/cloudflare-tunnel-easy-setup/ [youtube](https://www.youtube.com/watch?v=ZvIdFs3M5ic)
 - tbd
 
+## Linux install
+- [Cloudflare Package Repo](https://pkg.cloudflare.com/)
+
+## macOS
+- [cloudflared install](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
+```
+brew install cloudflared
+```
+
 ## windows install
 - [cloudflared install](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
-- Windows
-
 ```
 winget install --id Cloudflare.cloudflared
 ```
