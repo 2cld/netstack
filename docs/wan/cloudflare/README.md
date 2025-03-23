@@ -9,7 +9,28 @@
   - Access -> Applications (tunnel lockdowns)
 - Crosstalk setup
   - https://www.crosstalksolutions.com/cloudflare-tunnel-easy-setup/ [youtube](https://www.youtube.com/watch?v=ZvIdFs3M5ic)
-- tbd 
+- tbd
+
+## windows install
+- [cloudflared install](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
+- Windows
+
+```
+winget install --id Cloudflare.cloudflared
+```
+
+### connect as use
+- edit ~/.ssh/config
+- windows
+```cmd
+Host ssh.bradnordyke.com
+ProxyCommand cloudflared access ssh --hostname %h
+```
+- linux
+```bash
+Host ssh.bradnordyke.com
+ProxyCommand /usr/local/bin/cloudflared access ssh --hostname %h
+```
 
 # cf.2cld
 
