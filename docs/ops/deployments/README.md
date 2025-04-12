@@ -19,6 +19,42 @@ WIP:
 
 ![](https://mermaid.live/edit#pako:eNqtVMGO2jAQ_RXLJ5BCSpJCIKp6oVJ7aVVpqx526WFwJt4Ix45sB5ZF_HudmAC7AtRDT_G8zJs3fjPJnjKVI81oVcq8gnopCdFK2WEpLWqJdtAiWVYyJQcFkAJGTKgmH7awS3UZww4oBGgcePRKegtfUCQnUToOo08r_eHzpjah1aVch0xVt0v4F4QYz407Li8twpntc1gheSsxPQr8QLtVek2-gsUt7DqMFWHMRB72V3wnKT1ltC01nqVZYfiTaQt79QerNHD8079_UyIHCysweGITIsFEb6K4jxa7FepfumHrwfnYaWxLGY2dYjLuwm-7GvXvc1wLfLEbooSACsirHV7txVlTN26gF720daNNNTg-u2KuanSRcr8EKxh_Yq0ZSUde-ITe5eumcARtLiTqwqB0Hkkek_ndccWnefl7e2J3Htxo-foQ--5_Ouc8ZoTfl-jYgBF3d-PdOgq3E_9vEYxwrh6t_DcLjehGeAZ4Y0ZcQ3XDFQG1VbUrQANaoa6gzN33v2-zl9Q-Y4VLmrljjgU0wi7pUh5cKjRWPewko5nVDQZUq4Y_06wAYVzU1O6W-KWEVviE1iAflap6igtptqcvNItmSTiZRbM4nqTxdBKnAd3RLJmGMwdOo_k8ST8m08khoK8dfxzO0klAMS-d0d_9H6v7cQWU67b_Y08oc9QL1UhLszhNDn8BfEh7zA)
 
+```mermaid
+mindmap
+  root)internet(
+  ::icon(fa fa-cloud)
+    rnet)cloudflare(
+    ::icon(fa fa-cloud)    
+    rnet)ng 170.1<br/>vps.trink.com(
+    ::icon(fa fa-cloud)
+      sg 170.2<br/>gitea.trink.com
+    cfng)ng 6.1<br/>Network Gateway<br/>cf.2cld.net(
+    ::icon(fa fa-network-wired)
+      cfsg[sg 6.2<br/>Storage]
+      ::icon(fa fa-database)
+        nas1
+        nas2
+      CyberTruck(CyberTruck<br/>win10 6.30<br/>HyperV 6.30<br/>plextv ollama zt)
+      ::icon(fa fa-computer)
+        win11vm(win11vm<br/>6.31)
+        ::icon(fa fa-computer)
+      cfcg[cg 6.3<br/>Compute Gateway]
+      ::icon(fa fa-gears)
+        pfsense)ng2 9.1<br/>Network Gateway<br/>cf2.2cld.net<br/>pfsense<br/>(
+        ::icon(fa fa-network-wired)
+            cfPlex
+    slng)ng 1.1<br/>sl.2cld.net(
+    ::icon(fa fa-cloud)
+      slsg[Storage]
+      ::icon(fa fa-database)
+        nas1
+        nas2
+      slcg[Compute]
+      ::icon(fa fa-gears)
+        slwin11
+        gus-gram
+        ::icon(fa fa-laptop)
+```
 <!-- version 20250219pm
 ```mermaid
 mindmap
