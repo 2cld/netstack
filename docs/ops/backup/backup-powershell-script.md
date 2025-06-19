@@ -1,6 +1,19 @@
 Powershell script
 
+# Compare two folders
+```
+    $folder1Items = Get-ChildItem -Path "C:\Folder1" -Recurse
+    $folder2Items = Get-ChildItem -Path "C:\Folder2" -Recurse
 
+    Compare-Object -ReferenceObject $folder1Items -DifferenceObject $folder2Items -Property Name, Length
+```
+
+# Check size force
+```powershell
+    Compare-Object -ReferenceObject $folder1Items -DifferenceObject $folder2Items -Property Name, Length | Where-Object {$_.SideIndicator -eq "<="} | Copy-Item -Destination "C:\Folder3" -FromPath "C:\Folder2" -Force
+```
+    
+# rsync
 ```powershell
 function rsync  {
 param ( $source,
