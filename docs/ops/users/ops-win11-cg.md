@@ -1,12 +1,49 @@
 # ops win11 cg
 operations windows 11 compute gateway configuration and notes
 
-- cat-win11-autounattend install
-- massgravel hack
-- Installs
-  - wget brave / chrome
-  - wget
+- cat-win11-autounattend [config gen](https://schneegans.de/windows/unattend-generator/)
+  - file:///I:/catSurfaceBackup/chris-Downloads/autounattend.xml
+- massgravel [github repo](https://github.com/massgravel/Microsoft-Activation-Scripts/blob/master/README.md)
+  ```
+  irm https://get.activated.win | iex
+  ```
+- Enable wsl
+  ```
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All
+  ```
+- Enable wsl2
+  ```
+  Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -All
+  ```
+- Install Distro (will list)
+  ```
+  wsl --install
+  ```
+- Installs [winget pkg](https://winget.run)
+- winget search "Google Chrome"
+  - [winget chrome](https://winget.run/pkg/Google/Chrome)
+    ```
+    winget install -e --id Google.Chrome
+    ```
+  - [winget brave](https://winget.run/pkg/Brave/Brave)
+    ```
+    winget install -e --id Brave.Brave
+    ```
+  - [winget docker desktop](https://winget.run/pkg/Docker/DockerDesktop)
+    ```
+    winget install -e --id Docker.DockerDesktop
+    ```
+    - put on drive other than c
+  - [winget vscode](https://winget.run/pkg/Microsoft/VisualStudioCode)
+    ```
+    winget install -e --id Microsoft.VisualStudioCode
+    ```
 - tbd
+
+## backup
+https://www.google.com/search?q=run+windows+backup+from+command+line&rlz=1C1GCEA_enUS1065US1065&oq=running+windows+backup+fro&gs_lcrp=EgZjaHJvbWUqCAgBEAAYFhgeMgYIABBFGDkyCAgBEAAYFhgeMggIAhAAGBYYHjIICAMQABgWGB4yCAgEEAAYFhgeMggIBRAAGBYYHjIICAYQABgWGB4yDQgHEAAYhgMYgAQYigUyDQgIEAAYhgMYgAQYigUyBwgJEAAY7wXSAQg4ODcxajBqN6gCALACAA&sourceid=chrome&ie=UTF-8
+
+https://www.youtube.com/watch?v=hBaLTcNHSL4&t=56
 
 ### Resources
 - https://www.microsoft.com/en-us/software-download/windows11
