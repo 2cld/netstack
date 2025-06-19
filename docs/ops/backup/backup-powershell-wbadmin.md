@@ -30,3 +30,14 @@ You can install it using
 ```
 Install-WindowsFeature -Name Windows-Server-Backup
 ```
+
+# Review
+Windows backup / image
+https://www.hirensbootcd.org/download/
+https://www.youtube.com/watch?v=KcFANbzgyoo
+
+Setup Windows 11 perfectly
+https://www.youtube.com/watch?v=wAUjrvGTvMs
+
+https://www.youtube.com/@CyberCPU/videos
+
