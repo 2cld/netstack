@@ -3,7 +3,7 @@ netstack ops setup for a windows 11 compute gateway configuration
 
 - cat-win11-autounattend [config gen](https://schneegans.de/windows/unattend-generator/)
   - file:///I:/catSurfaceBackup/chris-Downloads/autounattend.xml
-- massgravel [github repo](https://github.com/massgravel/Microsoft-Activation-Scripts/blob/master/README.md)
+- massgravel [github repo](https://github.com/massgravel/Microsoft-Activation-Scripts/blob/master/README.md) via [grc sn-1004 show notes](https://www.grc.com/sn/sn-1004-notes.pdf)
   ```
   irm https://get.activated.win | iex
   ```
