@@ -51,3 +51,54 @@ wsl --unregister Ubuntu #to remove the distro
 
 The ext4.vhdx file will be deleted, and you can again run Ubuntu.exe setup file to start over.
 ```
+
+
+---
+---
+## Backup / Move
+
+To move a WSL (Windows Subsystem for Linux) distribution to a new computer, you can export it as a .tar file and then import it on the new machine. This process involves using the wsl --export command to create the backup, transferring the file, and then using wsl --import to restore it. 
+
+### Steps to Backup and Move WSL:
+1. Backup on the old machine:
+  - Open PowerShell or Command Prompt as an administrator.
+  - Stop the WSL instance: If the distribution is running, stop it using
+  ```
+  wsl --shutdown or wsl --terminate <DistributionName>
+  ```
+  - Export the distribution command to create a .tar backup. Replace <DistributionName> with the name of your WSL distribution (e.g., "Ubuntu-20.04") and <FileName> with the desired path and filename for the backup (e.g., "C:\backups\ubuntu_backup.tar").
+  ```
+  wsl --export <DistributionName> <FileName>
+  ```
+2. Transfer the generated .tar file to the new computer using your preferred method (e.g., USB drive, network share). 
+3. Import on the new machine:
+  - Open PowerShell or Command Prompt as an administrator on the new computer. 
+  - Unregister any existing distribution with the same name: if needed:
+  ```
+  wsl --unregister <DistributionName>
+  ```
+  - Import the distribution: Use the import command. Replace <NewDistributionName> with a new name for the distribution, <InstallLocation> with the desired directory for the installation (e.g., "D:\WSL\Ubuntu"), and <BackupFilePath> with the path to the .tar file. 
+  ```
+  wsl --import <NewDistributionName> <InstallLocation> <BackupFilePath>
+  ```
+4. Set the default user: If needed, configure the default user for the imported distribution using ubuntu.exe config --default-user <your-wsl-username>. 
+5. Launch the distribution: Run to start the imported distribution.
+  ```
+  wsl --distribution <NewDistributionName>
+  ```
+ 
+#### Important Notes:
+- WSL Version:
+These instructions generally apply to WSL2. If you have a WSL1 distribution, you'll need to back up the %localappdata%\\lxss directory instead of using wsl --export, says Ask Ubuntu. 
+
+- File System:
+WSL uses a virtual hard disk (VHD) file for its file system. For WSL2, you can also use the --vhd flag with wsl --import to import the VHD directly, which can be faster. 
+
+- Permissions:
+When restoring a WSL1 backup, you might need to manually reset file permissions. 
+
+- Disk Space:
+The .tar backup file can be quite large, so ensure you have enough disk space on both the source and destination machines. 
+
+- New Name:
+When importing, it's recommended to use a new name for the distribution to avoid potential conflicts, according to a Reddit user. 
