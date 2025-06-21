@@ -52,6 +52,10 @@ wsl --unregister Ubuntu #to remove the distro
 The ext4.vhdx file will be deleted, and you can again run Ubuntu.exe setup file to start over.
 ```
 
+- ext4.vhdx filenames by referencing the registry, ex: powershell:
+```powershell
+(Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object {Get-ItemProperty $_.PSPath}) | select DistributionName,BasePath,VhdFileName
+```
 
 ---
 ---
