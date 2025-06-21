@@ -7,6 +7,10 @@ netstack ops setup for a windows 11 compute gateway configuration
   ```
   irm https://get.activated.win | iex
   ```
+- Enable Hyper-V [netstack hyper-v](../hyper-v)
+  ```
+  Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
+  ```
 - Enable wsl via [netstack wsl](../wsl)
   ```
   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All
