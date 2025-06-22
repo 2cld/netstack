@@ -12,6 +12,10 @@
 - Login local and claim server at http://localhost:32400/
 - Claim
 - Library
+- Configure windows firewall
+  ```
+  New-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 32400 -Program "C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe" -Profile Any
+  ```
 
 ## Silicondust HDHomeRun
 - winget
