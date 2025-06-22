@@ -1,16 +1,25 @@
 Powershell script
 
+## robocopy Mirror a source directory to a destination, including subdirectories and empty ones
+```
+robocopy C:\SourcePath D:\DestinationPath /MIR /DCOPY:T /MT:8 /R:3 /W:1 /NP /LOG:C:\robocopy.log
+```
+
+## rsync via WSL to sync files from a Windows path to another
+```
+wsl rsync -av /mnt/c/SourcePath /mnt/d/DestinationPath
+```
+
 # Compare two folders
 ```
-    $folder1Items = Get-ChildItem -Path "C:\Folder1" -Recurse
-    $folder2Items = Get-ChildItem -Path "C:\Folder2" -Recurse
-
-    Compare-Object -ReferenceObject $folder1Items -DifferenceObject $folder2Items -Property Name, Length
+$folder1Items = Get-ChildItem -Path "C:\Folder1" -Recurse
+$folder2Items = Get-ChildItem -Path "C:\Folder2" -Recurse
+Compare-Object -ReferenceObject $folder1Items -DifferenceObject $folder2Items -Property Name, Length
 ```
 
 # Check size force
 ```powershell
-    Compare-Object -ReferenceObject $folder1Items -DifferenceObject $folder2Items -Property Name, Length | Where-Object {$_.SideIndicator -eq "<="} | Copy-Item -Destination "C:\Folder3" -FromPath "C:\Folder2" -Force
+Compare-Object -ReferenceObject $folder1Items -DifferenceObject $folder2Items -Property Name, Length | Where-Object {$_.SideIndicator -eq "<="} | Copy-Item -Destination "C:\Folder3" -FromPath "C:\Folder2" -Force
 ```
     
 # rsync
