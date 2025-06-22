@@ -42,7 +42,9 @@ operations windows 11 compute gateway configuration and notes
     ```
     winget install -e --id Plex.Plex
     ```
-  
+    ```
+    winget install -e --id Plex.PlexMediaServer
+    ```  
 - tbd
 
 ## backup
