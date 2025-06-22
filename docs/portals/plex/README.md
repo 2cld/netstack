@@ -16,6 +16,10 @@
   ```
   New-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 32400 -Program "C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe" -Profile Any
   ```
+- verify
+  ```
+  Get-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)"
+  ```
 
 ## Silicondust HDHomeRun
 - winget
