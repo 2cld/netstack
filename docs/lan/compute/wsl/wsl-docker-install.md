@@ -1,9 +1,18 @@
+# wsl docker install
 
-
-
+- Open PowerShell as administrator verify vhdx dist and path
+  ```
+  (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object {Get-ItemProperty $_.PSPath}) | select DistributionName,BasePath,VhdFileName
+  ```
+- Should get
+  ```
+  DistributionName BasePath                                       VhdFileName
+  ---------------- --------                                       -----------
+  Ubuntu-24.04     E:\wsl\Ubuntu2404-240425\Ubuntu_2404.0.5.0_x64 ext4.vhdx
+  ```
 - Open PowerShell as administrator and run to ensure your Ubuntu distribution is using WSL2
   ```
-  PS C:\Users\ghadmin> wsl --set-version Ubuntu-24.04 2
+  wsl --set-version Ubuntu-24.04 2
   ```
 - Update Package List and Install Dependencies:
   ```
