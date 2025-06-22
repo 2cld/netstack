@@ -3,7 +3,7 @@
 
 - Open PowerShell as administrator and run to ensure your Ubuntu distribution is using WSL2
   ```
-  wsl --set-version <distro> 2
+  PS C:\Users\ghadmin> wsl --set-version Ubuntu-24.04 2
   ```
 - Update Package List and Install Dependencies:
   ```
@@ -28,6 +28,10 @@
 - Install Docker.
   ```
   sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  ```
+- Test Docker
+  ```
+  sudo docker run hello-world
   ```
 
 ---
