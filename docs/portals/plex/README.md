@@ -6,6 +6,20 @@
   ```
   winget install -e --id Plex.Plex
   ```
+  ```
+  winget install -e --id Plex.PlexMediaServer
+  ```
+- Login local and claim server at http://localhost:32400/
+- Claim
+- Library
+
+## Silicondust HDHomeRun
+- winget
+  ```
+  winget install -e --id Silicondust.HDHomeRun
+  ```
+- Also need to go out and add HDHomeRun app from Microsoft Play Store
+- tbd
   
 ### quick
 ---
