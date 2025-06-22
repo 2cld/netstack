@@ -1,51 +1,65 @@
 # netstack windows 11 compute gateway
 netstack ops setup for a windows 11 compute gateway configuration
 
+## Install OS
 - cat-win11-autounattend [config gen](https://schneegans.de/windows/unattend-generator/)
   - file:///I:/catSurfaceBackup/chris-Downloads/autounattend.xml
 - massgravel [github repo](https://github.com/massgravel/Microsoft-Activation-Scripts/blob/master/README.md) via [grc sn-1004 show notes](https://www.grc.com/sn/sn-1004-notes.pdf)
   ```
   irm https://get.activated.win | iex
   ```
+## Install Virtual
 - Enable Hyper-V [netstack hyper-v](../hyper-v)
   ```
   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
   ```
-- Enable wsl via [netstack wsl](../wsl)
+- Enable wsl 2 via [netstack wsl](../wsl)
   ```
   Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -All
   ```
-- Enable wsl2 via [netstack wsl](../wsl)
   ```
   Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -All
   ```
-- Install Distro (will list)
   ```
-  wsl --install
+  dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+  dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
   ```
-- Installs [winget pkg](https://winget.run)
-  - winget search
-  - zerotier [my.zerotier.com](https://my.zerotier.com/login)
-    ```
-    winget install  -e --id=ZeroTier.ZeroTierOne
-    ```
-    ```
-    zerotier-cli join <network ID>
-    ```
-  - [Google chrome](https://winget.run/pkg/Google/Chrome) [remotedesktop.google.com](https://remotedesktop.google.com/access)
-    ```
-    winget install -e --id Google.Chrome
-    winget install -e --id Google.ChromeRemoteDesktopHost
-    ```
-  - [brave](https://winget.run/pkg/Brave/Brave)
-    ```
-    winget install -e --id Brave.Brave
-    ```
-  - [vscode](https://winget.run/pkg/Microsoft/VisualStudioCode)
-    ```
-    winget install -e --id Microsoft.VisualStudioCode
-    ```
+- check version should be 2
+  ```
+  wsl --version
+  ```
+## Install Network
+- Zerotier [my.zerotier.com](https://my.zerotier.com/login)
+  ```
+  winget install  -e --id=ZeroTier.ZeroTierOne
+  ```
+  ```
+  zerotier-cli join <network ID>
+  ```
+## Install Browsers
+- [Google chrome](https://winget.run/pkg/Google/Chrome) [remotedesktop.google.com](https://remotedesktop.google.com/access)
+  ```
+  winget install -e --id Google.Chrome
+  winget install -e --id Google.ChromeRemoteDesktopHost
+  ```
+- [brave](https://winget.run/pkg/Brave/Brave)
+  ```
+  winget install -e --id Brave.Brave
+  ```
+## Install Services
+- Plex
 - tbd
+## Install Development
+- [vscode](https://winget.run/pkg/Microsoft/VisualStudioCode)
+  ```
+  winget install -e --id Microsoft.VisualStudioCode
+  ```
+- Github Desktop
+  ```
+  winget install -e --id GitHub.GitHubDesktop
+  ```
+- 
+- [wsl docker](./../wsl/wsl-docker-install)
 
 ## backup
 
