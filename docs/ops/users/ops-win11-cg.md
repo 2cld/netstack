@@ -38,6 +38,11 @@ operations windows 11 compute gateway configuration and notes
     ```
     winget install -e --id Microsoft.VisualStudioCode
     ```
+  - media option [winget plex](https://winget.run/pkg/Plex/Plex)
+    ```
+    winget install -e --id Plex.Plex
+    ```
+  
 - tbd
 
 ## backup
