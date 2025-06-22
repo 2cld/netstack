@@ -1,6 +1,12 @@
 # Plex
 [edit this](https://github.com/2cld/netstack/edit/master/docs/portals/plex/README.md)
 
+## winget
+- install via winget
+  ```
+  winget install -e --id Plex.Plex
+  ```
+  
 ### quick
 ---
 - [cattvwin10 http://test.christrees.com:32400/](http://test.christrees.com:32400/)
