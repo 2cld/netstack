@@ -81,3 +81,38 @@ C:\>robocopy.exe source target /l /e /zb /xx /xl /fp /ns /nc /ndl /np /njh /njs
 /njh suppresses the job header.
 /njs suppresses the job summary.
 ```
+
+---
+---
+powershell cron-job
+---
+
+Here's how you can achieve "cron job" functionality using PowerShell:
+- Define the Action: Use New-ScheduledTaskAction to specify the command or script that the scheduled task will execute.
+Code
+```
+    $action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-File "C:\Path\To\Your\Script.ps1"'
+```
+- Define the Trigger: Use New-ScheduledTaskTrigger to set the schedule for the task. This can be daily, weekly, monthly, at logon, at startup, or based on specific events.
+Code
+```
+    # Daily at 1 PM
+    $trigger = New-ScheduledTaskTrigger -Daily -At '1pm'
+
+    # Weekly on Monday and Wednesday at 9 AM
+    $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday, Wednesday -At '9am'
+```
+- Register the Scheduled Task: Use Register-ScheduledTask to create the scheduled task, combining the action and trigger.
+Code
+```
+    Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "MyAutomatedTask" -Description "This task runs my PowerShell script daily."
+```
+
+Additional Cmdlets for Scheduled Task Management:
+Get-ScheduledTask: Lists existing scheduled tasks.
+Set-ScheduledTask: Modifies properties of an existing scheduled task.
+Disable-ScheduledTask: Disables a scheduled task.
+Enable-ScheduledTask: Enables a scheduled task.
+Unregister-ScheduledTask: Deletes a scheduled task.
+Start-ScheduledTask: Manually runs a scheduled task.
+By utilizing these PowerShell cmdlets, you can programmatically create and manage automated tasks in Windows, providing the equivalent of cron job functionality.
