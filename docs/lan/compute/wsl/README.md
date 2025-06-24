@@ -58,6 +58,34 @@ The ext4.vhdx file will be deleted, and you can again run Ubuntu.exe setup file 
 ```
 
 ---
+## wsl portproxy
+wsl portproxy from windows os
+- show portproxy on winos
+  ```powershell
+  netsh interface portproxy show all
+  ```
+- find the_wsl_ip (usually eth0) on wsl
+  ```bash
+  ip a
+  ```
+- add port to unix firewall ufw on wsl
+  ```bash
+  sudo ufw allow 8000
+  ```
+- add port to windows firewall in powershell on winos
+  ```powershell
+  New-NetFirewallRule -DisplayName "Allow Inbound Port 8000" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+  ```
+- forward port to wsl in powershell on winos.
+  ```powershell
+  netsh interface portproxy add v4tov4 listenport=8000 listenaddress=0.0.0.0 connectport=8000 connectaddress=<the_wsl_ip> 
+  ```
+- show portproxy on winos
+  ```powershell
+  netsh interface portproxy show all
+  ```
+  
+---
 ---
 ## Backup / Move
 
