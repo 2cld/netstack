@@ -11,3 +11,8 @@ sudo passwd vivek
 https://www.cyberciti.biz/faq/linux-set-change-password-how-to/#google_vignette
 lsb_release -a
 ```
+
+ssh key
+```
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
