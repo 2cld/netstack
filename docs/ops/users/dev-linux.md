@@ -16,3 +16,21 @@ ssh key
 ```
 ssh-keygen -t ed25519 -C "your_email@example.com"
 ```
+
+git setup
+```
+git config --global user.name "your name"
+```
+```
+git config --global user.email "your_email@example.com"
+```
+- add pub key to github https://github.com/settings/keys
+- set remote to use ssh
+- check where remote is set
+```
+git remote -v
+```
+- set remote to ssh url
+```
+git remote set-url origin git@github.com:2cld/ai.git
+```
