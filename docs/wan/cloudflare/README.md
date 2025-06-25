@@ -9,6 +9,8 @@
   - Access -> Applications (tunnel lockdowns)
 - Crosstalk setup
   - https://www.crosstalksolutions.com/cloudflare-tunnel-easy-setup/ [youtube](https://www.youtube.com/watch?v=ZvIdFs3M5ic)
+- Jim's Garage setup
+  - https://github.com/JamesTurland/JimsGarage/tree/main/Cloudflare-HTTPS [youtube](https://www.youtube.com/watch?v=U8hUNw2E1ZM)
 - tbd
 
 ## Linux install
@@ -26,6 +28,10 @@ brew install cloudflared
 winget install --id Cloudflare.cloudflared
 ```
 
+## wsl on windows install
+- go to https://one.dash.cloudflare.com/
+- search for tunnel and create new tunnel
+- tbd
 ### connect as use
 - edit ~/.ssh/config
 - windows
