@@ -34,6 +34,11 @@ netstack ops setup for a windows 11 compute gateway configuration
 - Zerotier [my.zerotier.com](https://my.zerotier.com/login)
   - winget install  -e --id=ZeroTier.ZeroTierOne
   - zerotier-cli join <network ID>
+- Proton [account.proton.me](https://account.proton.me/login)
+  - winget install  -e --id=Proton.ProtonVPN
+  - proton user login
+- Cloudflare [one.dash.cloudflare.com](https://dash.cloudflare.com/login)
+  - winget install  -e --id=Cloudflare.cloudflared
 
 ## Install Browsers
 - [Google chrome](https://winget.run/pkg/Google/Chrome) [remotedesktop.google.com](https://remotedesktop.google.com/access)
