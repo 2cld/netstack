@@ -1,10 +1,21 @@
 # wsl docker install
 
 - Open PowerShell as administrator verify vhdx dist and path
+- wsl list distributions
+  ```
+  wsl --list
+  ```
+  should get
+  ```
+  Windows Subsystem for Linux Distributions:
+  Ubuntu-24.04 (Default)
+  PS C:\WINDOWS\system32>
+  ```
+- Find location
   ```
   (Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object {Get-ItemProperty $_.PSPath}) | select DistributionName,BasePath,VhdFileName
   ```
-- Should get
+  shoud get
   ```
   DistributionName BasePath                                       VhdFileName
   ---------------- --------                                       -----------
@@ -43,7 +54,37 @@
   sudo docker run hello-world
   ```
 
+# wsl docker backup
+- reference https://www.mslinn.com/blog/2022/01/10/wsl-backup.html
+- wsl export Ubuntu-24.04 F:\backup\ubuntu-20250630.tar
+  ```
+  wsl --export 
+  ```
+- wsl unregister
+- setup net location
+- wsl set version 2 to avoid import error
+  ```
+  wsl --set-version Ubuntu-24.04 2
+  ```
+- wsl import standard way
+  ```
+  wsl --import Ubuntu-24.04 E:\wsl\ F:\backup\ubuntu-20250630.tar
+  ```
+- test
+
+
 ---
+- import issues option
+- wsl import through vhd ?? [see article - I did not test](https://www.mslinn.com/blog/2022/01/10/wsl-backup.html)
+  ```
+  wsl --import Ubuntu-24.04-d^
+  D:\WSL\Ubuntu-22.04\^
+  %HOMEDRIVE%%HOMEPATH%\AppData\Local\Packages\CanonicalGroupLimited.Ubuntu20.04onWindows_79rhkp1fndgsc\LocalState\ext4.vhdx^
+  --vhd
+  ```
+---
+
+other crap
 ---
 OLD install
 ---
