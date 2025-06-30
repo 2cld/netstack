@@ -1,5 +1,7 @@
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/workstation/nswin11-cg.md)
 # netstack windows 11 compute gateway
 netstack ops setup for a windows 11 compute gateway configuration
+- deployment [slwin11ops-notes](https://sl.2cld.net/ops/install/slwin11ops-notes.html)
 
 ## Install OS
 - cat-win11-autounattend [config gen](https://schneegans.de/windows/unattend-generator/)
@@ -30,35 +32,28 @@ netstack ops setup for a windows 11 compute gateway configuration
   ```
 ## Install Network
 - Zerotier [my.zerotier.com](https://my.zerotier.com/login)
-  ```
-  winget install  -e --id=ZeroTier.ZeroTierOne
-  ```
-  ```
-  zerotier-cli join <network ID>
-  ```
+  - winget install  -e --id=ZeroTier.ZeroTierOne
+  - zerotier-cli join <network ID>
+
 ## Install Browsers
 - [Google chrome](https://winget.run/pkg/Google/Chrome) [remotedesktop.google.com](https://remotedesktop.google.com/access)
-  ```
-  winget install -e --id Google.Chrome
-  winget install -e --id Google.ChromeRemoteDesktopHost
-  ```
+- winget install -e --id Google.Chrome
+- winget install -e --id Google.ChromeRemoteDesktopHost
 - [brave](https://winget.run/pkg/Brave/Brave)
-  ```
-  winget install -e --id Brave.Brave
-  ```
-## Install Services
-- Plex
+- winget install -e --id Brave.Brave
+
+## Install media Services
+- winget install -e --id Plex.Plex
+- winget install -e --id Plex.PlexMediaServer 
+  - Get-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)"
+  - New-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 32400 -Program "C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe" -Profile Any
+- winget install -e --id OBSProject.OBSStudio
+- winget install -e --id VideoLAN.VLC
+- winget install -e --id Silicondust.HDHomeRun
 - tbd
 ## Install Development
-- [vscode](https://winget.run/pkg/Microsoft/VisualStudioCode)
-  ```
-  winget install -e --id Microsoft.VisualStudioCode
-  ```
-- Github Desktop
-  ```
-  winget install -e --id GitHub.GitHubDesktop
-  ```
-- 
+- winget install -e --id Microsoft.VisualStudioCode
+- winget install -e --id GitHub.GitHubDesktop
 - [wsl docker](./../wsl/wsl-docker-install)
 
 ## backup
