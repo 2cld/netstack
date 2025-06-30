@@ -42,20 +42,34 @@ netstack ops setup for a windows 11 compute gateway configuration
 
 ## Install Browsers
 - [Google chrome](https://winget.run/pkg/Google/Chrome) [remotedesktop.google.com](https://remotedesktop.google.com/access)
-- winget install -e --id Google.Chrome
-- winget install -e --id Google.ChromeRemoteDesktopHost
+- winget install -e --id=Google.Chrome
+- winget install -e --id=Google.ChromeRemoteDesktopHost
 - [brave](https://winget.run/pkg/Brave/Brave)
-- winget install -e --id Brave.Brave
+- winget install -e --id=Brave.Brave
 
 ## Install media Services
-- winget install -e --id Plex.Plex
-- winget install -e --id Plex.PlexMediaServer 
+- winget install -e --id=Plex.Plex
+- winget install -e --id=Plex.PlexMediaServer 
   - Get-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)"
   - New-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 32400 -Program "C:\Program Files\Plex\Plex Media Server\Plex Media Server.exe" -Profile Any
-- winget install -e --id OBSProject.OBSStudio
-- winget install -e --id VideoLAN.VLC
-- winget install -e --id Silicondust.HDHomeRun
+- winget install -e --id=Silicondust.HDHomeRun
+- winget install -e --id=OBSProject.OBSStudio
+- winget install -e --id=VideoLAN.VLC
+- winget install -e --id=BlueStack.BlueStacks
+- winget install -e --id=ch.LosslessCut
+- I just extracted zip to F:\slMedia\LosslessCut-win-x64
+- winget install -e --id=GuinpinSoft.MakeMKV
+- Notes:
+  - Plex.Plex is plex app
+  - Plex.PlexMediaServer is Server
+  - Silicondust.HDHomeRun is for HDTuner
+  - OBSProject.OBSStudio is for screencast recording
+  - VideoLAN.VLC is for network streamming viewing
+  - BlueStack.BlueStacks is android emulator to run phone apps to manage streams
+  - ch.LosslessCut is a quick way to cut video
+  - GuinpinSoft.MakeMKV is for DVD ripping
 - tbd
+
 ## Install Development
 - winget install -e --id Microsoft.VisualStudioCode
 - winget install -e --id GitHub.GitHubDesktop
