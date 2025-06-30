@@ -54,7 +54,15 @@ netstack ops setup for a windows 11 compute gateway configuration
 ## Install Development
 - winget install -e --id Microsoft.VisualStudioCode
 - winget install -e --id GitHub.GitHubDesktop
+
+## wsl
+- sudo apt-get install cockpit -y
+- sudo systemctl enable --now cockpit.socket
+- sudo apt-get install podman cockpit-podman -y
+- sudo systemctl enable --now podman
 - [wsl docker](./../wsl/wsl-docker-install)
+- /home/ghadmin/docker/docker-compose
+
 
 ## backup
 
