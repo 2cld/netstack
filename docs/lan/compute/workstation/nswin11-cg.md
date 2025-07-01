@@ -83,6 +83,10 @@ netstack ops setup for a windows 11 compute gateway configuration
 
 ## backup
 
+- powershell backup
+  ```
+  wbadmin start backup -backupTarget:E:\catops\ -include:C: -quiet -allCritical
+  ```
 - [search reference](https://www.google.com/search?q=run+windows+backup+from+command+line&rlz=1C1GCEA_enUS1065US1065&oq=running+windows+backup+fro&gs_lcrp=EgZjaHJvbWUqCAgBEAAYFhgeMgYIABBFGDkyCAgBEAAYFhgeMggIAhAAGBYYHjIICAMQABgWGB4yCAgEEAAYFhgeMggIBRAAGBYYHjIICAYQABgWGB4yDQgHEAAYhgMYgAQYigUyDQgIEAAYhgMYgAQYigUyBwgJEAAY7wXSAQg4ODcxajBqN6gCALACAA&sourceid=chrome&ie=UTF-8_)
 - https://www.youtube.com/watch?v=hBaLTcNHSL4&t=56
 
