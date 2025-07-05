@@ -21,13 +21,13 @@ sudo zerotier-cli join [NETWORK_ID]
 | IP	| GW | Net | name | Purpose |
 |--|--|--|--|--|
 | 192.168.0.1/24	| ng (0.1) | n1-sl | ng | Network Gateway node DHCP DNS |
-| 192.168.0.2/24	| xx | nx-xx | sg | Storage Gateway node SMB |
+| 192.168.0.2/24	| nx | nx-xx | sg | Storage Gateway node SMB |
 | 192.168.0.3/24	| ng (0.1) | n3-wf | cg | Compute Gateway node + ZT + bridge |
 | 192.168.0.4/24	| ng (0.1) | n4-pi | mg | Monitor Gateway node ZT + bridge |
 | 192.168.0.5/24	| ng (0.1) | n5-cf | ng2 | Network Gateway node ZT + bridge |
 | 192.168.0.6/24	| nx | nx-xx | sg2 | Storage Gateway node |
-| 192.168.0.7/24	| ng (0.1) | n1-sl | cg2 | Compute node ZT + bridge |
-| 192.168.0.8/24	| nx | nx-xx | mg2 | Monitor Gateway node |
+| 192.168.0.7/24	| ng (0.1) | n1-sl | cg2 | Compute node ZT (windows 11) |
+| 192.168.0.8/24	| ng (0.1) | n1-sl | mg2 | Monitor Gateway node ZT + bridge |
 | 192.168.0.9/24	| nx | nx-xx | dg | Documentation node ZT + bridge |
 | 192.168.0.10/24	| ng (0.1) | n10-sl | n10 | node ZT + bridge |
 | 192.168.0.11/24	| ng (0.1) | n11-sl | n11 | node |
