@@ -17,6 +17,7 @@ sudo zerotier-cli join [NETWORK_ID]
 - ZT Bridge: 192.168.0.3 (in n3-wf)
 - ZT Bridge: 192.168.0.4 (in n4-pi)
 - ZT Bridge: 192.168.0.5 (in n5-cf)
+- ZT Bridge: 192.168.0.8 (in n1-sl)
 
 | IP | GW | Net | name | Purpose | os | 
 |--|--|--|--|--|--|
@@ -28,7 +29,7 @@ sudo zerotier-cli join [NETWORK_ID]
 | ~~192.168.0.6/24~~  | nx | nx-xx | sg2 | Storage Gateway node | na |
 | 192.168.0.7/24  | ng (0.1) | n1-sl | cg2 | Compute node ZT | wsl-win11 |
 | 192.168.0.8/24  | ng (0.1) | n1-sl | mg2 | Monitor Gateway node ZT + bridge | ub2404-hv-slwin11ops |
-| ~~192.168.0.9/24~~  | nx | nx-xx | dg | Documentation node ZT + bridge | na |
+| ~~192.168.0.9/24~~  | nx | nx-xx | dg | Documentation node | na |
 | ~~192.168.0.10/24~~ | nx | nx-xx | n10 | old IP on n1-sl | na |
 | 192.168.0.11/24 | ng (0.1) | n1-sl | n11 | node Tivo-S01 | tivo |
 | 192.168.0.12/24 | ng (0.1) | n1-sl | n12 | node Tivo-S02 | tivo |
