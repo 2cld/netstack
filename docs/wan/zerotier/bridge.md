@@ -13,7 +13,7 @@ network:
       addresses: [192.168.0.44/24] 
       routes:
         - to: default
-          via: 192.168.0.1
+          via: 192.168.0.44
       nameservers:
         addresses: [192.168.0.1, 1.1.1.1]
     zt6nti2mwx:
