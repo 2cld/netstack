@@ -274,5 +274,90 @@ ip link show
 …from both node03 and node13, and I’ll plug in the correct interface names for you into the script.
 
 
+---
+---
+# Debug
+<!--
+- from slwin11ops
+```
+C:\Users\ghadmin>arp -a
 
-c
+Interface: 192.168.0.7 --- 0x7
+  Internet Address      Physical Address      Type
+  169.254.172.1         00-18-dd-08-02-95     dynamic
+  192.168.0.1           18-a6-f7-31-9c-06     dynamic
+  192.168.0.8           00-15-5d-09-bf-02     dynamic
+  192.168.0.13          00-18-dd-08-02-95     dynamic
+  192.168.0.14          8c-49-62-0b-69-8d     dynamic
+  192.168.0.23          00-23-8b-86-38-61     dynamic
+  192.168.0.140         00-15-5d-09-bf-02     dynamic
+  192.168.0.255         ff-ff-ff-ff-ff-ff     static
+  224.0.0.2             01-00-5e-00-00-02     static
+  224.0.0.22            01-00-5e-00-00-16     static
+  224.0.0.251           01-00-5e-00-00-fb     static
+  224.0.0.252           01-00-5e-00-00-fc     static
+  239.0.0.250           01-00-5e-00-00-fa     static
+  239.255.255.250       01-00-5e-7f-ff-fa     static
+  255.255.255.255       ff-ff-ff-ff-ff-ff     static
+```
+- from rpi
+```
+cat@rpi:~ $ arp -n
+Address                  HWtype  HWaddress           Flags Mask            Iface
+192.168.2.83             ether   6c:71:d9:dc:b4:89   C                     eth0
+192.168.0.18                     (incomplete)                              zt6nti2mwx
+192.168.0.19             ether   00:11:d9:3d:3a:10   C                     eth0
+192.168.0.19                     (incomplete)                              zt6nti2mwx
+192.168.2.32             ether   3c:07:54:72:49:e2   C                     eth0
+192.168.2.1              ether   38:2c:4a:a2:17:88   C                     eth0
+192.168.0.18             ether   00:11:d9:3b:34:cb   C                     eth0
+192.168.2.67                     (incomplete)                              eth0
+cat@rpi:~ $
+```
+
+
+---
+---
+
+- from mons laptop and mac-mini on rpi lan
+```
+C:\Users\Alice Trees>arp -a
+
+Interface: 192.168.2.83 --- 0xe
+  Internet Address      Physical Address      Type
+  192.168.2.1           38-2c-4a-a2-17-88     dynamic
+  192.168.2.32          3c-07-54-72-49-e2     dynamic
+  192.168.2.42          8e-d0-75-72-6e-a7     dynamic
+  192.168.2.255         ff-ff-ff-ff-ff-ff     static
+  224.0.0.22            01-00-5e-00-00-16     static
+  224.0.0.251           01-00-5e-00-00-fb     static
+  224.0.0.252           01-00-5e-00-00-fc     static
+  239.255.255.250       01-00-5e-7f-ff-fa     static
+  255.255.255.255       ff-ff-ff-ff-ff-ff     static
+
+C:\Users\Alice Trees>ssh cat@192.168.2.32
+(cat@192.168.2.32) Password:
+Last login: Sat Jul  5 22:12:09 2025 from 192.168.2.83
+(base) cat@cats-Mac-mini ~ % arp -n
+usage: arp [-n] [-i interface] hostname
+       arp [-n] [-i interface] [-l] -a
+       arp -d hostname [pub] [ifscope interface]
+       arp -d [-i interface] -a
+       arp -s hostname ether_addr [temp] [reject] [blackhole] [pub [only]] [ifscope interface]
+       arp -S hostname ether_addr [temp] [reject] [blackhole] [pub [only]] [ifscope interface]
+       arp -f filename
+(base) cat@cats-Mac-mini ~ % arp -a
+? (10.147.17.94) at a6:47:3e:46:f9:ee on feth1976 ifscope [ethernet]
+? (10.147.17.210) at a6:78:17:4a:f4:4b on feth1976 ifscope [ethernet]
+? (169.254.98.71) at 0:11:d9:3b:34:cb on en0 [ethernet]
+? (169.254.231.209) at 0:11:d9:3d:3a:10 on en0 [ethernet]
+? (192.168.2.1) at 38:2c:4a:a2:17:88 on en0 ifscope [ethernet]
+? (192.168.2.32) at 3c:7:54:72:49:e2 on en0 ifscope permanent [ethernet]
+? (192.168.2.42) at (incomplete) on en0 ifscope [ethernet]
+? (192.168.2.83) at 6c:71:d9:dc:b4:89 on en0 ifscope [ethernet]
+mdns.mcast.net (224.0.0.251) at 1:0:5e:0:0:fb on en0 ifscope permanent [ethernet]
+? (239.255.255.250) at 1:0:5e:7f:ff:fa on en0 ifscope permanent [ethernet]
+broadcasthost (255.255.255.255) at ff:ff:ff:ff:ff:ff on en0 ifscope [ethernet]
+(base) cat@cats-Mac-mini ~ %
+```
+-->
