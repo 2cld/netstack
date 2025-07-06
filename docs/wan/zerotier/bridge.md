@@ -4,20 +4,28 @@
 ```yaml
 # This is the network config for mg
 network:
+  version: 2
+  renderer: networkd
   ethernets:
     eth0:
       dhcp4: false
+      dhcp6: false
+      addresses: [192.168.0.44/24] 
+      routes:
+        - to: default
+          via: 192.168.0.1
+      nameservers:
+        addresses: [192.168.0.1, 1.1.1.1]
     zt6nti2mwx:
       dhcp4: false
-  version: 2
+      dhcp6: false
 
   bridges:
     br0:
-      dhcp4: true
+      dhcp4: false
       interfaces:
         - eth0
         - zt6nti2mwx
-      dhcp4: yes
 ```
 
 - sudo ufw status
