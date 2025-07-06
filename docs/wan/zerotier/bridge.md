@@ -18,21 +18,27 @@ sudo zerotier-cli join [NETWORK_ID]
 - ZT Bridge: 192.168.0.4 (in n4-pi)
 - ZT Bridge: 192.168.0.5 (in n5-cf)
 
-| IP	| GW | Net | name | Purpose |
-|--|--|--|--|--|
-| 192.168.0.1/24	| ng (0.1) | n1-sl | ng | Network Gateway node DHCP DNS |
-| 192.168.0.2/24	| nx | nx-xx | sg | Storage Gateway node SMB |
-| 192.168.0.3/24	| ng (0.1) | n3-wf | cg | Compute Gateway node + ZT + bridge |
-| 192.168.0.4/24	| ng (0.1) | n4-pi | mg | Monitor Gateway node ZT + bridge |
-| 192.168.0.5/24	| ng (0.1) | n5-cf | ng2 | Network Gateway node ZT + bridge |
-| 192.168.0.6/24	| nx | nx-xx | sg2 | Storage Gateway node |
-| 192.168.0.7/24	| ng (0.1) | n1-sl | cg2 | Compute node ZT (windows 11) |
-| 192.168.0.8/24	| ng (0.1) | n1-sl | mg2 | Monitor Gateway node ZT + bridge |
-| 192.168.0.9/24	| nx | nx-xx | dg | Documentation node ZT + bridge |
-| 192.168.0.10/24	| ng (0.1) | n10-sl | n10 | node ZT + bridge |
-| 192.168.0.11/24	| ng (0.1) | n11-sl | n11 | node |
-| 192.168.0.12/24	| ng2 (0.5) | n12-cf | n12 | node |
-| 192.168.0.13/24	| ng2 (0.5) |  n13-cf | n13 | node |
+| IP | GW | Net | name | Purpose | os | 
+|--|--|--|--|--|--|
+| 192.168.0.1/24  | ng (0.1) | n1-sl | ng | Network Gateway node DHCP DNS | asus |
+| ~~192.168.0.2/24~~  | nx | nx-xx | sg | Storage Gateway node SMB | na |
+| ~~192.168.0.3/24~~  | ng (0.1) | n3-wf | cg | Compute Gateway node + ZT + bridge | proxmox |
+| 192.168.0.4/24  | ng (0.1) | n4-pi | mg | Monitor Gateway node ZT + bridge | pi |
+| 192.168.0.5/24  | ng (0.1) | n5-cf | ng2 | Network Gateway node ZT + bridge | ub2404-hv-cybertruck |
+| ~~192.168.0.6/24~~  | nx | nx-xx | sg2 | Storage Gateway node | na |
+| 192.168.0.7/24  | ng (0.1) | n1-sl | cg2 | Compute node ZT | wsl-win11 |
+| 192.168.0.8/24  | ng (0.1) | n1-sl | mg2 | Monitor Gateway node ZT + bridge | ub2404-hv-slwin11ops |
+| ~~192.168.0.9/24~~  | nx | nx-xx | dg | Documentation node ZT + bridge | na |
+| ~~192.168.0.10/24~~ | nx | nx-xx | n10 | old IP on n1-sl | na |
+| 192.168.0.11/24 | ng (0.1) | n1-sl | n11 | node Tivo-S01 | tivo |
+| 192.168.0.12/24 | ng (0.1) | n1-sl | n12 | node Tivo-S02 | tivo |
+| 192.168.0.13/24 | ng (0.1) |  n1-sl | n13 | node HDTuner | SiliconDust |
+| 192.168.0.14/24 | ng (0.1) |  n1-sl | n14 | node SRoku | Roku |
+| 192.168.0.15/24 | nx | nx-xx | n15 | node | na |
+| 192.168.0.16/24 | nx | nx-xx | n16 | node | na |
+| 192.168.0.17/24 | nx | nx-xx | n17 | node | na |
+| 192.168.0.18/24 | ng2 (0.4) |  n4-pi | n18 | node Tivo-N18 | tivo |
+| 192.168.0.19/24 | ng2 (0.4) |  n4-pi | n19 | node Tivo-N19 | tivo |
 
 
 ⚠️ Potential Issues
