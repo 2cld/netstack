@@ -1,13 +1,13 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/wan/zerotier/bridge.md)
 
-- netplan for bridge
+- netplan for mg bridge
 ```yaml
 # This is the network config for mg
 network:
   ethernets:
-    ens18:
+    eth0:
       dhcp4: false
-    ztklhtyipy:
+    zt6nti2mwx:
       dhcp4: false
   version: 2
 
@@ -15,11 +15,21 @@ network:
     br0:
       dhcp4: true
       interfaces:
-        - ens18
-        - ztklhtyipy
+        - eth0
+        - zt6nti2mwx
       dhcp4: yes
 ```
 
+- sudo ufw status
+- sudo ufw disable
+
+ netplan generate, netplan apply, netplan try, and netplan get
+ 
+- cd /etc/netplan
+- sudo netplan get all
+- sudo vi 0-mg-eth0-zt-bridge.yaml
+- sudo netplan apply
+  
 Hello, I am attempting to bridge two networks with zerotier.  Network one is in cf, Network 2 is in sl.  I have 3 devices in each network.  In network 1 (net1) we have node01, node02 and node03.  In network 2 (net2) we have node11, node12 and node13.  In net1 on node03 I have installed zerotier joined the zttestnetwork with IP 192.168.0.3/24 GW 192.168.0.1 with bridge enabled.  In net2 on node13 I have installed zerotier joined the zttestnetwork with IP 192.168.0.13/24 GW 192.168.0.1 with bridge enabled.  The GW with IP 192.168.0.1/24 device is in net1.  I configured node12 with IP 192.168.0.12/24 GW 192.168.0.4.  From node13 I attempted to ping node 12 and it fails.  Can you review this zerotier configuration and assist me with a step by step debugging plan please?
 
 ## Bridge Network Setup Summary
