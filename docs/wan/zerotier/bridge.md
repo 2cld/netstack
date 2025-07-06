@@ -8,14 +8,8 @@ network:
   renderer: networkd
   ethernets:
     eth0:
-      dhcp4: false
+      dhcp4: true
       dhcp6: false
-      addresses: [192.168.0.44/24] 
-      routes:
-        - to: default
-          via: 192.168.0.44
-      nameservers:
-        addresses: [192.168.0.1, 1.1.1.1]
     zt6nti2mwx:
       dhcp4: false
       dhcp6: false
