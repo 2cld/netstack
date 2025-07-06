@@ -278,6 +278,148 @@ ip link show
 ---
 # Debug
 <!--
+
+- from rpi zt 192.168.0.4 eth0 192.168.2.42
+```
+cat@rpi:~ $ arp -n
+Address                  HWtype  HWaddress           Flags Mask            Iface
+192.168.2.83             ether   6c:71:d9:dc:b4:89   C                     eth0
+192.168.0.18                     (incomplete)                              zt6nti2mwx
+192.168.0.19             ether   00:11:d9:3d:3a:10   C                     eth0
+192.168.0.19                     (incomplete)                              zt6nti2mwx
+192.168.2.32             ether   3c:07:54:72:49:e2   C                     eth0
+192.168.2.1              ether   38:2c:4a:a2:17:88   C                     eth0
+192.168.0.18             ether   00:11:d9:3b:34:cb   C                     eth0
+192.168.2.67                     (incomplete)                              eth0
+cat@rpi:~ $ ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether dc:a6:32:62:8f:83 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.2.42/24 brd 192.168.2.255 scope global dynamic noprefixroute eth0
+       valid_lft 81372sec preferred_lft 81372sec
+    inet6 fe80::f211:4986:7a06:bb9c/64 scope link noprefixroute
+       valid_lft forever preferred_lft forever
+3: wlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+    link/ether dc:a6:32:62:8f:84 brd ff:ff:ff:ff:ff:ff
+4: zt6nti2mwx: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2800 qdisc pfifo_fast state UNKNOWN group default qlen 1000
+    link/ether 8e:d0:75:72:6e:a7 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.0.4/24 brd 192.168.0.255 scope global zt6nti2mwx
+       valid_lft forever preferred_lft forever
+    inet6 fe80::8cd0:75ff:fe72:6ea7/64 scope link
+       valid_lft forever preferred_lft forever
+cat@rpi:~ $ ip link show
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP mode DEFAULT group default qlen 1000
+    link/ether dc:a6:32:62:8f:83 brd ff:ff:ff:ff:ff:ff
+3: wlan0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether dc:a6:32:62:8f:84 brd ff:ff:ff:ff:ff:ff
+4: zt6nti2mwx: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 2800 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ether 8e:d0:75:72:6e:a7 brd ff:ff:ff:ff:ff:ff
+cat@rpi:~ $
+```
+
+---
+- cat@rpi history
+```
+cat@rpi:~ $ history
+    1  pwd
+    2  echo "code code/add-microsoft-repo boolean true" | sudo debconf-set-selections
+    3  cd Downloads/
+    4  ls
+    5  sudo apt install ./code_1.100.3-1748872405_amd64.deb
+    6  sudo dpkg -i ./code_1.100.3-1748872405_amd64.deb
+    7  sudo apt update
+    8  sudo apt install code
+    9  git status
+   10  cd ..
+   11  ls
+   12  pwd
+   13  gh
+   14  cd code/
+   15  ls
+   16  cd ai/
+   17  sl
+   18  ls
+   19  git status
+   20  git add *
+   21  git commit -m "test commit from cat@rpi"
+   22  git config --global user.email "admin@horseoff.com"
+   23  git config --global user.name "admin_2cld_horseoff"
+   24  git commit -m "test commit from cat@rpi"
+   25  git push
+   26  code .
+   27  obconfig
+   28  obconf
+   29  curl
+   30  zerotier-cli
+   31  curl -s https://install.zerotier.com | sudo bash
+   32  zerotier-cli join 363c67c55aeaf78d
+   33  sudo zerotier-cli join 363c67c55aeaf78d
+   34  ip addr show
+   35  ip route
+   36  sudo sysctl -w net.ipv4.ip_forward=1
+   37  sudo vi /etc/sysctl.conf
+   38  ip link add name br0 type bridge
+   39  sudo ip link add name br0 type bridge
+   40  sudo ip link set zt6nti2mwx master br0
+   41  sudo ip link set eth0 master br0
+   42  sudo ip link br0 up
+   43  sudo ip link set br0 up
+   44  sudo ip link set zt6nti2mwx up
+   45  sudo ip link set eth0 up
+   46  sudo zerotier-cli listpeers
+   47  sudo zerotier-cli listnetworks
+   48  ping 192.168.0.1
+   49  ipconfig
+   50  ip addr
+   51  arp -n
+   52  iptables -L -v -n
+   53  sudo iptables -L -v -n
+   54  ip link show
+   55  sudo raspi-config
+   56  sudo ufw status verbose
+   57  systemctl status sshd
+   58  netstat -tulnp | grep LISTEN
+   59  ls ~/.ssh
+   60  ssh-keygen
+   61  ls ~/.ssh
+   62  arp -a
+   63  arp -n
+   64  ip addr
+   65  ssh ghadmin@192.168.0.7
+   66  ping 192.168.0.19
+   67  arp -n
+   68  ping 192.168.2.1
+   69  ping 192.168.2.32
+   70  ping 192.168.0.4
+   71  ping 192.168.0.18
+   72  ping 192.168.0.19
+   73  arp -a
+   74  arp -n
+   75  bridge link
+   76  bridge
+   77  ip addr
+   78  ip link show
+   79  history
+cat@rpi:~ $
+```
+
+---
+- nsUb2404 hyperv vm on slwin11ops
+```
+
+```
+
+---
+others not on zt network
+---
+
 - from slwin11ops
 ```
 C:\Users\ghadmin>arp -a
@@ -300,24 +442,6 @@ Interface: 192.168.0.7 --- 0x7
   239.255.255.250       01-00-5e-7f-ff-fa     static
   255.255.255.255       ff-ff-ff-ff-ff-ff     static
 ```
-- from rpi
-```
-cat@rpi:~ $ arp -n
-Address                  HWtype  HWaddress           Flags Mask            Iface
-192.168.2.83             ether   6c:71:d9:dc:b4:89   C                     eth0
-192.168.0.18                     (incomplete)                              zt6nti2mwx
-192.168.0.19             ether   00:11:d9:3d:3a:10   C                     eth0
-192.168.0.19                     (incomplete)                              zt6nti2mwx
-192.168.2.32             ether   3c:07:54:72:49:e2   C                     eth0
-192.168.2.1              ether   38:2c:4a:a2:17:88   C                     eth0
-192.168.0.18             ether   00:11:d9:3b:34:cb   C                     eth0
-192.168.2.67                     (incomplete)                              eth0
-cat@rpi:~ $
-```
-
-
----
----
 
 - from mons laptop and mac-mini on rpi lan
 ```
