@@ -12,7 +12,7 @@ Phase 1: Create the Virtual Machine (VM) in Hyper-V
 4. Assign Startup Memory: Allocate RAM  with dynamic memory enabled.
 5. Configure Networking: External HyperV Switch.
 6. Create a Virtual Hard Disk: Virtual hard disk (e.g., 300GB).
-7. Install Operating System: Ubuntu 16.04 LTS ISO file downloaded.
+7. Install Operating System: Ubuntu 22.04.5 LTS ISO file downloaded.
 8. Click "Next", then "Finish" to create the VM.
 9. Once the VM is created, right-click on it in Hyper-V Manager and select "Settings...".
 10. Navigate to "Security" and disable "Secure Boot".
@@ -21,10 +21,10 @@ Phase 1: Create the Virtual Machine (VM) in Hyper-V
 13. Connect to the VM and start it to begin the Ubuntu installation.
 
 Phase 2: Ubuntu Server Installation and EVE-NG Pre-installation
-1. Proceed with the standard Ubuntu 16.04 LTS server installation steps within the Hyper-V console.
-2. After the Ubuntu installation completes and the VM reboots, log in with the user credentials you created during the Ubuntu setup.
-3. Gain root access by typing sudo su and entering your user password.
-4. Change the root password to something memorable (e.g., "eve").
+1. Proceed with the standard Ubuntu 22.04.5 LTS server installation steps within the Hyper-V console.
+2. After the Ubuntu installation completes and the VM reboots, log in with ghadmin.
+3. Gain root access.
+4. Change the root password to What#Time.
 5. Execute apt-get update followed by apt-get upgrade to update Ubuntu packages. After the upgrade, shut down the server by typing shutdown now.
 ```bash
 apt-get update
