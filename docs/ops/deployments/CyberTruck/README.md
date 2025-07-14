@@ -1,6 +1,7 @@
-[edit]() --> [...](../)
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/deployments/CyberTruck/README.md) --> [...](../)
 # CyberTruck
 
+- https://github.com/2cld/cfnotes/edit/main/ops/cf/CyberTruck.md
 - https://www.asus.com/motherboards-components/motherboards/others/tuf-x299-mark-1/techspec/
 - https://www.asus.com/motherboards-components/motherboards/others/tuf-x299-mark-1/helpdesk_knowledge?model2Name=TUF-X299-MARK-1
 - CyberTruck MB Dock [TUF-X299-MARK-1 PDF](./CyberTruck-MB-E12783_TUF_X299_MARK1_UM_WEB_20170706.pdf)
