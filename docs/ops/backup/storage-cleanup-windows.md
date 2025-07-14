@@ -1,4 +1,4 @@
-[edit]() --> [...](./)
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/backup/storage-cleanup-windows.md) --> [...](./)
 # storage cleanup for windows
 
 - youtube [Freeup Storage in Windows 10 11](https://youtu.be/kg055pAz9xA)
