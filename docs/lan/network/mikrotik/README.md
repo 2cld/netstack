@@ -1,3 +1,4 @@
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/network/mikrotik/README.md) and [../](../) and [../../ network](../../) and [../../../ lan](../../../)
 # mikrotik
 
 https://www.youtube.com/watch?v=vbGgCcIXPQo
@@ -13,3 +14,5 @@ how to install proxmox on Hyper-V windows 11
 
 mikrotik - ipv6
 https://www.youtube.com/watch?v=OcUPrra3QFc
+
+https://www.youtube.com/watch?v=EYCjuvTd3dY
