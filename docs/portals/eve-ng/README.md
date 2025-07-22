@@ -113,6 +113,9 @@ ip firewall nat add chain=srcnat action=masquerade out-interface=ether1 src-addr
 export
 ```
 - tbd
+## mikrotik zt config
+- [yt network berg](https://www.youtube.com/watch?v=QKjWLfGfkF0)
+- docker on mikrotik
 
 # pfsense node
 - Install
