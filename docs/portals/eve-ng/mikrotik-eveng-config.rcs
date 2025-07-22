@@ -1,0 +1,73 @@
+# This script sets up a basic WAN and LAN configuration for a Mikrotik router
+# with ether1 as the WAN port and a bridge on ether2-4 for the LAN.
+# It includes DHCP client for WAN, DHCP server for LAN, and basic NAT/firewall.
+
+# --- Reset Configuration (Optional, but recommended for clean slate) ---
+# Uncomment the following line if you want to start with a fresh configuration.
+# /system reset-configuration no-defaults=yes keep-users=no skip-backup=yes
+
+# --- Interface Configuration ---
+
+/interface bridge
+add name=bridge-LAN comment="LAN Bridge"
+
+/interface bridge port
+add bridge=bridge-LAN interface=ether2 comment="LAN Port 2"
+add bridge=bridge-LAN interface=ether3 comment="LAN Port 3"
+add bridge=bridge-LAN interface=ether4 comment="LAN Port 4"
+
+# --- IP Address Configuration ---
+
+/ip address
+add address=192.168.88.1/24 interface=bridge-LAN comment="LAN IP Address"
+
+# --- DHCP Client for WAN (ether1) ---
+
+/ip dhcp-client
+add interface=ether1 add-default-route=yes use-peer-dns=yes comment="WAN DHCP Client"
+
+# --- DHCP Server for LAN (bridge-LAN) ---
+
+/ip pool
+add name=dhcp-pool-LAN ranges=192.168.88.130-192.168.88.189 comment="LAN DHCP Pool"
+
+/ip dhcp-server
+add address-pool=dhcp-pool-LAN disabled=no interface=bridge-LAN name=dhcp-server-LAN
+
+/ip dhcp-server network
+add address=192.168.88.0/24 dns-server=192.168.88.1 gateway=192.168.88.1 comment="LAN DHCP Network"
+
+# --- NAT Configuration ---
+
+/ip firewall nat
+add chain=srcnat action=masquerade out-interface=ether1 comment="NAT for Internet Access"
+
+# --- Basic Firewall Rules ---
+
+/ip firewall filter
+# Accept established and related connections
+add chain=input action=accept connection-state=established,related comment="Accept Established, Related Input"
+add chain=forward action=accept connection-state=established,related comment="Accept Established, Related Forward"
+
+# Drop invalid connections
+add chain=input action=drop connection-state=invalid comment="Drop Invalid Input"
+add chain=forward action=drop connection-state=invalid comment="Drop Invalid Forward"
+
+# Allow ICMP (ping) from the LAN
+add chain=input action=accept protocol=icmp in-interface=bridge-LAN comment="Allow ICMP from LAN"
+
+# Drop traffic from WAN to the router's input chain
+add chain=input action=drop in-interface=ether1 comment="Drop Input from WAN"
+
+# Drop traffic from WAN to LAN that's not established/related
+add chain=forward action=drop in-interface=ether1 connection-state=new connection-nat-state=!dstnat comment="Drop new from WAN to LAN"
+
+# --- DNS Configuration ---
+
+/ip dns
+set allow-remote-requests=yes
+
+# --- System Identity (Optional) ---
+# Change "MikroTik" to a descriptive hostname for your router.
+/system identity set name=hwpc-router
+
