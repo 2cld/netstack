@@ -1,4 +1,4 @@
-[edit](https://github.com/2cld/netstack/edit/master/docs/lan/network/mikrotik/README.md) and [../](../) and [../../ network](../../) and [../../../ lan](../../../)
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/network/mikrotik/README.md) or [../](../) or [../../ network](../../) or [../../../ lan](../../../)
 # mikrotik
 
 https://www.youtube.com/watch?v=vbGgCcIXPQo
