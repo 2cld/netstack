@@ -1,4 +1,4 @@
-[edit](https://github.com/2cld/netstack/edit/master/docs/portals/eve-ng/README.md) and [../](../)
+[edit](https://github.com/2cld/netstack/edit/master/docs/portals/eve-ng/README.md) and [../ portals](../)
 
 # eve-ng network simulation
 
