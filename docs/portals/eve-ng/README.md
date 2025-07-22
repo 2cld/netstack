@@ -81,7 +81,37 @@ ip route print
 interface bridge add name=LAN
 ```
 ```
-interface bridge port add name=ether1
+interface bridge port add interface=ether2 bridge=LAN
+interface bridge port add interface=ether3 bridge=LAN
+interface bridge port add interface=ether4 bridge=LAN
+```
+```
+ip address add address=192.168.88.1/24 interface=LAN
+```
+```
+ip dhcp-server setup
+```
+- interface: LAN
+- address space: 192.168.88.0/24
+- gateway: 192.168.88.1
+- pool: 192.168.88.130-192.168.88.189
+- DNS: 8.8.8.8,1.1.1.1
+- lease: 8h
+```
+ip dhcp-server export
+```
+```
+ip dhcp-server lease print
+```
+```
+ip arp print
+```
+```
+ip firewall nat add chain=srcnat action=masquerade out-interface=ether1 src-address=192.168.88.0/24
+```
+```
+export
+```
 - tbd
 
 # pfsense node
