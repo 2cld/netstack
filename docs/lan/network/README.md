@@ -1,4 +1,4 @@
-[documents](../../) - [lan](../)
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/network/README.md)  or [../ lan](../) or [../../ docs](../../)
 
 # lan - network
 
