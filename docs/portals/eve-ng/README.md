@@ -5,6 +5,7 @@
 - notebooklm [EVE-NG Lab Setup](https://notebooklm.google.com/notebook/0f519cd9-523e-47f0-a659-aed8146dde49)
 - documents  [EVE-NG Documents](https://www.eve-ng.net/index.php/documentation/)
 - cookbook [EVE-NG Cookbook](https://www.eve-ng.net/images/EVE-COOK-BOOK-1.2.pdf)
+- nodes linux [EVE-NG linux nodes](https://mega.nz/folder/30p3TKob#42_S__9wwPVO0zHIfC4xow)
 - EVE-NG [Hyper-V Install on CyberTruck](./install.md)
 - VM on ct evelab - root eve
 - VMWorkstation win10 network bridge enable vnet0 issue [yt video](https://www.youtube.com/watch?v=VVa1Q1wYgEY)
@@ -113,6 +114,15 @@ ip firewall nat add chain=srcnat action=masquerade out-interface=ether1 src-addr
 export
 ```
 - tbd
+
+## mikrotik eve-ng config import
+- config file [mikrotik-eveng-config.rcs](./mikrotik-eveng-config.rcs)
+- cli import
+```
+/import hwpc-test-config.rsc
+```
+- the [google-ai-mode search](https://www.google.com/search?udm=50&aep=46&source=25q2-US-SearchSites-Site-CTA&q=I+am+a+network+engineer+working+with+Mikrotik+router+os.++I+would+like+a+configuration+script+to+setup+a+basic+network+with+WAN+and+LAN+networks+for+a+basic+firewall+and+router.++The+device+has+4+ether+interfaces+with+ether1+to+be+used+as+the+WAN+port+with+DHCP+client.++The+LAN+network+should+be+bridged+to+ether2-4+on+the+192.168.88.0%2F24+subnet.++The+LAN+will+have+IP+192.168.88.1+and+serve+as+the+gateway+with+access+to+a+DHCP+server+with+pool+192.168.88.130-189.++I+would+like+to+import+this+configuration+in+a+file+called+hwpc-test-config.&mtid=Wup_aI-lEoPXptQP-t61MQ&mstk=AUtExfD6HnTS2Yx__uWTUUoJwglBB2Y6-K_uvrGLIzu2e9b5GrzRyj-qqbDwNeeol0hjgHo0h0YV7a0kHy_3rwKanPfwbDOABoTwOJgYQBa3tQvbotNOGoOWvf_Zvz_W8KX-PcdeN-MnBoxdU5fuI0WDDEzKaTklGQusn3Fq2Z6KoMjTXUXIyhcVm6UXAbmUlwjce0lTtcvGqap6oZ-84YT4i3Wmgs1n4SoIeSfAMxSy1xHJLuhNorfpVfEzDuFri0Mhq51kYebsSiXi5-Fa0E_ReFqtQt-MW6Zwqdjk5BxsIqN6MwEAqa27Xz0zSpPHlTQe0bbKdpXixMpS6w&csuir=1)
+
 ## mikrotik zt config
 - [yt network berg](https://www.youtube.com/watch?v=QKjWLfGfkF0)
 - docker on mikrotik
