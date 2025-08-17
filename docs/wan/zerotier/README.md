@@ -61,7 +61,15 @@ zerotier-cli peers
   ```
   sudo zerotier-cli status
   ```
-  
+# Zerotier Install
+- [https://www.zerotier.com/download/](https://www.zerotier.com/download/)
+- Linux
+```
+curl -s https://install.zerotier.com | sudo bash
+```
+- windbows [msi download here](https://download.zerotier.com/dist/ZeroTier%20One.msi)
+
+
 <!--
 ```
 0c82af27d7
