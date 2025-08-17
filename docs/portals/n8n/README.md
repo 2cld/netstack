@@ -1,6 +1,11 @@
 [edit]()
 # n8n
 
+- [n8n install](./n8n-install.md)
+  - [sl.2cld.net n8n deployment]()
+  - [cf.2cld.net n8n deployment]()
+- n8n admin portals
+  - [n8n.sl.2cld.net]() ??
 
 ### Reference
 
