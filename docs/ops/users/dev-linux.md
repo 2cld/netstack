@@ -19,6 +19,9 @@ useradd appadmin1 -u 4100 -g 4100 -m -s /bin/bash
 ```
 systemctl status sshd
 ```
+```
+ps -e | grep sshd
+```
 - check port
 ```
 ss -tulnp | grep LISTEN
@@ -37,7 +40,10 @@ sudo ufw status numbered
 ```
 sudo ufw allow 22/tcp
 ```
-- install
+```
+sudo ufw allow ssh
+```
+- install sshd
 ```
 sudo apt install openssh-server
 ```
@@ -47,6 +53,10 @@ sudo systemctl enable ssh --now
 - install if rpi
 ```
 sudo raspi-config
+```
+- enable fw
+```
+sudo ufw enable
 ```
 
 ### ssh key
