@@ -1,4 +1,4 @@
-[edit]()
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/docker/docker-compose-traefik.md) - [..docker](../) - [../../compute](../../)
 
 # traefik
 - reference [Jim's Garage](https://github.com/JamesTurland/JimsGarage)
