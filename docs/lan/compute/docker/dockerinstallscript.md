@@ -1,4 +1,4 @@
-
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/docker/dockerinstallscript.md) - [../docker](../) - [../../compute](../../)
 # dockerinstallscript.md
 
 - raw file is dockerinstallscript.sh
