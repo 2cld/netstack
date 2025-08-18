@@ -1,3 +1,4 @@
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/docker/dockerdesktop.md) - [../docker](../) - [../../compute](../../)
 # docker desktop
 
 https://forums.docker.com/t/updates-on-how-to-install-docker-to-other-drive-on-windows-11-pro-24h2/148281
