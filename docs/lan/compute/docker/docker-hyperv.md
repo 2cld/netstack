@@ -33,3 +33,27 @@ nsUb2404hv VSS                     True    OK                       The protocol
 
 PS C:\WINDOWS\system32>
 ```
+
+# ssh
+- ssh install
+```bash
+sudo apt update
+```
+```bash
+sudo apt install openssh-server -y
+```
+- ssh check
+```bash
+sudo systemctl status ssh
+```
+- firewall
+```bash
+sudo ufw allow ssh
+sudo ufw enable
+sudo ufw status
+```
+
+# docker
+- tbd
+```bash
+```
