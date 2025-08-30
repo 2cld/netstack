@@ -33,3 +33,27 @@
   ```
   sudo zerotier-cli status
   ```
+
+# Docker Compose on Synology
+- Reference [doc-synology-nas-docker-media-server-2022](https://www.simplehomelab.com/synology-nas-docker-media-server-2022/) of [https://www.simplehomelab.com/](https://www.simplehomelab.com/)
+- Docker Compose [github repo](https://github.com/SimpleHomelab/Docker-Traefik) of [https://github.com/SimpleHomelab](https://github.com/SimpleHomelab)
+- Jims Garage [github repo](https://github.com/JamesTurland/JimsGarage)
+- ssh -p 2020 buadmin@192.168.9.2
+- su
+```bash
+buadmin@sg:~$ sudo su
+ash-4.3# cd /var/packages/Docker/target/usr/bin/
+```
+- move old to bak
+```bash
+ash-4.3# mv docker-compose docker-compose_bak
+```
+- pull down new
+```bash
+ash-4.3# curl -L https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-`uname -s`-`uname -m` -o docker-compose
+```
+- check version
+```bash
+ash-4.3# docker-compose -v
+Docker Compose version v2.39.2
+```
