@@ -37,7 +37,7 @@
 # Docker Compose on Synology
 - Reference [doc-synology-nas-docker-media-server-2022](https://www.simplehomelab.com/synology-nas-docker-media-server-2022/) of [https://www.simplehomelab.com/](https://www.simplehomelab.com/)
 - Docker Compose [github repo](https://github.com/SimpleHomelab/Docker-Traefik) of [https://github.com/SimpleHomelab](https://github.com/SimpleHomelab)
-- [ns DockerCompose Traefic](~/docs/lan/compute/docker/docker-compose-traefik.md) based on Jims Garage [github repo](https://github.com/JamesTurland/JimsGarage)
+- [ns DockerCompose Traefic](../../compute/docker/docker-compose-traefik.md) based on Jims Garage [github repo](https://github.com/JamesTurland/JimsGarage)
 - ssh -p 2020 buadmin@192.168.9.2
 - su
 ```bash
