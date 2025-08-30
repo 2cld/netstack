@@ -46,6 +46,14 @@ sudo apt install openssh-server -y
 ```bash
 sudo systemctl status ssh
 ```
+- mod config
+```bash
+sudo vi /etc/ssh/sshd_config
+```
+- restart
+```bash
+sudo systemctl restart ssh
+```
 - firewall
 ```bash
 sudo ufw allow ssh
@@ -54,6 +62,44 @@ sudo ufw status
 ```
 
 # docker
-- tbd
+-  Install necessary packages for the repository
 ```bash
+sudo apt install apt-transport-https ca-certificates curl gnupg -y
 ```
+- Add Docker's official GPG key
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+```
+- Add the Docker repository to the APT sources list
+```bash
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+- Install Docker and plug-ins
+```bash
+# Update the package index with the Docker repository
+sudo apt update
+# Install the latest version of Docker and its plugins
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+```
+- Manage docker as a non-root user
+```bash
+# Add your user to the docker group
+sudo usermod -aG docker $USER
+# Apply the new group membership
+newgrp docker
+```
+- Verify
+```bash
+# Verify Docker Engine is working
+docker run hello-world
+
+# Verify the Docker Compose plugin is working
+docker compose version
+```
+
+
+
