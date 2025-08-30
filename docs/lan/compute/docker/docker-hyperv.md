@@ -1,7 +1,7 @@
 [edit]()
 
 # Docker Hyper-V
-
+- nsdockerhv	192.168.6.106	00:15:5d:c0:01:05
 - nsUb2404hv NetStack Ubuntu 24.04.3 Hyper-V vm on ? Cyber Truck ?
 - Installed via quick start using D:\vmhv\ubuntu-24.04.3-desktop-amd64.iso
 - CyberTruck C:\ProgramData\Microsoft\Windows\Virtual Hard Disks\nsUb2404hv_806410E7-BDBF-44D8-88C6-C115BBD90382.avhdx
