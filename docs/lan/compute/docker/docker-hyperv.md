@@ -138,6 +138,7 @@ sudo zerotier-cli status
 ```bash
 sudo zerotier-cli join <network_id>
 ```
+- Test [https://10.147.17.176:9090](https://10.147.17.176:9090)
 
 # template
 - tbd
