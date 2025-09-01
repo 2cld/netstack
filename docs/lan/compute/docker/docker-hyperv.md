@@ -1,5 +1,8 @@
 [edit]()
 
+- ssh nsadmin@192.168.6.106
+- cockpit [http://192.168.6.106:9090](http://192.168.6.106:9090)
+
 # Docker Hyper-V
 - nsdockerhv	192.168.6.106	00:15:5d:c0:01:05
 - nsUb2404hv NetStack Ubuntu 24.04.3 Hyper-V vm on ? Cyber Truck ?
@@ -101,5 +104,49 @@ docker run hello-world
 docker compose version
 ```
 
+# cockpit
+- apt update and install
+```bash
+sudo apt update
+sudo apt install cockpit -y
+```
+- enable
+```bash
+sudo systemctl enable --now cockpit.socket
+```
+- firewall
+```bash
+sudo ufw allow 9090/tcp
+sudo ufw reload
+```
+- verify
+```bash
+sudo systemctl status cockpit
+```
+- Test [http://192.168.6.106:9090](http://192.168.6.106:9090)
 
+# zerotier [https://my.zerotier.com/](https://my.zerotier.com/)
+- install
+```bash
+curl -s https://install.zerotier.com | sudo bash
+```
+- status
+```bash
+sudo zerotier-cli status
+```
+- Join
+```bash
+sudo zerotier-cli join <network_id>
+```
+
+# template
+- tbd
+```bash
+```
+- tbd
+```bash
+```
+- tbd
+```bash
+```
 
