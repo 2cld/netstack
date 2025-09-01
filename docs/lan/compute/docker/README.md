@@ -2,6 +2,7 @@
 
 # docker
 - [docker-compose-traefik](./docker-compose-traefik)
+- [docker-hyperv](./docker-hyperv)
 - [docker-wsl-setup](./docker-wsl-setup)
 - [dockerdesktop](./dockerdesktop)
 - [dockerinstallscript](./dockerinstallscript)
