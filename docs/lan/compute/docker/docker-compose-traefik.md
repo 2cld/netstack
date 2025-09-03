@@ -20,6 +20,24 @@
     - [.env](https://github.com/JamesTurland/JimsGarage/blob/main/Traefikv3/.env)
     - [cf-token](https://github.com/JamesTurland/JimsGarage/blob/main/Traefikv3/cf-token) (from cloudflare config)
 
+- get DNS edit API token from cloudflare [see Traefikv3.3 yt-tc18:51](https://youtu.be/CmUzMi5QLzI?t=1131)
+  - https://dash.cloudflare.com/
+  - Manage Account -> Account API Token [see Traefikv3.3 yt-tc18:51](https://youtu.be/CmUzMi5QLzI?t=1131)
+  - Save to cf-token
+- get Traefik Dashboard Cred [see Traefikv3.3 yt-tc21:22](https://youtu.be/CmUzMi5QLzI?t=1282)
+  - sudo apt install apache2-utils
+  - echo $(htpasswd -nB admin) | sed -e s/\\$/\\$\\$/g
+  - put string into .env
+- create acme.json
+  - touch acme.json
+  - sudo chmod 600 acme.json
+- setup proxy network
+  - sudo docker network create proxy
+  - sudo docker network list
+- run
+  - sudo docker compose up -d
+  - check docker/traefik/logs for errors
+  - sudo docker stop traefik
 
 The --force-recreate flag ensures that containers are recreated even if their configuration and image haven't changed, guaranteeing that the newly built images are used. If you want to run in detached mode, add the -d flag:
 
