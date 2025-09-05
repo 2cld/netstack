@@ -88,8 +88,8 @@ services:
       - GENERIC_TIMEZONE=${GENERIC_TIMEZONE}
       - TZ=${GENERIC_TIMEZONE}
     volumes:
-      - /home/nsadmin/docker/n8n/n8n_data:/home/node/.n8n
-      - /home/nsadmin/docker/n8n/local-files:/files
+      - /home/nsadmin/code/docker/n8n/n8n_data:/home/node/.n8n
+      - /home/nsadmin/code/docker/n8n/local-files:/files
     networks:
       proxy:
 
