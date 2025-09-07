@@ -3,8 +3,14 @@
 # Portals for user access
 
 - [CasaOS](./casaos/) on netstack
+- [eve-ng](./eve-ng/)
+- [gitea](./gitea/)
 - [Home Assistant](./homeassistant/) on netstack
+- [metube](./metube/)
+- [n8n](./n8n/)
+- [netbox](./netbox/)
 - [Plex](./plex/) on netstack
+- [Portainer](./portainer/)
 - [Stream Studio](./streamstudio/) on netstack
 - [tbd]()
 
