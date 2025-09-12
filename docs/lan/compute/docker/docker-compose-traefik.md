@@ -1,6 +1,7 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/docker/docker-compose-traefik.md) - [../docker](../) - [../../compute](../../)
 
 - templates in [https://gitea.cat9.me/nsadmin/docker-compose](https://gitea.cat9.me/nsadmin/docker-compose)
+- traefik quick-start [documentation](https://doc.traefik.io/traefik/getting-started/quick-start/)
 
 # traefik
 - reference [Christian Lempa](https://www.youtube.com/@christianlempa) - [docker-compose repo](https://github.com/ChristianLempa/boilerplates/tree/main/docker-compose) - [yt-Traefik Tutorial](https://www.youtube.com/watch?v=-hfejNXqOzA)
