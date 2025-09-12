@@ -5,7 +5,7 @@
 - [docker cheat-sheet](https://github.com/ChristianLempa/cheat-sheets/blob/main/tools/docker.md)
 
 # traefik
-- reference [Christian Lempa](https://www.youtube.com/@christianlempa) - [docker-compose repo](https://github.com/ChristianLempa/boilerplates/tree/main/docker-compose) - [yt-Traefik Tutorial](https://www.youtube.com/watch?v=-hfejNXqOzA)
+- reference [Christian Lempa](https://www.youtube.com/@christianlempa) - [docker-compose repo](https://github.com/ChristianLempa/boilerplates/tree/main/docker-compose/traefik) - [yt-Traefik Tutorial](https://www.youtube.com/watch?v=-hfejNXqOzA)
 - reference [Jim's Garage](https://github.com/JamesTurland/JimsGarage) - [docker-compose repo](https://github.com/JamesTurland/JimsGarage/tree/main/Traefikv3) - [yt-Traefik v3.3](https://www.youtube.com/watch?v=CmUzMi5QLzI) also on [sg.klopfenstein.org](https://sg.klopfenstein.org/?launchApp=SYNO.SDS.VideoPlayer2.Application&SynoToken=aMXeceUJcyWJU&launchParam=ieMode%3D9%26is_drive%3Dfalse%26path%3D%252Fdocker%252FcatMetube%252FHomeLab%252FJimsGarage%252FTraefik%2520v3.3%2520-%2520Secure%2520Everything!%2520Complete%2520Tutorial.webm%26file_id%3D%252Fdocker%252FcatMetube%252FHomeLab%252FJimsGarage%252FTraefik%2520v3.3%2520-%2520Secure%2520Everything!%2520Complete%2520Tutorial.webm&ieMode=9)
 
 
