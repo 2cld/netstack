@@ -3,6 +3,7 @@
 # docker portal cloudflare traefik install
 - guide to installing a docker based public portal using cloudflare and traefik
 - example [https://cf.2cld.net](https://cf.2cld.net) @gh
+- repos [https://gitea.cat9.me/nsadmin/docker-compose](https://gitea.cat9.me/nsadmin/docker-compose) @ns
 
 | [cf](https://one.dash.cloudflare.com/830c41d5976453f0c03f34d4f765b229/networks/tunnels) hv url | service [zt](https://my.zerotier.com/network/d5e5fb65371eb4a4) |
 |---|---|
