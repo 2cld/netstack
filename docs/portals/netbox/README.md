@@ -1,8 +1,14 @@
-[edit]() - [../portals/](../) - [../../docs/](../../)
+[edit](https://github.com/2cld/netstack/edit/master/docs/portals/netbox/README.md) - [../portals/](../) - [../../docs/](../../)
 # netbox
 
 - https://netboxlabs.com/docs/netbox/
 - yt [NetworkChuck netbox](https://www.youtube.com/watch?v=9z1_14YSaDY&t=21s)
+- [https://hub.docker.com/r/linuxserver/netbox](https://hub.docker.com/r/linuxserver/netbox)
+- google/aimode [create netbox](https://www.google.com/search?udm=50&aep=11&q=I%27m+trying+to+install+netbox+using+docker+compose+file.++Can+you+create+a+docker-compose.yaml+file+along+with+an+explanation+of+the+configuration+and+reference+to+online+tutorial+that+also+demonstrates+the+successful+installation%3F&mtid=mq7JaK3qLYaKptQP5afueA&mstk=AUtExfAQ1YrduLIohv9vm5cz2IdsK7foVG6NIrEzCwbnHaKfodQL5b_Ce7JZiKeZYX-ExDzAIMHnzchrmoBkZZTEGoyN1HRna5F_UXaTPggl3tKfgnYdJlI77BmBxRps8xVh5LZyADgj8yh297tLTwi836f4gZ2cOCFpVoBZiEjaXHnJA2aT-0j05rNVQ4Mb3L8A9fIzByGu4JKAqU441X70NhLlyujbMdnZNN4PBzZUmg_R21hG_7PW8_iNuNHzjC41DF0br7fmTti1knW2Sqxow_bhrjJ4cYSrTdy8BjGbXQK77ultppaFMHYWEp9Qx3tVq-Ri1SpADc37fg&csuir=1)
+- [https://hub.docker.com/r/netboxcommunity/netbox/](https://hub.docker.com/r/netboxcommunity/netbox/)
+- netbox community [Getting Started](https://github.com/netbox-community/netbox-docker/wiki/Getting-Started) - [netbox-docker](https://github.com/netbox-community/netbox-docker)
+- netboxlabs [Install](https://netboxlabs.com/docs/netbox/installation/)
+- [http://10.147.17.176:8080/](http://10.147.17.176:8080/) and [https://netbox.cat9.me/](https://netbox.cat9.me/)
 
 
 ```yaml
