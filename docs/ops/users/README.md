@@ -6,9 +6,14 @@
 - keys
 - storage
 - remote access
-- [dev-win-wsl](./dev-win-wsl)
-- [dev-win-ps](./dev-win-ps)
 - [dev-linux](./dev-linux)
+- [dev-win-ps](./dev-win-ps)
+- [dev-win-wrk](./dev-win-wrk)
+- [dev-win-wsl](./dev-win-wsl)
+- [ops-win11-cg](./ops-win11-cg)
+- [user-win10-pad](./user-win10-pad)
+- [tbd](./)
+
 
 ### ssh key pair
 1. Check for existing ssh keys
