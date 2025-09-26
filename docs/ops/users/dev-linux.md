@@ -81,3 +81,48 @@ git remote -v
 ```
 git remote set-url origin git@github.com:2cld/ai.git
 ```
+### zt
+```
+curl -s https://install.zerotier.com | sudo bash
+sudo zerotier-cli join d5e5fb65371eb4a4
+```
+
+### cockpit
+```
+sudo apt update
+```
+- install
+```
+sudo apt install cockpit
+```
+- enable service
+```
+sudo systemctl enable --now cockpit.socket
+```
+- firewall
+```
+ghadmin@mg2:~$ sudo ufw allow 9090/tcp
+Rule added
+Rule added (v6)
+ghadmin@mg2:~$ sudo ufw enable
+```
+- test [https://10.147.17.135:9090/](https://10.147.17.135:9090/)
+
+---
+- cockpit-files [repo](https://github.com/cockpit-project/cockpit-files)
+- Install build dependencies:
+```
+sudo apt install gettext nodejs npm make
+```
+
+- Clone the GitHub repository:
+```
+git clone https://github.com/cockpit-project/cockpit-files.git
+cd cockpit-files
+```
+
+- Build and install the package:
+```
+sudo make install
+```
+
