@@ -1,4 +1,14 @@
 # ops monitor
+- Jim's Garage [Homelab Monitoring #1](https://www.youtube.com/watch?v=LShvy9l3tzs)
+- Jim's Garage [Homelab Monitoring #2](https://www.youtube.com/watch?v=Yr9-QMa7JHw)
+- Christian Lempa [Grafana Alloy](https://www.youtube.com/watch?v=E654LPrkCjo)
+  - [https://grafana.com/docs/alloy/latest/](https://grafana.com/docs/alloy/latest/)
+  - [https://github.com/grafana/alloy-scenarios](https://github.com/grafana/alloy-scenarios)
+  - [https://github.com/christianlempa/boilerplates](https://github.com/christianlempa/boilerplates)
+- CodeOps by Mo
+  - [Part 1: Collecting Logs with Grafana](https://www.youtube.com/watch?v=tMSZ_DVq5pw)
+  - [Part 2: Collecting Metrics with Grafana](https://www.youtube.com/watch?v=kDQ-egkmNvE)
+  - [Part 3: Building Tracing Pipelines with Alloy](https://www.youtube.com/watch?v=PCF5CYKirx8)
 - Networkchuck What's Up Gold - https://www.youtube.com/watch?v=-2yzXSIuC8o
 - Gatus Website Monitoring https://www.youtube.com/watch?v=vlifG8dCqU8
 
