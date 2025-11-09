@@ -1,3 +1,4 @@
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/compute/wsl/wsl-docker-install.md)  - [../wsl](../) - [../../compute](../../)
 # wsl docker install
 
 - Open PowerShell as administrator verify vhdx dist and path
@@ -83,6 +84,25 @@
   --vhd
   ```
 ---
+
+# issue with docker not running
+- ai prompt [google aimode](https://www.google.com/search?q=I%27m+a+windows+admin+working+with+docker+running+under+wsl.++how+do+i+start+the+docker+daemon+under+wsl%3F&sourceid=chrome&ie=UTF-8&udm=50&aep=48&cud=0&qsubts=1762698651748&mstk=AUtExfDoYFPUliPJ1lqtOdz5PAg-VGSSouCxzkPjdFO9quCVaBhaam3PNmyQSPK8GwtJ-UZp9Zq9VyjEsKC7yVzhrw-1uFTBsZfwauo3bJ6lv_QRGhtAAm7-cWb3h6KydrbmlagJ0OGxoIRMplZcH52oQAdGXRmJeYkkPhU&csuir=1&mtid=xqUQaYqbK4KrptQPk6WZuQg)
+- Step 1: Enable systemd in WSL
+- sudo nano /etc/wsl.conf
+```
+[boot]
+systemd=true
+```
+- edit, exit, shudown, restart wls in windows cmd check docker ps
+```
+ghadmin@Cybertruck:/mnt/c/Users/ghadmin$ sudo vi /etc/wsl.conf
+[sudo] password for ghadmin:
+ghadmin@Cybertruck:/mnt/c/Users/ghadmin$ exit
+logout
+C:\Users\ghadmin>wsl --shutdown
+C:\Users\ghadmin>wsl
+ghadmin@Cybertruck:/mnt/c/Users/ghadmin$ docker ps
+```
 
 other crap
 ---
