@@ -1,6 +1,9 @@
 # Plex
 [edit this](https://github.com/2cld/netstack/edit/master/docs/portals/plex/README.md)
 
+- [https://tv.2cld.net/](https://tv.2cld.net/)
+- tbd
+  
 ## winget
 - install via winget
   ```
