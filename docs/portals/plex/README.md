@@ -2,6 +2,8 @@
 [edit this](https://github.com/2cld/netstack/edit/master/docs/portals/plex/README.md)
 
 - [https://tv.2cld.net/](https://tv.2cld.net/)
+- plex [rust-api](./rust-api/)
+- rescan for cf ant
 - tbd
   
 ## winget
