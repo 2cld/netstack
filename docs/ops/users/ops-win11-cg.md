@@ -1,6 +1,16 @@
 # ops win11 cg
-operations windows 11 compute gateway configuration and notes
+operations windows 11 compute gateway configuration and notes 
+- netstack windows 11 compute gateway [nswin11-cg](https://github.com/2cld/netstack/blob/master/docs/lan/compute/workstation/nswin11-cg.md)
 
+## docker windows 11
+- netstack [docker-portal-windows](https://github.com/2cld/netstack/blob/master/docs/lan/compute/docker/docker-portal-windows.md)
+
+## proxmox windows
+- proxmox windows 11 [pm-win11]()
+- proxmox windows 10 [pm-win10]()
+
+## Hyper-V windows 11
+- created on slwin11 ??
 - cat-win11-autounattend [config gen](https://schneegans.de/windows/unattend-generator/)
   - file:///I:/catSurfaceBackup/chris-Downloads/autounattend.xml
 - massgravel [github repo](https://github.com/massgravel/Microsoft-Activation-Scripts/blob/master/README.md)
