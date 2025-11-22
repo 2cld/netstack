@@ -3,7 +3,7 @@
   - Jim's [yaml github docker windows](https://github.com/JamesTurland/JimsGarage/blob/main/MacWindows/Windows/docker-compose.yaml)
   - yaml review [yt](https://youtu.be/jOzk8QyAXwc?t=345)
   - install [yt](https://youtu.be/jOzk8QyAXwc?t=575)
-  - sudo docker compose up -d   [yt](https://youtu.be/jOzk8QyAXwc?t=5790
+  - sudo docker compose up -d   [yt](https://youtu.be/jOzk8QyAXwc?t=5790)
   - portainer - windows dockurr/windows running -> click on logs
   - should see it requesting windows 11 -> [yt](https://youtu.be/jOzk8QyAXwc?t=591)
   - go to the term portal and should see the windows install automatically running -> [yt](https://youtu.be/jOzk8QyAXwc?t=670)
