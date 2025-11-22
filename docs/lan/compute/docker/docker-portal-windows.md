@@ -16,6 +16,7 @@
 - repo [https://gitea.cat9.me/nsadmin/docker-compose](https://gitea.cat9.me/nsadmin/docker-compose)
 
 ## netstack nsadmin windows create docker-compose.md
+- NOTE: docker host must have nested virt enabled [hyper-v vert](../hyper-v/hv-nestedvm.md)
 - repo [https://gitea.cat9.me/nsadmin/docker-compose](https://gitea.cat9.me/nsadmin/docker-compose)
 - rd/rdp/ssh - 10.147.17.176 - nsdockerhv-hv-ct-10.147.17.219
 - repo /home/nsadmin/code/docker-compose
