@@ -43,3 +43,7 @@ nsadmin@nsdockerhv:~$ gcloud init
 
 
 - https://github.com/theNetworkChuck/ai-in-the-terminal
+
+# Open code
+- I installed open code and this amused me... Big Pickel Build 
+![cat9-nsdockerhv-opencode.JPG](./cat9-nsdockerhv-opencode.JPG)
