@@ -24,15 +24,15 @@
 - winget install -e --id=Google.ChromeRemoteDesktopHost
 - [brave](https://winget.run/pkg/Brave/Brave)
 - winget install -e --id=Brave.Brave
-- winget install -e --id RustDesk.RustDesk
-- winget install -e --id ZeroTier.ZeroTierOne
+- winget install -e --id=RustDesk.RustDesk
+- winget install -e --id=ZeroTier.ZeroTierOne
 
 ## Install Tools
-- winget install --id Git.Git -e --source winget
-- winget install Amazon.Kiro
-- winget install Amazon.Kiro.CLI
-- winget install Microsoft.VisualStudioCode
-- winget install Python.Python.3
+- winget install -e --id=Git.Git --source=winget
+- winget install -e --id=Amazon.Kiro
+- winget install -e --id=Amazon.Kiro.CLI
+- winget install -e --id=Microsoft.VisualStudioCode
+- winget install -e --id=Python.Python.3
 
 ## Install Intuit
 - [https://downloads.quickbooks.com/app/qbdt/products](https://downloads.quickbooks.com/app/qbdt/products)
