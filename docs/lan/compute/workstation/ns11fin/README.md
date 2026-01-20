@@ -25,7 +25,6 @@
 - [brave](https://winget.run/pkg/Brave/Brave)
 - winget install -e --id=Brave.Brave
 - winget install -e --id=RustDesk.RustDesk
-- winget install -e --id=ZeroTier.ZeroTierOne
 
 ## Install Tools
 - winget install -e --id=Git.Git --source=winget
