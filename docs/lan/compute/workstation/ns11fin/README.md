@@ -40,7 +40,7 @@
 - winget install --id SST.OpenCodeDesktop -e --source winget (DID NOT TRY)
 - winget install --id SST.opencode -e --source winget
 - winget install -e --id OpenJS.NodeJS
-  - npm install -g @google/gemini-cli
+  - npm.cmd install -g @google/gemini-cli
 - winget install -e --id Anthropic.ClaudeCode
 - winget install -e --id OpenAI.Codex
   - npm install -g @openai/codex
