@@ -29,9 +29,21 @@
 ## Install Tools
 - winget install -e --id=Git.Git --source=winget
 - winget install -e --id=Amazon.Kiro
-- winget install -e --id=Amazon.Kiro.CLI
+- winget install -e --id=Amazon.Kiro.CLI (DID NOT WORK)
 - winget install -e --id=Microsoft.VisualStudioCode
 - winget install -e --id=Python.Python.3
+- wsl
+  - wsl --install
+  - wsl --list --online
+  - wsl --install -d Ubuntu-24.04
+- winget install --id SST.opencode -e --source winget
+- winget install --id SST.OpenCodeDesktop -e --source winget (DID NOT TRY)
+- winget install --id SST.opencode -e --source winget
+- winget install -e --id OpenJS.NodeJS
+  - npm install -g @google/gemini-cli
+- winget install -e --id Anthropic.ClaudeCode
+- winget install -e --id OpenAI.Codex
+  - npm install -g @openai/codex
 
 ## Install Intuit
 - [https://downloads.quickbooks.com/app/qbdt/products](https://downloads.quickbooks.com/app/qbdt/products)
