@@ -45,6 +45,9 @@
 - winget install -e --id OpenAI.Codex
   - npm install -g @openai/codex
 
+## Install com
+- winget install -e --id OpenWhisperSystems.Signal --accept-package-agreements --accept-source-agreements
+
 ## Install Intuit
 - [https://downloads.quickbooks.com/app/qbdt/products](https://downloads.quickbooks.com/app/qbdt/products)
 - [https://turbotax.intuit.com/personal-taxes/cd-download/install-turbotax/](https://turbotax.intuit.com/personal-taxes/cd-download/install-turbotax/)
