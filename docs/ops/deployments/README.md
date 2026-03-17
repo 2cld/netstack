@@ -4,7 +4,7 @@
 
 Site-specific configurations and network diagrams. Each site has its own repo with full details — netstack holds the summary and cross-site view.
 
-New site? Start from the [site template](./_template/).
+New site? Start from the [site template](./site-template/).
 
 ## Sites
 
