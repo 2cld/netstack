@@ -1,11 +1,15 @@
-[edit](https://github.com/2cld/netstack/edit/master/docs/ops/backup/README.md)
+[edit](https://github.com/2cld/netstack/edit/master/docs/ops/backup/README.md) or [../ops](../) or [../../docs](../../)
 
-# backup proceedure for netstack ops
-- [backup-catMediaShare](backup-catMediaShare.md) powershell
-- [backup-diagram](backup-diagram.md)
-- scripts
-- [backup powershell script](https://netstack.org/docs/ops/backup/backup-powershell-script)
-- [robocopy backup for powershell](https://netstack.org/docs/ops/backup/#robocopy)
+# Backup
+
+Backup procedures, scripts, and tools for netstack operations.
+
+- [backup-catMediaShare](backup-catMediaShare.md) - powershell media backup
+- [backup-diagram](backup-diagram.md) - backup flow diagram
+- [backup-powershell-script](https://netstack.org/docs/ops/backup/backup-powershell-script) - powershell scripts
+- [backup-powershell-wbadmin](./backup-powershell-wbadmin) - wbadmin backup
+- [backup-proxmox-server](./backup-proxmox-server) - proxmox backup
+- [storage-cleanup-windows](./storage-cleanup-windows) - Windows cleanup
 - [vortexbox](./vortexbox/)
 
 

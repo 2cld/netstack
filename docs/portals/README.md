@@ -1,29 +1,22 @@
-[edit](https://github.com/2cld/netstack/edit/master/docs/portals/README.md)
+[edit](https://github.com/2cld/netstack/edit/master/docs/portals/README.md) or [../docs](../)
 
-# Portals for user access
+# Portals
 
-- [CasaOS](./casaos/) on netstack
-- [eve-ng](./eve-ng/)
-- [gitea](./gitea/)
-- [Home Assistant](./homeassistant/) on netstack
-- [metube](./metube/)
-- [n8n](./n8n/)
-- [netbox](./netbox/)
-- [Plex](./plex/) on netstack
-- [Portainer](./portainer/)
-- [Stream Studio](./streamstudio/) on netstack
-- [tbd]()
+User-facing services running on netstack infrastructure.
 
-## notes
-- [Lots of HomeLab tutorials](https://i12bretro.github.io/tutorials/) need to put this somewhere
-- [Chrome Terminal](https://chromewebstore.google.com/detail/chrome-terminal/ejmpoclnkkdepgggmppdbjpblncajlno?pli=1)
-- [Xtermjs - github](https://github.com/EdisonDevadoss/xterm-terminal-demo)
-- [Xtermjs - blog](https://medium.com/yavar/xterm-js-terminal-2b19ccd2a52)
-- [Xtermjs - https://xtermjs.org/](https://xtermjs.org/)
-- [Google dork cli search](https://gist.github.com/sundowndev/283efaddbcf896ab405488330d1bbc06)
-- [OSINT - yt](https://www.youtube.com/watch?v=1hFpU8CEjVE)
+- [CasaOS](./casaos/)
+- [eve-ng](./eve-ng/) - network emulation
+- [Gitea](./gitea/) - self-hosted git
+- [Home Assistant](./homeassistant/)
+- [MeTube](./metube/) - media downloader
+- [n8n](./n8n/) - workflow automation
+- [Netbox](./netbox/) - network documentation
+- [Plex](./plex/) - media server
+- [Portainer](./portainer/) - container management UI
+- [Stream Studio](./streamstudio/)
+- [Uptime Kuma](./uptimekuma/) - uptime monitoring
 
-
-- [TechHutTV Homelab](https://github.com/TechHutTV/homelab/tree/main)
-- [TechHut - homelab serve](https://www.youtube.com/watch?v=zLFB6ulC0Fg)
-- tbd
+### References
+- [Lots of HomeLab tutorials](https://i12bretro.github.io/tutorials/)
+- [TechHutTV Homelab](https://github.com/TechHutTV/homelab/tree/main) - [video](https://www.youtube.com/watch?v=zLFB6ulC0Fg)
+- [Xtermjs](https://xtermjs.org/) - web terminal

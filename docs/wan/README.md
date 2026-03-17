@@ -1,9 +1,10 @@
-[documents index](../)
+[edit](https://github.com/2cld/netstack/edit/master/docs/wan/README.md) or [../docs](../)
 # WAN Overview
 
-Current default netstack proceedure for public domain interface is to use [https://domains.google/](https://domains.google/) and [github pages](https://github.com).
+Public domain and remote access for netstack. Default procedure is to use [https://domains.google/](https://domains.google/) and [github pages](https://github.com) for community documents.
 
 - [Cloudflare](./cloudflare/)
 - [Domain Setup](./domain/)
 - [OpenVPN](./openvpn/)
-- [zerotier](./zerotier/)
+- [Wireguard](./wireguard/)
+- [Zerotier](./zerotier/)

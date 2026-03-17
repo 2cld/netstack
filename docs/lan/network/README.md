@@ -1,6 +1,9 @@
-[edit](https://github.com/2cld/netstack/edit/master/docs/lan/network/README.md)  or [../ lan](../) or [../../ docs](../../)
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/network/README.md) or [../lan](../) or [../../docs](../../)
 
-# lan - network
+# Network
 
-- [pfsense](./pfsense/)
-- [pfsense - setup](./pfsense/setup)
+Gateways, routing, subnets, and firewall configuration.
+
+- [pfsense](./pfsense/) - firewall and routing
+  - [pfsense - setup](./pfsense/setup)
+- [mikrotik](./mikrotik/) - RouterOS ([private repo](https://github.com/2cld/mikrotik))
