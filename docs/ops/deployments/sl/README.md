@@ -1,35 +1,35 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/ops/deployments/sl/README.md) or [../deployments](../) or [../../ops](../../)
-# sl - Silver Lake
+# sl - St. Louis
 
 | | |
 |-|-|
-| site docs | [sl.2cld.net/docs](https://sl.2cld.net/docs) |
+| site docs | [sl.2cld.net](https://sl.2cld.net) |
 | repo | [github.com/2cld/sl](https://github.com/2cld/sl) |
-| ISP subnet | 192.168.0.0/24 |
-| netstack subnet | 192.168.9.0/24 |
+| subnet | 192.168.0.0/24 |
+| gateway | 192.168.0.1 (TP-Link AC1750 Archer C7) |
 | PIP | 24.216.208.251 |
 
 ## Key Resources
 
-| role | IP | what |
-|------|----|------|
-| ng | 192.168.9.1 | mikrotik |
-| cg | 192.168.9.2 | proxmox |
-| sg2 (QNAP) | 192.168.0.6 | QNAP TS-431 |
-| slwin11 | 192.168.0.9 | ops workstation |
-| dg | 192.168.9.9 | proxmox (documents) |
-| gusGram | 192.168.0.28 | user workstation |
+| role | IP | ZeroTier | what |
+|------|----|----------|------|
+| ng | 192.168.0.1 | — | TP-Link Archer C7 router |
+| slwin11ops | 192.168.0.143 | 10.147.17.94 | Dell i5 Win11 - primary ops |
+| mg2 (Hyper-V) | 192.168.0.140 | 10.147.17.135 | Ubuntu 24.04 VM - Docker host |
+| gusGram | 192.168.0.28 | 10.147.17.190 | User laptop |
 
 ## Cloudflare Tunnels
 
 | hostname | service |
 |----------|---------|
-| traefik.2cld.com | traefik via slwin11 Hyper-V |
-| portainer.2cld.com | portainer via slwin11 Hyper-V |
-| gitea.2cld.com | gitea via slwin11 Hyper-V |
+| traefik.2cld.com | traefik via mg2 |
+| portainer.2cld.com | portainer via mg2 |
+| gitea.2cld.com | gitea via mg2 |
 
 ## Remote Access
-- zerotier: cat-ghadmin-grid (slwin11ops, slwin11)
-- google remote desktop: gusGram, gusHPLaptop
 
-Full device inventory, DHCP tables, and services: [sl.2cld.net/docs](https://sl.2cld.net/docs)
+- ZeroTier network: d5e5fb65371eb4a4
+- SSH to mg2: `ssh ghadmin@10.147.17.135`
+- SSH to WSL: `ssh -p 2222 ghadmin@10.147.17.94`
+
+Full device inventory, services, and storage: [sl.2cld.net](https://sl.2cld.net)
