@@ -4,11 +4,11 @@ Network architecture documentation and patterns for the 2cld federation.
 
 ## Sites
 
-| Site | URL | Subnet | Description |
-|------|-----|--------|-------------|
-| sl | [sl.2cld.net](https://sl.2cld.net) | 192.168.0.0/24 | St. Louis |
-| cf | [cf.2cld.net](https://cf.2cld.net) | 192.168.6.0/24 | Cedar Falls |
-| wf | [wf.2cld.net](https://wf.2cld.net) | 192.168.9.0/24 | Winfield |
+| Site | URL | Description |
+|------|-----|-------------|
+| sl | [sl.2cld.net](https://sl.2cld.net) | St. Louis |
+| cf | [cf.2cld.net](https://cf.2cld.net) | Cedar Falls |
+| wf | [wf.2cld.net](https://wf.2cld.net) | Winfield |
 
 ## Documentation
 

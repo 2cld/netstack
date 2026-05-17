@@ -161,9 +161,9 @@ label: "sl-backup-target"
 type: nas
 connection: ZeroTier-SMB
 location: sl
-zerotier_ip: 10.147.17.94
-share: "\\10.147.17.94\slMedia"
-backup_path: "/catbu-sl/cf-backup/"
+zerotier_ip: <overlay-ip>
+share: "\\<overlay-ip>\sharename"
+backup_path: "/backup/cf/"
 capacity_gb: 1863
 free_gb: 800
 tier: warm

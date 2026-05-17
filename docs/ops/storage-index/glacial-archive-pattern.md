@@ -76,17 +76,17 @@ Each node should be able to confirm its backups exist on the other nodes:
 
 ```
 CF node checks:
-  - "My glacial archives on cfbu?" → ls \\192.168.10.2\bg\archive\
-  - "My offsite backups on sl?" → ssh 10.147.17.94 ls /backup/cf/
-  - "My offsite backups on wf?" → ssh 10.147.17.209 ls /volume1/backup/cf/
+  - "My glacial archives on local NAS?" → ls <nas-path>/archive/
+  - "My offsite backups on sl?" → ssh <sl-overlay-ip> ls /backup/cf/
+  - "My offsite backups on wf?" → ssh <wf-overlay-ip> ls /volume1/backup/cf/
 
 SL node checks:
-  - "My offsite backups on cf?" → ssh 10.147.17.219 ls /backup/sl/ (via cfbu relay)
-  - "My offsite backups on wf?" → ssh 10.147.17.209 ls /volume1/backup/sl/
+  - "My offsite backups on cf?" → ssh <cf-overlay-ip> ls /backup/sl/
+  - "My offsite backups on wf?" → ssh <wf-overlay-ip> ls /volume1/backup/sl/
 
 WF node checks:
-  - "My offsite backups on sl?" → ssh 10.147.17.94 ls /backup/wf/
-  - "My offsite backups on cf?" → ssh 10.147.17.219 ls /backup/wf/ (via cfbu relay)
+  - "My offsite backups on sl?" → ssh <sl-overlay-ip> ls /backup/wf/
+  - "My offsite backups on cf?" → ssh <cf-overlay-ip> ls /backup/wf/
 ```
 
 ## Offline / Glacial Storage

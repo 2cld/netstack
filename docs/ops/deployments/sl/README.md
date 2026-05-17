@@ -4,32 +4,19 @@
 | | |
 |-|-|
 | site docs | [sl.2cld.net](https://sl.2cld.net) |
-| repo | [github.com/2cld/sl](https://github.com/2cld/sl) |
-| subnet | 192.168.0.0/24 |
-| gateway | 192.168.0.1 (TP-Link AC1750 Archer C7) |
-| PIP | 24.216.208.251 |
+| repo | [github.com/2cld/sl](https://github.com/2cld/sl) (private) |
 
-## Key Resources
+## Overview
 
-| role | IP | ZeroTier | what |
-|------|----|----------|------|
-| ng | 192.168.0.1 | — | TP-Link Archer C7 router |
-| slwin11ops | 192.168.0.143 | 10.147.17.94 | Dell i5 Win11 - primary ops |
-| mg2 (Hyper-V) | 192.168.0.140 | 10.147.17.135 | Ubuntu 24.04 VM - Docker host |
-| gusGram | 192.168.0.28 | 10.147.17.190 | User laptop |
+Primary ops site. Runs Windows 11 workstation with Hyper-V VM hosting Docker services (Traefik, Portainer, Gitea). Connected to federation via ZeroTier overlay VPN.
 
-## Cloudflare Tunnels
+## Services (via Cloudflare Tunnel)
 
-| hostname | service |
-|----------|---------|
-| traefik.2cld.com | traefik via mg2 |
-| portainer.2cld.com | portainer via mg2 |
-| gitea.2cld.com | gitea via mg2 |
+- traefik.2cld.com
+- portainer.2cld.com
+- gitea.2cld.com
 
-## Remote Access
+## Details
 
-- ZeroTier network: d5e5fb65371eb4a4
-- SSH to mg2: `ssh ghadmin@10.147.17.135`
-- SSH to WSL: `ssh -p 2222 ghadmin@10.147.17.94`
-
-Full device inventory, services, and storage: [sl.2cld.net](https://sl.2cld.net)
+Full device inventory, network topology, and service configuration in the private sl repo.
+See [sl.2cld.net](https://sl.2cld.net) for site documentation.
