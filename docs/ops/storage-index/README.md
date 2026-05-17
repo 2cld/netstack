@@ -31,6 +31,7 @@ Each indexed device gets a markdown file with structured frontmatter:
 ```markdown
 ---
 device_id: "WD-WX1234567890"
+serial: "WX1234567890"
 label: "catbu-usb-photos"
 type: usb | internal | nas | cloud | optical
 connection: USB3 | SATA | NVMe | SMB | ZeroTier | HTTPS
@@ -42,6 +43,7 @@ free_gb: 550
 filesystem: NTFS | ext4 | exFAT | btrfs | cloud
 tier: hot | warm | cold | glacial
 status: active | archive | unknown | needs-review | failed
+role: working | backup-target | seed-media | archive
 last_indexed: 2026-05-16
 indexed_by: ghadmin@cybertruck
 notes: "Old photos and documents from 2018 migration"
@@ -136,9 +138,82 @@ git push
 
 Label the physical device with its `label` name. Store it. The index persists in git.
 
-## Cross-Site Summary
+## Remote Storage (ZeroTier-attached)
 
-Netstack maintains a federation-wide view at `docs/ops/storage-index/federation.md` that links to each site's index. Updated periodically by pulling summaries from each site.
+Remote storage accessed via ZeroTier gets a **shallow index only** — just enough to know what's available for backup targets. The detailed file-level index lives in that node's own site repo.
+
+### Shallow index captures:
+- Share names and mount points
+- Total capacity / free space
+- Designated backup target path
+- Whether it's currently online
+
+### Why shallow?
+- Crawling remote shares over ZT is slow and unnecessary
+- Each node owns its own detailed index
+- From a backup perspective, you only need: "can I write to it, and how much space is there?"
+
+### Example shallow manifest:
+
+```markdown
+---
+label: "sl-backup-target"
+type: nas
+connection: ZeroTier-SMB
+location: sl
+zerotier_ip: 10.147.17.94
+share: "\\10.147.17.94\slMedia"
+backup_path: "/catbu-sl/cf-backup/"
+capacity_gb: 1863
+free_gb: 800
+tier: warm
+status: active
+role: backup-target
+last_checked: 2026-05-16
+detail_index: "https://sl.2cld.net/ops/storage-index/"
+---
+```
+
+## Physical Media UID
+
+Every indexed device records a hardware serial number or volume UUID. This is critical for:
+
+1. **Sneakernet seeding** — Initial backup sync by physically carrying a drive to another node
+2. **Tracking which physical media holds what** — "USB drive SN:WX1234 contains the cf→sl seed from 2026-05-16"
+3. **Verifying you have the right drive** — Plug in, check serial matches manifest
+
+### How to get the UID:
+
+```powershell
+# Windows — disk serial number
+Get-Disk | Select Number, FriendlyName, SerialNumber, Size
+
+# Windows — volume serial (for partitions)
+Get-Volume | Select DriveLetter, UniqueId, FileSystemLabel
+```
+
+```bash
+# Linux — disk serial
+lsblk -o NAME,SERIAL,SIZE,MODEL
+
+# Linux — filesystem UUID
+blkid
+```
+
+### Sneakernet Workflow
+
+```
+1. ATTACH portable drive to source node (e.g., cf)
+2. INDEX it: index-device.ps1 -Drive "E:" -Label "seed-cf-to-sl" -Type usb -Tier cold
+3. SYNC backup data to it: robocopy or rsync
+4. RECORD in manifest: "seeded from cf, date, contents"
+5. PHYSICALLY CARRY to target node (e.g., sl)
+6. ATTACH at target, rsync from USB to target backup path
+7. DETACH USB, label it, update manifest with "delivered to sl on <date>"
+8. FUTURE: incremental rsync over ZeroTier picks up from this baseline
+```
+
+The manifest tracks the full lifecycle of the physical media.
 
 ## Naming Convention
 
