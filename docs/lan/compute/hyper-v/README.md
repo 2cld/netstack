@@ -4,5 +4,6 @@
 Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All
 ```
 
-## hv-nestedvm
+## Files
 - [hv-nestedvm](./hv-nestedvm.md)
+- [hv-vm-mac-remote-network](./hv-vm-mac-remote-network.md)
