@@ -11,8 +11,9 @@ Windows 10/11 includes OpenSSH Server as an optional feature. This enables key-b
 
 1. **Admin users need keys in a different file** than regular users
 2. **File permissions (ACLs) must be exact** or the server silently rejects keys
-3. **Mapped network drives (S:, W:) are NOT accessible** in SSH sessions (per-login-session limitation)
-4. **Use UNC paths or local drive letters** for file access via SSH
+3. **Firewall must allow SSH on ALL interfaces** (including ZeroTier overlay)
+4. **Mapped network drives (S:, W:) are NOT accessible** in SSH sessions (per-login-session limitation)
+5. **Use UNC paths or local drive letters** for file access via SSH
 
 ## Setup Procedure
 
@@ -32,15 +33,29 @@ Get-Service sshd
 # Should show: Running
 ```
 
-### Step 2: Configure Firewall (usually automatic)
+### Step 2: Configure Firewall (CRITICAL for ZeroTier)
+
+The default SSH firewall rule may only allow connections on the primary network interface. Federation nodes connect via ZeroTier overlay — you MUST allow SSH on ALL interfaces:
 
 ```powershell
 # Check if rule exists
 Get-NetFirewallRule -Name *ssh*
 
-# If not, create it:
-New-NetFirewallRule -Name sshd -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+# Create rule that works on ALL interfaces (including ZeroTier):
+New-NetFirewallRule -Name "sshd-all" -DisplayName "OpenSSH Server (all interfaces)" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22 -Profile Any
+
+# If the default rule exists but only allows Domain/Private:
+Remove-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyContinue
+New-NetFirewallRule -Name "sshd-all" -DisplayName "OpenSSH Server (all interfaces)" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22 -Profile Any
 ```
+
+**Why this matters:** ZeroTier creates a virtual network adapter. Windows firewall treats it as a "Public" network by default. If your SSH rule only allows "Domain" or "Private" profiles, connections over ZeroTier will be silently dropped (timeout, not refused).
+
+**Verify from another node:**
+```bash
+ssh -o ConnectTimeout=5 user@10.147.17.x "echo ok"
+```
+If you get "Connection timed out" instead of "Connection refused" or "Permission denied", it's a firewall issue.
 
 ### Step 3: Deploy Public Key
 
@@ -57,6 +72,9 @@ Set-Content C:\ProgramData\ssh\administrators_authorized_keys $key
 
 # FIX PERMISSIONS (required - server rejects keys with wrong ACLs):
 icacls "C:\ProgramData\ssh\administrators_authorized_keys" /inheritance:r /grant "SYSTEM:(F)" /grant "Administrators:(F)"
+
+# Restart to pick up changes
+Restart-Service sshd
 ```
 
 #### For regular users:
@@ -106,6 +124,25 @@ hostname\username
 ```
 
 ## Troubleshooting
+
+### Connection timed out (not refused)
+
+**Cause:** Firewall blocking on the ZeroTier interface.
+
+Fix:
+```powershell
+New-NetFirewallRule -Name "sshd-all" -DisplayName "OpenSSH Server (all interfaces)" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22 -Profile Any
+```
+
+### Connection refused
+
+**Cause:** sshd not running.
+
+Fix:
+```powershell
+Start-Service sshd
+Set-Service -Name sshd -StartupType Automatic
+```
 
 ### Key is offered but rejected (Permission denied)
 
@@ -168,10 +205,14 @@ ssh -i ~/.ssh/id_backup user@host "dir D:\\backups\\*.tar"
 
 # Check VM status (Hyper-V)
 ssh -i ~/.ssh/id_backup user@host "powershell Get-VM | Select Name,State"
+
+# Process audit
+ssh -i ~/.ssh/id_backup user@host "tasklist /FI \"MEMUSAGE gt 500000\" /FO CSV /NH"
 ```
 
 ## Related
 - [SSH/rsync Backup Pattern](ssh-rsync-pattern.md) — overall backup transport pattern
 - [Federation Backup Plan](federation-backup-plan.md) — 3-2-1 strategy
 - [Monitoring Pattern](../monitor/monitoring-pattern.md) — health check integration
+- [Process Audit Pattern](../monitor/process-audit-pattern.md) — auditing what's running
 - [Request Lifecycle](../monitor/request-lifecycle.md) — how SSH setup was requested and verified
