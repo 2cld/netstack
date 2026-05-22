@@ -6,6 +6,7 @@
 - keys
 - storage
 - remote access
+- [dev-ssh-kiro-cli](./dev-ssh-kiro-cli) — SSH + Kiro CLI (recommended)
 - [dev-linux](./dev-linux)
 - [dev-win-ps](./dev-win-ps)
 - [dev-win-wrk](./dev-win-wrk)
