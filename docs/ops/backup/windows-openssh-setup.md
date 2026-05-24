@@ -216,3 +216,31 @@ ssh -i ~/.ssh/id_backup user@host "tasklist /FI \"MEMUSAGE gt 500000\" /FO CSV /
 - [Monitoring Pattern](../monitor/monitoring-pattern.md) — health check integration
 - [Process Audit Pattern](../monitor/process-audit-pattern.md) — auditing what's running
 - [Request Lifecycle](../monitor/request-lifecycle.md) — how SSH setup was requested and verified
+
+### Default shell fix (WSL conflict)
+
+If SSH connects but commands fail with `Invalid command line argument: -c` or `Please use 'wsl.exe --help'`, the default shell is set to WSL instead of PowerShell/cmd.
+
+**Symptom:**
+```
+$ ssh ghadmin@10.147.17.165 "hostname"
+Invalid command line argument: -c
+Please use 'wsl.exe --help' to get a list of supported arguments.
+```
+
+**Fix (PowerShell as admin on the target machine):**
+```powershell
+# Set PowerShell as default SSH shell
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
+
+# Restart SSH service
+Restart-Service sshd
+```
+
+**Verify:**
+```bash
+ssh ghadmin@10.147.17.165 "hostname"
+# Should return the hostname, not a WSL error
+```
+
+**Why this happens:** Windows with WSL installed may default SSH sessions to the WSL shell. The registry key overrides this to use PowerShell for all SSH connections.
