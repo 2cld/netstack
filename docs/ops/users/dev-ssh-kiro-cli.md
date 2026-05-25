@@ -130,3 +130,93 @@ ssh nsadmin@10.147.17.176 -t "tmux attach -t wip"
 - [remote-desktop.md](../tools/remote-desktop.md) — GUI remote access (when you need it)
 - [../backup/windows-openssh-setup.md](../backup/windows-openssh-setup.md) — enabling SSH on Windows nodes
 - [contributor-setup.md](../tools/contributor-setup.md) — full dev environment setup
+
+## Mobile Access: Termius (iOS/Android)
+
+[Termius](https://termius.com/) is an SSH client for mobile devices that supports:
+- Saved host profiles (one-tap connect)
+- Snippets (saved commands)
+- SFTP file browsing
+- **Siri Shortcuts integration** (voice-triggered SSH sessions)
+
+### Setup
+
+1. Install Termius from App Store / Play Store
+2. Add host:
+   - Label: `nsdockerhv (Wip)`
+   - Hostname: `10.147.17.165` (requires ZeroTier on phone)
+   - Port: 22
+   - Username: `nsadmin`
+   - Auth: SSH key (import or generate in Termius)
+3. Save and test connection
+
+### Siri Integration (iOS)
+
+Termius supports Siri Shortcuts. You can create a shortcut that:
+1. Opens Termius
+2. Connects to nsdockerhv
+3. Runs a command (e.g., starts tmux session)
+
+**Setup:**
+- Open iOS Shortcuts app
+- Create new shortcut: "Hey Siri, open Wip"
+- Action: Open Termius → Connect to saved host "nsdockerhv (Wip)"
+
+**Voice paste pattern:**
+- Dictate to Siri → text goes to clipboard
+- Paste into Termius terminal (SSH session)
+- This enables voice-to-terminal input from phone
+
+### Alternative: SSH from iOS without Termius
+
+iOS has no built-in SSH client, but options include:
+- **Termius** (recommended — best UX, Siri support)
+- **Blink Shell** (power user, mosh support)
+- **a]Shell** (free, basic)
+
+## tmux Best Practices for Wip Sessions
+
+### Named Sessions
+
+```bash
+# Create/attach to named session
+tmux new-session -A -s wip
+
+# Multiple sessions for different contexts
+tmux new-session -A -s wip      # Wip coordination
+tmux new-session -A -s dev      # Development work
+tmux new-session -A -s ops      # Ops/monitoring
+```
+
+### Useful tmux Commands
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+B d` | Detach (session keeps running) |
+| `Ctrl+B c` | New window |
+| `Ctrl+B n` | Next window |
+| `Ctrl+B p` | Previous window |
+| `Ctrl+B "` | Split horizontal |
+| `Ctrl+B %` | Split vertical |
+| `Ctrl+B [` | Scroll mode (q to exit) |
+
+### Reconnect After Disconnect
+
+```bash
+# From any device (phone, laptop, tablet):
+ssh nsadmin@10.147.17.176 -t "tmux attach -t wip"
+
+# If session doesn't exist, create it:
+ssh nsadmin@10.147.17.176 -t "tmux new-session -A -s wip"
+```
+
+### Why tmux + SSH > RDP
+
+| | RDP | SSH + tmux |
+|-|-----|-----------|
+| Bandwidth | High (video stream) | Minimal (text only) |
+| Latency feel | Laggy on slow links | Instant |
+| Session persistence | Lost on disconnect | Survives disconnect |
+| Mobile | Clunky (small screen + desktop UI) | Natural (terminal fits any screen) |
+| Voice input | No | Yes (Siri → paste into terminal) |
+| Multiple sessions | One desktop | Many tmux windows |
