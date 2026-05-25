@@ -23,6 +23,25 @@ Three geographic sites connected by encrypted overlay (ZeroTier). Each site has 
   (backup)          (failover)
 ```
 
+## Layer 0: Ops User Environment
+
+Before touching network or services, set up the operator account. This is the foundation everything else builds on.
+
+**Follow:** [ops-node-setup.md](../users/ops-node-setup.md)
+
+Checklist:
+1. `nsadmin` user exists with sudo + docker group
+2. `~/code/` directory with netstack clone (minimum)
+3. `~/.local/bin/` on PATH
+4. Node.js 22+ installed
+5. Git configured
+
+Once the operator environment is ready, proceed to network setup.
+
+**Pattern note:** All work on this node follows the [pattern-workflow](../pattern-workflow.md) — if you can't find a netstack doc for what you're doing, write one first.
+
+---
+
 ## Layer 1: Network Setup
 
 Every federation node needs these network components:

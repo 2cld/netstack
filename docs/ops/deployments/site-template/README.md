@@ -18,16 +18,20 @@ docs/
 
 ## After creating the site repo
 
-1. Copy template files into `docs/` in the new repo
-2. Fill in site-specific values (IPs, MACs, services)
-3. Enable GitHub Pages on the repo
-4. Add CNAME file with `xx.2cld.net`
-5. Add DNS record pointing to GitHub Pages
-6. Add the site to [netstack deployments](https://netstack.org/docs/ops/deployments/)
+1. Set up `nsadmin` operator account per [ops-node-setup](https://netstack.org/docs/ops/users/ops-node-setup/)
+2. Copy template files into `docs/` in the new repo
+3. Fill in site-specific values (IPs, MACs, services)
+4. Enable GitHub Pages on the repo
+5. Add CNAME file with `xx.2cld.net`
+6. Add DNS record pointing to GitHub Pages
+7. Add the site to [netstack deployments](https://netstack.org/docs/ops/deployments/)
 
 ## Linking back to netstack
+
+All work follows the [pattern-workflow](https://netstack.org/docs/ops/pattern-workflow/): netstack holds the Why/How/Where, site repos hold the What. Never duplicate explanations — link to netstack patterns instead.
 
 Each site repo should reference netstack for architecture and install guides rather than duplicating them. Use links like:
 - `Based on [netstack LAN model](https://netstack.org/docs/lan/)`
 - `Installed per [netstack proxmox guide](https://netstack.org/docs/lan/compute/proxmox/)`
 - `Backup procedures follow [netstack backup](https://netstack.org/docs/ops/backup/)`
+- `Operator setup per [netstack ops-node-setup](https://netstack.org/docs/ops/users/ops-node-setup/)`

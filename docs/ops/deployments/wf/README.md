@@ -21,3 +21,10 @@ Storage and services site. Runs Mikrotik router, Synology NAS (Docker host), and
 
 Full device inventory, network topology, and service configuration in the private wf repo.
 See [wf.2cld.net](https://wf.2cld.net) for site documentation.
+
+## Patterns (from netstack)
+
+- [Pattern Workflow](../../pattern-workflow.md) — how netstack drives ops
+- [Ops Node Setup](../../users/ops-node-setup.md) — nsadmin environment setup
+- [Federation Setup Guide](../federation-setup-guide.md) — full node standup procedure
+- [Backup Cron Pattern](../../backup/backup-cron-pattern.md) — backup target configuration

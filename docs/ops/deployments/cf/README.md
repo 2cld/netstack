@@ -19,3 +19,11 @@ Media and compute site. Runs CyberTruck workstation (Win10 i7 GPU) with Hyper-V,
 
 Full device inventory, network topology, storage mapping, and service configuration in the private cf repo.
 See [cf.2cld.net](https://cf.2cld.net) for site documentation.
+
+## Patterns (from netstack)
+
+- [Pattern Workflow](../../pattern-workflow.md) — how netstack drives ops
+- [Ops Node Setup](../../users/ops-node-setup.md) — nsadmin environment (nsdockerhv is the reference implementation)
+- [CLI Helper Pattern](../../tools/cli-helper-pattern.md) — `wip` command and dispatcher scripts
+- [Federation Setup Guide](../federation-setup-guide.md) — full node standup procedure
+- [Backup Cron Pattern](../../backup/backup-cron-pattern.md) — daily backup automation
