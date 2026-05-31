@@ -38,6 +38,7 @@ Every federation node gets a `buadmin` user dedicated to backup operations. This
 - Owns no services or interactive sessions
 - Uses a dedicated SSH key (no passphrase, for automation)
 - Can be restricted via `authorized_keys` command= directives
+- Has NO sudo access (principle of least privilege)
 
 **Linux (nsdockerhv, future Ubuntu nodes):**
 ```bash
@@ -257,6 +258,40 @@ Each node can push to both others.
 Each node can pull from both others.
 SSH keys deployed bidirectionally.
 ```
+
+## Designated Monitor (Wip)
+
+The backup user (`buadmin`) runs the backups. A **designated monitor** verifies they ran successfully and alerts when they don't.
+
+**Monitor role (Wip):**
+- Reads `.backup-state` files during morning check-in
+- Flags stale backups (> 24h since last success)
+- Surfaces failures in daily standup
+- Sends action recommendations to node owner per [contract-map](https://github.com/2cld/wip/blob/main/docs/contract-map.md)
+
+**Monitor does NOT:**
+- Run backups (that's buadmin's job via cron)
+- Fix failures directly (sends recommendation to owner)
+- Have sudo or admin access (read-only observation)
+
+**Separation of concerns:**
+```
+buadmin (ownership)  = runs backup, writes .backup-state
+wip (observability)  = reads .backup-state, alerts on failure
+nsadmin (admin)      = fixes issues when alerted
+```
+
+**Monitor check (in morning-checkin.js):**
+```bash
+# Read .backup-state, verify freshness
+STATE=$(cat /home/nsadmin/backups/.backup-state)
+# If stale or missing: flag in standup + send action recommendation
+```
+
+**Integration with [federation-backup-plan](./federation-backup-plan.md):**
+- Each node's `.backup-state` is the contract between buadmin and the monitor
+- Monitor checks all nodes daily (via SSH read or local file)
+- Red alerts squeak daily until resolved (Principle 8)
 
 ## Related
 - [Federation Backup Plan](ops/backup/federation-backup-plan.md) — 3-2-1 strategy

@@ -84,20 +84,24 @@ State is tracked in `.backup-state` (local file, contains `0` or `1`).
 
 ## Transport
 
-| Method | Use Case |
-|--------|----------|
-| rsync over SSH (via overlay VPN) | Primary method — incremental, efficient |
-| Synology Hyper Backup | Between Synology devices if both online |
-| Manual USB drive (sneakernet) | Initial seed for large datasets |
+| Method | Use Case | Pattern Doc |
+|--------|----------|-------------|
+| rsync over SSH (via overlay VPN) | Primary method - incremental, efficient | [ssh-rsync-pattern](./ssh-rsync-pattern.md) |
+| Synology Hyper Backup | Between Synology devices if both online | — |
+| Manual USB drive (sneakernet) | Initial seed for large datasets | — |
+
+**Backup user:** All automated rsync runs as `buadmin` (dedicated backup user, no sudo). See [ssh-rsync-pattern Step 0](./ssh-rsync-pattern.md) for setup.
 
 ## Prerequisites
 
 Before running backups:
 
-1. **SSH keys**: Each backup source needs passwordless SSH to its targets
+1. **buadmin user**: Created on all nodes per [ssh-rsync-pattern](./ssh-rsync-pattern.md)
+2. **SSH keys**: buadmin has passwordless SSH to all targets
    ```bash
-   ssh-keygen -t ed25519 -f ~/.ssh/id_backup -N ''
-   ssh-copy-id -i ~/.ssh/id_backup <user>@<target-overlay-ip>
+   # From ops controller as buadmin:
+   ssh -i /home/buadmin/.ssh/id_backup buadmin@<target-overlay-ip> "echo ok"
+   ```
    ```
 
 2. **Target directories**: Create `/backup/<site>/` on each target
