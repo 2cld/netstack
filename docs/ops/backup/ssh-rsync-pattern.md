@@ -31,6 +31,62 @@ Target node (receives backup)
 
 ## Setup Pattern
 
+### 0. Create dedicated backup user (buadmin)
+
+Every federation node gets a `buadmin` user dedicated to backup operations. This user:
+- Has read access to backup source paths only
+- Owns no services or interactive sessions
+- Uses a dedicated SSH key (no passphrase, for automation)
+- Can be restricted via `authorized_keys` command= directives
+
+**Linux (nsdockerhv, future Ubuntu nodes):**
+```bash
+# Create user with no login shell, no home directory clutter
+sudo useradd -m -s /bin/bash buadmin
+sudo mkdir -p /home/buadmin/.ssh
+sudo chmod 700 /home/buadmin/.ssh
+
+# Generate backup key pair (on ops controller)
+sudo ssh-keygen -t ed25519 -f /home/buadmin/.ssh/id_backup -N "" -C "buadmin@$(hostname)"
+sudo chown -R buadmin:buadmin /home/buadmin/.ssh
+
+# Add buadmin to groups for read access to backup sources
+sudo usermod -aG docker buadmin  # if backing up Docker volumes
+```
+
+**Windows (sl, wf, cat9fin):**
+```powershell
+# Create local user (no password login - key auth only)
+net user buadmin /add /active:yes
+# Set a strong random password (won't be used - key auth only)
+net user buadmin "$(New-Guid)" /y
+
+# Create .ssh directory
+mkdir C:\Users\buadmin\.ssh
+
+# Add the ops controller's buadmin public key
+# Copy from nsdockerhv: /home/buadmin/.ssh/id_backup.pub
+# Paste into: C:\ProgramData\ssh\administrators_authorized_keys
+# (or C:\Users\buadmin\.ssh\authorized_keys if not admin)
+```
+
+**Key deployment (from ops controller to all nodes):**
+```bash
+# Deploy buadmin's public key to each target node
+# Linux targets:
+ssh-copy-id -i /home/buadmin/.ssh/id_backup.pub buadmin@<target-ip>
+
+# Windows targets (manual - paste key into authorized_keys):
+cat /home/buadmin/.ssh/id_backup.pub
+# Then on Windows: add to C:\ProgramData\ssh\administrators_authorized_keys
+```
+
+**Verify:**
+```bash
+# From ops controller as buadmin:
+sudo -u buadmin ssh -i /home/buadmin/.ssh/id_backup buadmin@<target-ip> "echo buadmin connected"
+```
+
 ### 1. Generate SSH key pair (on the machine that PUSHES or PULLS)
 
 ```bash
@@ -94,16 +150,17 @@ rsync -avz --checksum \
 
 ```bash
 #!/bin/bash
-# Federation backup script — rsync over SSH
+# Federation backup script - rsync over SSH
 # Pattern: push critical data to off-site node
+# Runs as: buadmin (dedicated backup user)
 
 set -euo pipefail
 
 SOURCE="/path/to/critical/data"
-TARGET_USER="nsadmin"
+TARGET_USER="buadmin"
 TARGET_HOST="10.x.x.x"  # ZeroTier overlay IP
 TARGET_PATH="/path/to/backup/$(hostname)"
-SSH_KEY="$HOME/.ssh/id_backup"
+SSH_KEY="/home/buadmin/.ssh/id_backup"
 STATE_FILE="/path/to/.backup-state"
 
 echo "[$(date)] Starting backup..."
