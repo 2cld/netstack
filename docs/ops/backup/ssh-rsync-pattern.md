@@ -118,6 +118,27 @@ Set-Service -Name sshd -StartupType Automatic
 # Or for admin users: C:\ProgramData\ssh\administrators_authorized_keys
 ```
 
+- Issue with file perms
+```powershell
+# 1. Define the file path (Change this to your actual file path)
+# $keyPath = "C:\ProgramData\ssh\administrators_authorized_keys" 
+$keyPath = "C:\Users\buadmin\.ssh\authorized_keys" 
+# NOTE: If you are a standard user, change the path above to: "C:\Users\YOUR_USER\.ssh\authorized_keys"
+
+# 2. Reset the file's security container entirely
+icacls $keyPath /reset
+
+# 3. Disable inheritance completely and strip all unassigned users
+icacls $keyPath /inheritance:r
+
+# 4. Explicitly grant access ONLY to the required entities
+icacls $keyPath /grant "NT AUTHORITY\SYSTEM:(F)"
+icacls $keyPath /grant "BUILTIN\Administrators:(F)"
+
+# 5. Restart the server to clear the cache
+Restart-Service sshd
+```
+
 ### 4. Test connectivity
 
 ```bash
