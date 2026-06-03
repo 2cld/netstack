@@ -93,10 +93,11 @@ WF node checks:
 
 For data that goes to USB drives or gets shelved:
 
-1. **Physical label**: Write the manifest `label` name on the drive with a marker
-2. **Index persists**: The manifest stays in git even after the drive is disconnected
-3. **Serial number**: The `serial` field in the manifest uniquely identifies the physical media
-4. **Location tracking**: `physical_location` field says where the drive is stored
+1. **Digital breadcrumb**: Write `cat9-asset-tag.txt` to the root of the filesystem with: asset name, date indexed, manifest URL (commit hash), repo URL, pattern URL. If you find this drive in 5 years with no memory, this file gets you back to full context.
+2. **Physical label**: Write the manifest `label` name on the drive with a marker
+3. **Index persists**: The manifest stays in git even after the drive is disconnected
+4. **Serial number**: The `serial` field in the manifest uniquely identifies the physical media
+5. **Location tracking**: `physical_location` field says where the drive is stored
 
 Example: "USB drive labeled `seed-cf-to-sl`, serial WX1234, on shelf above CyberTruck"
 

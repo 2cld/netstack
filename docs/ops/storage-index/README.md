@@ -205,6 +205,26 @@ git commit -m "Index: old-photos-usb (cold, 450GB photos)"
 git push
 ```
 
+### 4.5 Breadcrumb (digital receipt on device)
+
+Write `cat9-asset-tag.txt` to the root of the device filesystem:
+
+```bash
+# Get the commit hash
+HASH=$(git log -1 --format=%H ops/storage-index/devices/old-photos-usb.md)
+
+# Write breadcrumb to device
+cat > /mnt/device/cat9-asset-tag.txt << EOF
+Asset: old-photos-usb
+Indexed: $(date +%Y-%m-%d)
+Manifest: https://github.com/2cld/<site>/blob/$HASH/ops/storage-index/devices/old-photos-usb.md
+Repo: https://github.com/2cld/<site>
+Pattern: https://netstack.org/docs/ops/storage-index/
+EOF
+```
+
+This survives even if the physical label falls off. Find the drive in 5 years, open `cat9-asset-tag.txt`, click the link - full context.
+
 ### 5. Detach (if cold/glacial)
 
 Label the physical device with its `label` name. Store it. The index persists in git.
