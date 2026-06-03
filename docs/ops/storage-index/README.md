@@ -216,6 +216,11 @@ HASH=$(git log -1 --format=%H ops/storage-index/devices/old-photos-usb.md)
 # Write breadcrumb to device
 cat > /mnt/device/cat9-asset-tag.txt << EOF
 Asset: old-photos-usb
+Serial: WX1234567890
+Size: 1000 GB
+Free: 550 GB
+Status: cold (indexed, labeled, shelved)
+Attached: devwin10 (10.147.17.165)
 Indexed: $(date +%Y-%m-%d)
 Manifest: https://github.com/2cld/<site>/blob/$HASH/ops/storage-index/devices/old-photos-usb.md
 Repo: https://github.com/2cld/<site>
