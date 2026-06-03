@@ -1,28 +1,31 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/ops/storage-index/README.md)
-# Storage Indexing Method
+# Storage and Asset Indexing Method
 
-A federation-wide approach to inventorying, tagging, and managing storage across all 2cld nodes.
+A federation-wide approach to inventorying, tagging, and managing **storage and physical assets** across all 2cld sites.
 
 ## Problem
 
-Data is scattered across multiple locations, device types, and services with no single inventory. USB drives accumulate without labels. NAS devices hold unknown data. Cloud storage is untracked.
+Data is scattered across multiple locations, device types, and services with no single inventory. USB drives accumulate without labels. NAS devices hold unknown data. Cloud storage is untracked. Physical equipment (servers, monitors, tools, furniture) piles up with no record of what's there, what works, or what's worth keeping.
 
 ## Principles
 
-1. **Index first, organize later** — Don't move anything until you know what you have
-2. **Metadata is cheap** — The index lives in git, costs nothing
-3. **Offline drives get indexed when attached** — Plug in, scan, unplug, index persists
-4. **Tiers drive decisions** — Tag everything, then decide what to keep/move/delete
-5. **Federation-aware** — Each node indexes its own storage, netstack holds the method
+1. **Index first, organize later** - Don't move anything until you know what you have
+2. **Metadata is cheap** - The index lives in git, costs nothing
+3. **Offline drives get indexed when attached** - Plug in, scan, unplug, index persists
+4. **Physical assets get indexed when inspected** - Look at it, write manifest, label it
+5. **Tiers drive decisions** - Tag everything, then decide what to keep/move/delete/sell
+6. **Federation-aware** - Each site indexes its own assets, netstack holds the method
+7. **One manifest per item** - Whether it's a hard drive or a rack server, same pattern
 
-## Storage Tiers
+## Tiers (applies to both data and physical assets)
 
-| Tier | Access Pattern | Examples | Backup |
-|------|---------------|----------|--------|
-| **Hot** | Always online, fast access | Internal drives, local NAS | Replicate to 2 offsite nodes |
-| **Warm** | Online but slow or remote | ZeroTier shares, cloud services | 1 offsite copy |
-| **Cold** | Offline, plug in when needed | USB drives, spare NAS disks | Index only, store safely |
-| **Glacial** | Archive, rarely accessed | Old project backups, legacy media | Index, label, shelf |
+| Tier | Access Pattern | Data Examples | Physical Examples |
+|------|---------------|--------------|-------------------|
+| **Hot** | Always online/in use | Internal drives, local NAS | Daily-use workstation, active tools |
+| **Warm** | Available but not daily | ZeroTier shares, cloud | Spare monitor, seasonal equipment |
+| **Cold** | Offline, access when needed | USB drives, spare disks | Stored server (working), boxed parts |
+| **Glacial** | Archive, rarely accessed | Old backups, legacy media | Legacy hardware (parts only), archive boxes |
+| **Dispose** | No future value | Wiped/corrupt drives | Broken beyond repair, obsolete, scrap |
 
 ## Device Manifest Format
 
@@ -78,21 +81,89 @@ notes: "Old photos and documents from 2018 migration"
 - [ ] Consider moving to glacial (label and shelf)
 ```
 
+## Physical Asset Manifest Format
+
+Non-storage physical assets (servers, monitors, tools, furniture) use the same manifest pattern:
+
+```markdown
+---
+asset_id: "dell-r720-001"
+label: "2U Dell R720 blade server"
+type: server | workstation | monitor | rack | networking | tool | furniture | other
+make: "Dell"
+model: "PowerEdge R720"
+serial: "ABC123XYZ"
+location: wf-shop | wf-shed | wf-house | cf-basement | cf-garage | sl-garage
+physical_location: "wf shop, south wall rack"
+condition: working | needs-repair | parts-only | unknown | dispose
+power: "tested-ok | untested | dead | n/a"
+value_estimate: "$200"
+tier: hot | warm | cold | glacial | dispose
+status: active | stored | needs-review | listed-for-sale | disposed
+last_inspected: 2026-06-03
+inspected_by: christrees
+notes: "Pulled from old datacenter. 2x Xeon E5-2670, 64GB RAM. Needs rails."
+---
+# Asset: 2U Dell R720 blade server
+
+## Specs
+- CPU: 2x Xeon E5-2670
+- RAM: 64 GB
+- Storage: 8x 2.5" bays (empty)
+- Network: 4x 1GbE
+- Power: dual PSU
+
+## Triage Decision
+- [ ] Power on and test
+- [ ] Determine use case (Proxmox node? parts?)
+- [ ] Assign to project or list for sale
+
+## History
+- 2026-06-03: Found in wf shop, inspected, manifest created
+```
+
+### Physical Asset Types
+
+| Type | Examples | Key Fields |
+|------|----------|------------|
+| server | rack servers, blades, NAS chassis | CPU, RAM, drive bays, power test |
+| workstation | PCs, laptops, SBCs | CPU, RAM, OS, boot status |
+| monitor | displays, TVs | size, resolution, inputs, working? |
+| rack | server racks, shelving, enclosures | size (U), capacity, condition |
+| networking | switches, routers, APs, cables | ports, speed, managed?, PoE? |
+| tool | press, welder, power tools | working?, repair needed? |
+| furniture | desks, chairs, workbenches | condition, dimensions, reuse plan |
+| other | misc electronics, cables, adapters | description, quantity |
+
+### Triage Workflow (physical assets)
+
+```
+1. INSPECT  - look at it, note condition
+2. INDEX    - create manifest (even minimal: type, location, condition)
+3. DECIDE   - keep (assign tier) | repair | sell | dispose
+4. LABEL    - write manifest label on item (tape/marker)
+5. PLACE    - store in designated location matching manifest
+6. RETRIEVE - search manifests, find item by label/location
+```
+
 ## Directory Structure (per site repo)
 
 ```
 <site>/ops/storage-index/
-├── README.md                    ← Site-specific overview and device list
+├── README.md                    <- Site-specific overview and inventory
 ├── devices/
-│   ├── <device-name>.md         ← One manifest per device/volume
+│   ├── <device-name>.md         <- One manifest per storage device/volume
+│   └── ...
+├── assets/
+│   ├── <asset-name>.md          <- One manifest per physical asset
 │   └── ...
 ├── cloud/
-│   ├── <service-name>.md        ← Cloud service inventories
+│   ├── <service-name>.md        <- Cloud service inventories
 │   └── ...
 └── scripts/
-    ├── index-device.ps1         ← PowerShell: scan and generate manifest
-    ├── index-device.sh          ← Bash: scan and generate manifest
-    └── generate-summary.ps1     ← Roll up all manifests into overview
+    ├── index-device.ps1         <- PowerShell: scan and generate manifest
+    ├── index-device.sh          <- Bash: scan and generate manifest
+    └── generate-summary.ps1     <- Roll up all manifests into overview
 ```
 
 ## Indexing Workflow
