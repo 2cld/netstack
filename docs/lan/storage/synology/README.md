@@ -1,4 +1,7 @@
-[edit]()
+[edit](https://github.com/2cld/netstack/edit/master/docs/lan/storage/synology/README.md)
+
+- See [docs/ops/backup/synology-ssh-setup.md](../../../ops/backup/synology-ssh-setup.md)
+- See [docs/ops/backup/synology-recovery.md](../../../ops/backup/synology-recovery.md)
 
 # DS411+II
 - User interface on port 5000 [http://192.168.6.6:5000](http://192.168.6.6:5000)
