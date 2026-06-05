@@ -6,6 +6,34 @@
 
 The ops controller (Linux) orchestrates all monitoring. Target nodes (Windows or Linux) answer queries via SSH. No monitoring agents needed on targets - just SSH + the target's native shell.
 
+## Goal-Based Monitoring
+
+**Monitor the goal outcome, not every piece of infrastructure.**
+
+Don't ask "is every container up?" Ask "are my goals being served?"
+
+### How to decide what to monitor:
+
+1. Define the site's goals (what is this site FOR right now?)
+2. Identify what serves each goal (which services/nodes)
+3. Monitor ONLY those things
+4. If a service doesn't serve a current goal, don't monitor it (less noise, less maintenance)
+
+### Example (wf site):
+
+| Goal | What serves it | Monitor check |
+|------|---------------|---------------|
+| hwpc-rp backup | D: drive receives from cf | "Did backup arrive today?" (.backup-state fresh) |
+| Sort piles | devwin10 online, drives mountable | "Can I work when I'm at wf?" (ping + SSH) |
+| Federation storage | cg2 ZFS + wfMedia | "Is storage and media serving?" (plex active, ZFS healthy) |
+
+Things NOT monitored (don't serve a current goal):
+- LXC 100 (docker) - stopped, no active use
+- VM 102 (llscat) - Trink collab, not critical
+- VM 501 (pfsense) - experiment, stopped
+
+**When a new goal appears:** add the monitoring check. When a goal is retired, remove its checks. Keep the signal-to-noise ratio high.
+
 ## Architecture
 
 ```
