@@ -7,6 +7,7 @@
 # 1. Create buadmin user (key-auth only, strong random password)
 $password = [System.Guid]::NewGuid().ToString()
 net user buadmin $password /add /active:yes
+net localgroup Administrators buadmin /add
 Write-Host "Created buadmin user"
 
 # 2. Create .ssh directory
@@ -22,6 +23,12 @@ $pubKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE2VwROHwIrRdrD4nCNMMPuCrO98llSUi
 $adminKeyFile = "C:\ProgramData\ssh\administrators_authorized_keys"
 Add-Content -Path $adminKeyFile -Value $pubKey
 Write-Host "Added public key to $adminKeyFile"
+
+# For admin users, key goes in ProgramData
+#$userKeyFile = "C:\Users\buadmin\.ssh\authorized_keys"
+#Add-Content -Path $userKeyFile -Value $pubKey
+#Write-Host "Added public key to $userKeyFile"
+#icacls C:\Users\buadmin\.ssh\authorized_keys /inheritance:r /grant "buadmin:(R)" /grant "SYSTEM:(R)"
 
 # Fix permissions on admin key file (required by Windows OpenSSH)
 icacls $adminKeyFile /inheritance:r /grant "SYSTEM:(F)" /grant "Administrators:(F)"
