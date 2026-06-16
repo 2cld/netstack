@@ -24,7 +24,7 @@ Google now provides built-in AI that can do most of this classification automati
 |------|-------------|--------|------|
 | **Gemini in Gmail** | Summarizes, prioritizes, suggests to-dos, drafts replies | Built into Gmail (enable Smart Features) | Included in Workspace |
 | **AI Inbox** | Shows "Suggested to-dos" and "Topics to catch up on" | Gmail web/mobile | Included |
-| **Google Workspace Studio** | No-code AI agent builder — automate labeling, archiving, data extraction | [studio.google.com](https://studio.google.com) | Included in Workspace |
+| **Google Workspace Studio** | No-code AI agent builder — automate labeling, archiving, data extraction | [studio.workspace.google.com](https://studio.workspace.google.com) or Gmail side panel icon | Included in Workspace |
 | **Gmail Filters** | Rule-based routing (from, to, subject, has:attachment) | Gmail Settings | Free |
 | **AI Overviews in Search** | Contextual AI summary when searching mail | Gmail search bar | Included |
 
@@ -55,13 +55,14 @@ Layer 3: Gemini in Gmail (human-assist)
 
 ### Prerequisites
 - Google Workspace account with Workspace Studio enabled
-- Gmail API access (should already be active on Workspace accounts)
-- Visit [studio.google.com](https://studio.google.com) to confirm access
+- Admin must enable: Admin console → Apps → Google Workspace → Workspace Studio ([admin setup guide](https://support.google.com/a/answer/16796372))
+- Access via: [studio.workspace.google.com](https://studio.workspace.google.com) OR Gmail side panel (Workspace Studio icon, top right)
 
 ### Step 1: Create New Automation
 
-1. Go to **Workspace Studio** → "Create new"
-2. Describe in natural language:
+1. Open **Workspace Studio** (side panel in Gmail or direct URL)
+2. Click "Create new" or "New flow"
+3. Describe in natural language:
 
 ```
 When a new email arrives in my inbox:
@@ -76,7 +77,7 @@ When a new email arrives in my inbox:
 4. If category is "action-required", also forward to wip@horseoff.com
 ```
 
-3. Review the automation Gemini builds → test with sample emails → activate
+4. Review the automation Gemini builds → test with sample emails → activate
 
 ### Step 2: Configure Categories
 
@@ -243,5 +244,7 @@ Once proven here → apply to christrees@gmail.com (higher volume) → then HWPC
 - [Wip ops-email-processing.md](https://github.com/2cld/wip/blob/main/docs/ops-email-processing.md) — current manual pipeline
 - [wip#5](https://github.com/2cld/wip/issues/5) — Wip email inbox processing
 - [Google: Manage to-dos with AI Inbox](https://support.google.com/mail/answer/16845247)
-- [Google: Workspace Studio Gmail automation](https://support.google.com/appsheet/answer/15725655)
+- [Google: Workspace Studio admin setup](https://support.google.com/a/answer/16796372)
+- [Google: Get started with Workspace Studio](https://support.google.com/workspace-studio/answer/16444479)
+- [Google: Access Studio from Gmail side panel](https://support.google.com/workspace-studio/answer/16765741)
 - [Google: Gemini in Gmail](https://workspace.google.com/intl/en/products/gmail/ai/)
