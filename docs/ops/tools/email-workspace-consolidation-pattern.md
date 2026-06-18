@@ -275,3 +275,15 @@ If you do not need to import the data immediately but want to keep it accessible
 *Note: The "Data migration service" mentioned in some support docs is designed for importing data from external sources (e.g., Microsoft Exchange or generic IMAP servers) and is not intended for moving data between two Google Workspace accounts.*
 
 ---
+
+Yes, you can assign an alias that was previously used by an archived user to an active user, provided the alias is no longer actively assigned to the archived account.
+
+Follow these steps to make that alias available:
+
+1.  **Navigate to the Archived User**: In the Admin Console, go to [**Directory** \> **Users**](https://admin.google.com/ac/users) and locate the archived account.
+2.  **Remove the Alias**: Click on the user to expand their profile details. Under the **User information** section, select **Alternate email addresses (email aliases)** and remove the specific email address you want to use.
+3.  **Assign to Active User**: Once removed, navigate to the active user's profile in **Directory** \> **Users**, select **Alternate email addresses (email aliases)**, and add the address you just freed up.
+
+Note that archived users themselves cannot receive new email, even if an alias is still attached to them. Removing the alias from the archived user ensures no conflicts exist, allowing the active user to receive mail at that address.
+
+---
