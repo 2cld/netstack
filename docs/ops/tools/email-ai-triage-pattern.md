@@ -39,8 +39,8 @@ Layer 1: Gmail Filters (deterministic, fast)
   - Auto-archive known noise (unsubscribe candidates)
 
 Layer 2: Workspace Studio (AI classification)
-  - New email arrives → Gemini classifies → applies label
-  - Categories: action-required, fyi, financial, dev-notification, noise
+  - New email arrives → Gemini classifies → applies ONE label
+  - Categories: action, capture, dev, financial, noise, notification
   - Optionally: extract data to Sheets, draft reply, notify
 
 Layer 3: Gemini in Gmail (human-assist)
@@ -51,73 +51,118 @@ Layer 3: Gemini in Gmail (human-assist)
 
 ---
 
-## Setup: Workspace Studio Auto-Label Agent
+## Deployed Implementation: Workspace Studio Flow
 
-### Prerequisites
-- Google Workspace account with Workspace Studio enabled
-- Admin must enable: Admin console → Apps → Google Workspace → Workspace Studio ([admin setup guide](https://support.google.com/a/answer/16796372))
-- Access via: [studio.workspace.google.com](https://studio.workspace.google.com) OR Gmail side panel (Workspace Studio icon, top right)
+### What We Deployed (wip@horseoff.com, June 2026)
 
-### Step 1: Create New Automation
+**Labels created (in Gmail before activating flow):**
 
-1. Open **Workspace Studio** (side panel in Gmail or direct URL)
-2. Click "Create new" or "New flow"
-3. Describe in natural language:
+| Label | Purpose | Action |
+|-------|---------|--------|
+| `wip/action` | Needs a response or task from me | Keep in inbox |
+| `wip/capture` | New item to route through Effort Validation | Keep in inbox |
+| `wip/dev` | GitHub, Gitea, CI/CD, code-related notifications | Skip inbox |
+| `wip/financial` | Invoices, bills, payment confirmations | Keep in inbox |
+| `wip/noise` | Marketing, promotions, automated junk | Archive |
+| `wip/notification` | FYI — informational, no action needed | Skip inbox |
+
+### Setup Steps (exact procedure)
+
+1. **Create labels first** — Gmail → Settings → Labels → Create each label above. Studio cannot apply labels that don't exist.
+
+2. **Open Workspace Studio** — [studio.workspace.google.com](https://studio.workspace.google.com) OR click the Workspace Studio icon in Gmail's right side panel.
+
+3. **Create new flow** — use this natural language prompt:
 
 ```
-When a new email arrives in my inbox:
-1. Use Gemini to classify it into one of these categories:
-   - "action-required" (needs a response or task from me)
-   - "financial" (invoices, bills, payment confirmations)
-   - "dev-notification" (GitHub, Gitea, CI/CD alerts)
-   - "fyi" (informational, no action needed)
-   - "noise" (marketing, promotions, automated junk)
-2. Apply a Gmail label matching the category name
-3. If category is "noise", archive it (remove from inbox)
-4. If category is "action-required", also forward to wip@horseoff.com
+When a new email arrives in my inbox, classify it into exactly ONE of these categories
+based on the content, sender, and subject:
+
+- "wip/action" — requires a response, decision, or task from me (requests, approvals, questions directed at me)
+- "wip/capture" — contains a new idea, link, or item that should be captured for later processing
+- "wip/dev" — developer notifications (GitHub, Gitea, CI/CD, build alerts, code reviews)
+- "wip/financial" — invoices, bills, payment confirmations, bank alerts, accounting
+- "wip/noise" — marketing, promotions, newsletters I didn't subscribe to, automated junk
+- "wip/notification" — informational updates that don't require action (calendar responses, confirmations, FYI)
+
+Rules:
+- Apply ONLY ONE label (the single best match)
+- If the email is from GitHub or Gitea → always "wip/dev"
+- If the email contains "invoice" or "payment" → always "wip/financial"  
+- If unsure between categories → use "wip/capture" (safe default for human review)
+- If the email is a calendar acceptance/decline → "wip/notification"
+
+After classifying:
+- Apply the matching Gmail label
+- If label is "wip/noise" → also archive the message (remove from inbox)
 ```
 
-4. Review the automation Gemini builds → test with sample emails → activate
+4. **Test** — send yourself a test email, wait 1-2 minutes, check if correct label was applied. Adjust prompt if classification is wrong.
 
-### Step 2: Configure Categories
+5. **Activate** — once classification is accurate, enable the flow permanently.
 
-Customize categories for your workflow:
+### Lessons Learned
 
-| Category | Label | Auto-Action | Forward to Coordination? |
-|----------|-------|-------------|:------------------------:|
-| action-required | `ai/action` | Keep in inbox | ✅ Yes |
-| financial | `ai/financial` | Keep in inbox | ✅ Yes |
-| dev-notification | `ai/dev` | Skip inbox (but keep) | Only if issue-related |
-| fyi | `ai/fyi` | Skip inbox | ❌ No |
-| noise | `ai/noise` | Archive | ❌ No |
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| All labels applied to every message | Prompt said "classify into categories" (plural) | Changed to "classify into exactly ONE" + "Apply ONLY ONE label" |
+| Labels not applying | Labels didn't exist in Gmail before flow activation | Create labels FIRST, then activate flow |
+| Sent messages not classified | Studio flows only trigger on received messages | Expected behavior — only incoming gets classified |
+| Classification takes 1-2 minutes | Studio is asynchronous, not instant | Normal — don't expect real-time |
 
-### Step 3: Test and Tune
+### Verification
 
-1. Run for 1 week in "label only" mode (no auto-archive yet)
-2. Review: did it classify correctly? Adjust natural language prompt if not
-3. Once accurate: enable auto-archive for noise, auto-forward for action-required
-4. Check weekly: any mis-classifications? Add to prompt as examples
+Check classification is working:
+```javascript
+// In morning-checkin.js or ad-hoc:
+const labels = await gmail.users.labels.list({ userId: 'me' });
+const wipLabels = labels.data.labels.filter(l => l.name.startsWith('wip/'));
+for (const label of wipLabels) {
+  const detail = await gmail.users.labels.get({ userId: 'me', id: label.id });
+  console.log(`${label.name}: ${detail.data.messagesUnread || 0} unread`);
+}
+```
 
 ---
 
-## Setup: Gemini in Gmail (AI Inbox)
+## Integration with Wip Dashboard
 
-### Enable Smart Features
-1. Gmail → Settings → "See all settings" → General tab
-2. Check: "Smart features and personalization"
-3. Check: "Smart features and personalization in other Google products"
-4. Save
+The email classification feeds directly into the coordination layer's morning check-in:
 
-### Using AI Inbox
-Once enabled, Gmail shows:
-- **Suggested to-dos** — high-priority items extracted from email content
-- **Topics to catch up on** — grouped summaries of related messages
-- **AI summaries** — one-line summary at top of long email threads
+```
+Workspace Studio classifies incoming email
+    ↓
+Morning check-in reads label counts via Gmail API:
+  wip/action: 3 unread → "📬 3 action items need triage"
+  wip/financial: 1 unread → "💰 1 financial item"
+  wip/dev: 5 unread → "(info only, skip)"
+  wip/noise: 0 → "(already archived by flow)"
+    ↓
+Daily report shows actionable count → Chris reviews wip/action items
+    ↓
+Each item gets routed: issue on project repo, calendar block, or archive
+```
 
-### Integration with Coordination Layer
-During morning check-in, Wip can reference AI Inbox to-dos:
-- Read via Gmail API: messages with `ai/action` label = pre-classified action items
-- Reduces triage from "read every email" to "review AI-flagged items only"
+### The Admin Experience (phone-friendly)
+
+1. **Morning:** Check calendar event → see "📬 3 action items" in description
+2. **If time:** Open wip@ inbox → only `wip/action` + `wip/capture` items visible (everything else auto-handled)
+3. **Route:** Each action item → becomes an issue on the right repo (per contract-map)
+4. **Done:** Inbox stays near-zero without manual sorting
+
+---
+
+## For Other Netstack Admins
+
+Any admin with a Google Workspace account can replicate this:
+
+1. **Choose your label prefix** — we used `wip/`. You might use `ops/`, `admin/`, or your name.
+2. **Define your categories** — adapt from our 6 categories to match your workflow.
+3. **Create the labels in Gmail** — must exist before the flow can apply them.
+4. **Set up the Studio flow** — copy our prompt, adjust category names.
+5. **Connect to your coordination layer** — whether that's a wip repo, a Trello board, or just your own review process, the labels tell you what needs attention.
+
+**Minimum viable setup:** 3 labels (`action`, `dev`, `noise`) + Studio flow. You can add more categories later as you understand your email patterns.
 
 ---
 
@@ -129,15 +174,12 @@ For accounts with years of accumulated mail:
 ```
 Gmail search: before:2025/01/01
 Select all → Archive
-
-Gmail search: before:2024/01/01 (already archived from above, but catches stragglers)
 ```
 
 ### Phase 2: Unsubscribe Campaign
 ```
 Gmail search: unsubscribe newer_than:30d
-Sort by sender → unsubscribe from top noise sources
-Then: from:sender@noise.com → select all → delete
+Open top senders → Unsubscribe (link at top of message) → delete their history
 ```
 
 ### Phase 3: Large Attachments
@@ -146,104 +188,39 @@ Gmail search: has:attachment larger:5M
 Review → download what you need → delete the rest
 ```
 
-### Phase 4: Workspace Studio Cleanup Agent
-Create automation:
-```
-Find all emails older than 2 years that are:
-- Not starred
-- Not labeled "important" or "action-required"
-- Not in a conversation I replied to
-Archive them all.
-```
-
 ---
 
 ## Cross-Provider Strategy
 
 For non-Gmail accounts that don't have native AI:
 
-| Provider | Best Strategy | Steps |
-|----------|--------------|-------|
-| **Yahoo** | IMAP migration to Gmail → then apply AI | Gmail Settings → Check mail from other accounts → Add Yahoo IMAP |
-| **Outlook/Live** | Forward all to Gmail OR migrate | Outlook → Settings → Forwarding → forward to Gmail |
-| **Apple (iCloud)** | Forward selectively (limited API) | iCloud Mail → Rules → forward matching |
-| **Other** | Cold archive (Download My Data) → close | Download mbox → store offline → delete account |
+| Provider | Best Strategy |
+|----------|--------------|
+| **Yahoo** | IMAP migration to Gmail → then apply AI |
+| **Outlook/Live** | Forward all to Gmail OR migrate |
+| **Apple (iCloud)** | Forward selectively (limited API) |
+| **Personal Gmail** | Can't use Studio — forward actionable items TO Workspace account where Studio runs |
 
-**Principle:** Consolidate everything into Gmail where AI can work on it. Non-Gmail providers become either forwarding sources or archived history.
-
----
-
-## Integration with Coordination Layer (Wip)
-
-```
-Email arrives at any account
-    ↓
-Forwarding rules send to Gmail primary (or directly to wip@)
-    ↓
-Workspace Studio classifies + labels
-    ↓
-Morning check-in reads labels via Gmail API:
-  - ai/action → surface in morning report as "needs triage"
-  - ai/financial → surface in LLC Epic section
-  - ai/dev → cross-reference with active NEXT items
-  - ai/fyi, ai/noise → skip (already handled)
-    ↓
-Human reviews flagged items → routes to issues
-```
-
-### API Integration (morning-checkin.js enhancement)
-```javascript
-// Read AI-classified action items
-const actionMessages = await gmail.users.messages.list({
-  userId: 'me',
-  q: 'label:ai/action is:unread'
-});
-// Surface in morning report
-console.log(`📬 ${actionMessages.length} action items (AI-classified)`);
-```
+**Principle:** Consolidate everything into a Workspace Gmail where AI can work on it.
 
 ---
 
-## Privacy and Security Considerations
+## Privacy and Security
 
 | Concern | Reality | Mitigation |
 |---------|---------|------------|
 | Gemini reads all email | Yes (since Oct 2025, on by default) | Accept for business accounts; disable for personal if desired |
-| Data used for training | Workspace: NOT used for training (enterprise ToS). Personal: may be. | Use Workspace accounts for sensitive business email |
-| Classification errors | AI will mis-classify some messages | Keep "label only" mode for first week; review before enabling auto-archive |
-| Forwarding sensitive data | Forwarding to coordination layer moves data between accounts | Both accounts should be same Workspace domain or trusted |
-
----
-
-## Reference Implementation: wip@horseoff.com
-
-**Domain:** horseoff.com (Google Workspace)  
-**Volume:** Low (system alerts, forwarded items only)  
-**Goal:** Near-zero manual triage
-
-Setup:
-1. Workspace Studio agent classifies incoming → labels `ai/action`, `ai/dev`, `ai/noise`
-2. `ai/noise` auto-archived
-3. `ai/action` stays in inbox → `morning-checkin.js` reads via API
-4. `ai/dev` skips inbox → checked during project monitoring
-
-This is the simplest test case because:
-- Low volume (easy to validate accuracy)
-- Known senders (GitHub, Gitea, forwarding rules)
-- Full API access already configured
-- No legacy cleanup needed
-
-Once proven here → apply to christrees@gmail.com (higher volume) → then HWPC domain accounts.
+| Data used for training | Workspace: NOT used for training (enterprise ToS) | Use Workspace for sensitive business email |
+| Classification errors | AI will mis-classify some messages | Start with "label only" (no auto-archive) for first week |
 
 ---
 
 ## Related
 
 - [email-workspace-consolidation-pattern](./email-workspace-consolidation-pattern.md) — reduce accounts first, then apply AI
+- [personal-gmail-maintenance-pattern](../users/personal-gmail-maintenance-pattern.md) — personal Gmail cleanup + forwarding
 - [pattern-workflow](../pattern-workflow.md) — netstack drives all ops
-- [Wip ops-email-processing.md](https://github.com/2cld/wip/blob/main/docs/ops-email-processing.md) — current manual pipeline
-- [wip#5](https://github.com/2cld/wip/issues/5) — Wip email inbox processing
-- [Google: Manage to-dos with AI Inbox](https://support.google.com/mail/answer/16845247)
+- [personal-wip-pattern](https://github.com/2cld/netstack/issues/5) — coordination layer for solo admins (planned)
 - [Google: Workspace Studio admin setup](https://support.google.com/a/answer/16796372)
 - [Google: Get started with Workspace Studio](https://support.google.com/workspace-studio/answer/16444479)
 - [Google: Access Studio from Gmail side panel](https://support.google.com/workspace-studio/answer/16765741)
