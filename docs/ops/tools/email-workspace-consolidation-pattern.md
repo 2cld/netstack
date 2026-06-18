@@ -240,3 +240,38 @@ This pattern applies identically across multiple Workspace domains. Each domain 
 - [repo-communication-pattern](../monitor/repo-communication-pattern.md) — how monitoring communicates findings via issues
 - [Wip ops-email-processing.md](https://github.com/2cld/wip/blob/main/docs/ops-email-processing.md) — implementation reference for coordination layer email triage
 - [Google Workspace Admin Help: Add email aliases](https://support.google.com/a/answer/33327)
+
+---
+
+## Info from Google within admin terminal
+
+There is no native "import" button in the Admin Console to automatically move emails between two active or suspended user accounts within the same organization.
+
+Since you are looking to access data from an account that is not currently active, use one of the following methods:
+
+### Option 1: Restore the account and delegate access
+
+If the account is suspended, this is the quickest way to access the emails without migrating them.
+
+1.  **Restore the account**: In the Admin Console, go to [**Directory** \> **Users**](https://admin.google.com/ac/users). Filter for the suspended user, click **More options**, and select **Reactivate**.
+2.  **Enable delegation**: Once active, sign in to the user's Gmail account (or use your admin privileges to reset their password and sign in). In Gmail settings, navigate to **See all settings** \> **Accounts and Import** \> **Grant access to your account** to add the target user's email address.
+3.  **Access the mail**: The target user can now switch to the old account's mailbox from their own Gmail interface to view or move messages.
+
+### Option 2: Export and import (Takeout)
+
+If you need to permanently move the data into a new account:
+
+1.  **Restore the account**: If the user is currently suspended, follow the steps above to restore them.
+2.  **Export data**: Use **Google Takeout** (takeout.google.com) while signed in as that user to download their email data (typically as an MBOX file).
+3.  **Import data**: The new user can then import that MBOX file into their own account via their Gmail settings under **Accounts and Import** \> **Import mail and contacts**.
+
+### Option 3: Use an Archived User license
+
+If you do not need to import the data immediately but want to keep it accessible for compliance, use an **Archived User (AU)** license.
+
+1.  **Assign the license**: In the Admin Console, navigate to the user account, click **More options**, and select **Archive user**.
+2.  **Access data**: This preserves the data without requiring an active user license. If you later need to access the data, you can unarchive the user to restore their mailbox access.
+
+*Note: The "Data migration service" mentioned in some support docs is designed for importing data from external sources (e.g., Microsoft Exchange or generic IMAP servers) and is not intended for moving data between two Google Workspace accounts.*
+
+---
