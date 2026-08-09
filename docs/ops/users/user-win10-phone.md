@@ -48,7 +48,7 @@ Since the native Microsoft Store client no longer operates on Windows 10 Mobile,
 ## Step 1: Generate the Download Package Links
 You will need a working PC to fetch the setup files safely.
 
-   1. Open a web browser on your computer and navigate to the community-trusted deployment extraction tool: Adguard Store Link Generator.
+   1. Open a web browser on your computer and navigate to the community-trusted deployment extraction tool: [Adguard Store Link Generator](https://store.rg-adguard.net).
    2. In the central text box, change the first dropdown from URL (link) to PackageFamilyName.
    3. Paste the following official Microsoft identity string into the box:
    Microsoft.RemoteDesktop_8wekyb3d8bbwe
@@ -57,7 +57,7 @@ You will need a working PC to fetch the setup files safely.
 ## Step 2: Download the Client and Dependencies
 The page will populate a direct download list directly from Microsoft's delivery servers. Scroll to the bottom to look for the appropriate formats: [2] 
 
-* 
+* [Link I used - cat 2026.08.09](https://store.rg-adguard.net/#google_vignette)
 * The Main App: Locate and click the file ending in .appxbundle. Look specifically for a version dating around 2020–2023 (such as versions starting with 10.2...) to ensure it still bundles the legacy Windows 10 Mobile ARM binary. [3, 4] 
 * The Dependencies: You may also need to download the matching prerequisite files listed on the screen if your phone prompts you for them. Download the ARM architecture variants of:
 * Microsoft.NET.Native.Framework
@@ -91,3 +91,36 @@ Are you planning to run this over a local Wi-Fi network, or will you need guidan
 
 [13] [https://support.microsoft.com](https://support.microsoft.com/en-us/windows/experience/connectivity-networking/how-to-use-remote-desktop)
 [14] [https://www.youtube.com](https://www.youtube.com/watch?v=2gYvIBIaUFc)
+
+
+ZeroTier cannot be directly installed on Windows 10 Mobile because ZeroTier does not make a client for the dead Windows Phone/Mobile platform. The official [ZeroTier Windows Client](https://www.zerotier.com/download/) only works on desktop versions of Windows (like Windows 10 and 11 x86/x64) and lacks the required ARM32/UWP phone architecture support. [1, 2] 
+However, because the Alcatel IDOL 4S uses a Snapdragon 820 processor, you have a few community-driven workarounds depending on how deeply you want to modify your phone.
+## Option 1: Install Windows 10/11 Desktop (WOA)
+The Alcatel IDOL 4S supports the Windows on ARM (WOA) project, which allows you to replace Windows 10 Mobile entirely with a full desktop version of Windows 10 or 11.
+
+* 
+* Full desktop Windows on ARM can run standard x86 desktop applications through emulation.
+* Once WOA is installed, you can download and run the standard ZeroTier Windows installer.
+* Risk: This is a highly technical process requiring unlocking your bootloader via WPInternals and flashing a new operating system. It will drastically affect battery life and daily phone usability.
+* 
+
+## Option 2: Flash Android onto the Alcatel IDOL 4S
+There are versions of the Alcatel IDOL 4S that natively shipped with Android, and developers have historically ported Android ROMs to the Windows variants.
+
+* 
+* If you cross-flash the device to Android, you can easily install the official [ZeroTier One App from the Google Play Store](https://play.google.com/store/apps/details?id=com.zerotier.one).
+* Check mobile developer communities like the XDA Forums for specific ROM flashing guides for the IDOL 4S. [3] 
+* 
+
+## Option 3: Use a Raspberry Pi Router (No Phone Modification)
+If you just need your phone to talk to a ZeroTier network while at home or in a specific lab setup without bricking your device:
+
+   1. Install ZeroTier on a secondary device like a Raspberry Pi or an old PC.
+   2. Configure that device as a network bridge/router inside your local network.
+   3. Connect your Alcatel IDOL 4S to the local Wi-Fi hosted by that bridge. The phone will access the ZeroTier nodes through the router without needing the app itself.
+
+Would you like to know more about the Windows on ARM flashing process for your specific phone model, or are you looking for an alternative VPN protocol like WireGuard that might have legacy community UWP apps?
+
+[1] [https://docs.zerotier.com](https://docs.zerotier.com/compatibility/)
+[2] [https://www.stratospherix.com](https://www.stratospherix.com/support/how-to-install-zerotier-on-windows.php)
+[3] [https://wiki.teltonika-networks.com](https://wiki.teltonika-networks.com/view/ZeroTier_Configuration)
