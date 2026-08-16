@@ -1,6 +1,6 @@
 # Public Status Endpoint Pattern
 
-**Status:** Adopted (wf validated 2026-08-13) | **Goal:** All sites by Q4 2026
+**Status:** Adopted (wf validated 2026-08-13, cf PR open 2026-08-16) | **Goal:** All sites by Q4 2026
 
 ## Problem
 
@@ -37,6 +37,18 @@ Each site generates its own `status.json` locally, then publishes it via a Cloud
 │         │                                           │
 │  .monitor-state.json → morning-update → README      │
 └─────────────────────────────────────────────────────┘
+          │
+          │  HTTPS (public)
+          ▼
+┌─────────────────────────────────────────────────────┐
+│ FEDERATION DASHBOARD (wip.2cld.net/docs/status/)    │
+│                                                     │
+│  Static HTML + JS (GitHub Pages)                    │
+│  Fetches status.json from each site                 │
+│  Renders unified status view                        │
+│  Auto-refreshes every 60s                           │
+│                                                     │
+└─────────────────────────────────────────────────────┘
 ```
 
 ## Architecture Principles
@@ -51,13 +63,15 @@ Each site generates its own `status.json` locally, then publishes it via a Cloud
 
 5. **Site autonomy.** Each site owns its `checks.yml`. Adding a new check is a git push, not a coordinator config change.
 
+6. **Federation dashboard reads the same endpoints.** The web UI at wip.2cld.net/docs/status/ fetches each site's status.json directly — no server-side aggregation needed.
+
 ## Implementation Per Site
 
 ### What runs locally (on the site's always-on node)
 
 | Component | Container | Purpose |
 |-----------|-----------|---------|
-| site-status-checker | `site-server` (or split) | Reads `checks.yml`, runs checks every 5 min, writes `status.json` |
+| site-status-checker | `site-status-checker` or `cf-status-checker` | Reads `checks.yml`, runs checks every 5 min, writes `status.json` |
 | site-web | nginx | Serves `status.json` at `/status.json` and `/health` |
 | cloudflared | `cloudflared` | Tunnels site-web to public internet |
 
@@ -75,7 +89,7 @@ Each site generates its own `status.json` locally, then publishes it via a Cloud
   "site": "wf",
   "site_name": "Winfield",
   "timestamp": "2026-08-13T15:47:20.123Z",
-  "status": "ok|warning|error",
+  "status": "ok|warning|degraded|error",
   "check_interval_seconds": 300,
   "check_count": 12,
   "ok_count": 10,
@@ -97,19 +111,21 @@ Each site generates its own `status.json` locally, then publishes it via a Cloud
 
 ## Adoption Status
 
-| Site | Local Checker | Public Endpoint | Coordinator Reads | Status |
-|------|:---:|:---:|:---:|--------|
-| wf | ✅ | ✅ `wf.klopfenstein.org/status.json` | ✅ | **Done** (2026-08-13) |
-| sl | ❌ | ❌ | ❌ (SSH to WSL) | Needs site-server deploy |
-| cf | ❌ | ❌ | ❌ (runs locally) | Needs site-server + tunnel |
+| Site | Local Checker | Public Endpoint | Coordinator Reads | Dashboard | Status |
+|------|:---:|:---:|:---:|:---:|--------|
+| wf | ✅ | ✅ `wf.klopfenstein.org/status.json` | ✅ | ✅ | **Done** (2026-08-13) |
+| cf | ✅ [PR#5](https://github.com/2cld/cf/pull/5) | Pending deploy | ❌ (runs locally) | Pending | **In Progress** (2026-08-16) |
+| sl | ❌ | ❌ | ❌ (SSH to WSL) | Pending | Needs site-server deploy |
 
 ### Next steps
 
-1. **sl:** Deploy site-server container on slwin11ops WSL (or dedicated LXC). Configure `checks.yml` for F: drive, docker services, tunnel health. Expose via sl's Cloudflare tunnel at `sl.2cld.net/status.json`.
+1. **cf:** Merge PR#5, deploy Docker stack, add CF tunnel route to `cf.2cld.net`. Deploy runbook: [wip/docs/ops-cf-status-deploy.md](https://github.com/2cld/wip/blob/main/docs/ops-cf-status-deploy.md)
 
-2. **cf:** cf already runs locally on nsdockerhv — doesn't strictly need a public endpoint (coordinator IS the site). But for consistency and external visibility, add a `cf.2cld.net/status.json` endpoint.
+2. **sl:** Deploy site-server container on slwin11ops WSL (or dedicated LXC). Configure `checks.yml` for F: drive, docker services, tunnel health. Expose via sl's Cloudflare tunnel at `sl.2cld.net/status.json`.
 
-3. **Coordinator:** Once all sites publish, remove all SSH-based checks from `wip-daily-cron.sh`, `storage-status.js`, and `netstack-status.js`. The public endpoint becomes the single source of truth.
+3. **Federation dashboard:** Live at [wip.2cld.net/docs/status/](https://wip.2cld.net/docs/status/) — fetches all site endpoints, renders unified view. Code in [wip/docs/status/index.html](https://github.com/2cld/wip/blob/main/docs/status/index.html).
+
+4. **Coordinator migration:** Once all sites publish, remove SSH-based checks from `wip-daily-cron.sh`, `storage-status.js`, and `netstack-status.js`. The public endpoint becomes the single source of truth.
 
 ## Related Patterns
 
