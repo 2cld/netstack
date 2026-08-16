@@ -5,6 +5,7 @@
 **Working implementation:** [wf/ops/templates/services/site-server/](https://github.com/2cld/wf/tree/main/ops/templates/services/site-server)
 **Live endpoint:** https://wf.klopfenstein.org/status.json
 **Coordinator integration:** [wip/ops/scripts/netstack-status.js](https://github.com/2cld/wip/blob/main/ops/scripts/netstack-status.js)
+**Federation dashboard:** [wip.2cld.net/docs/status/](https://wip.2cld.net/docs/status/) (reads all site endpoints)
 **Related issue:** [wip#16](https://github.com/2cld/wip/issues/16) — reactive alerting
 
 ---
@@ -105,63 +106,63 @@ checks:
 - `tier` — `operational` (alert if down), `cold` (informational only)
 - `goal` — maps to site goals per [site-status-page-pattern](./site-status-page-pattern.md)
 
-### 2. `server.py` — Combined docs builder + status checker
+### 2. `checker.py` — Status check loop
 
-Python service that manages three loops:
-1. **Git pull** — refreshes local repo clone (hourly)
-2. **MkDocs build** — rebuilds site HTML from docs/ (hourly)
-3. **Status checks** — pings/curls local nodes, writes status.json (every 5 min)
-
-All outputs go to `/srv/output/` which nginx serves.
+Python service that:
+1. Loads `checks.yml`
+2. Executes each check (ping, HTTP, command, disk)
+3. Computes overall status (`ok` / `warning` / `degraded`)
+4. Writes `status.json` atomically (tmp + rename)
+5. Writes `health.json` (self-check)
+6. Sleeps `CHECK_INTERVAL` seconds (default: 300 = 5 min)
+7. Loops forever
 
 **Environment variables:**
 
 | Var | Default | Purpose |
 |-----|---------|---------|
 | `SITE_CODE` | `wf` | Site identifier in output |
-| `SITE_REPO` | `https://github.com/2cld/wf.git` | Repo to clone for docs |
-| `CHECK_INTERVAL` | `300` | Seconds between status check runs |
-| `BUILD_INTERVAL` | `3600` | Seconds between mkdocs builds |
-| `GIT_PULL_INTERVAL` | `3600` | Seconds between git pulls |
-| `GITHUB_PAT` | (empty) | Optional PAT for private repos |
+| `CONFIG_FILE` | `/config/checks.yml` | Path to check definitions |
+| `OUTPUT_DIR` | `/data` | Where to write results |
+| `CHECK_INTERVAL` | `300` | Seconds between check runs |
 
-### 3. Endpoints (nginx serves from /srv/output/)
+### 3. Endpoints (nginx serves from output volume)
 
 | Endpoint | Purpose | Update frequency |
 |----------|---------|-----------------|
 | `/status.json` | Machine-readable health checks | Every 5 min |
 | `/health` or `/health.json` | Container self-check (is the service alive?) | Every 5 min |
-| `/` | MkDocs-rendered site documentation | Every 1 hour |
 
 ### 4. `docker-compose.yml` — Deploy together
 
 ```yaml
 services:
-  site-server:
-    build: ./server
-    container_name: site-server
+  checker:
+    build: ./checker
+    container_name: site-status-checker
     restart: unless-stopped
     network_mode: host
     volumes:
-      - output_data:/srv/output
+      - status_data:/data
+      - ./checks.yml:/config/checks.yml:ro
     environment:
-      - SITE_CODE=wf
-      - SITE_REPO=https://github.com/2cld/wf.git
       - CHECK_INTERVAL=300
-      - BUILD_INTERVAL=3600
+      - SITE_CODE=wf
+      - OUTPUT_DIR=/data
+      - CONFIG_FILE=/config/checks.yml
 
   web:
     image: nginx:alpine
-    container_name: site-web
+    container_name: site-status-web
     restart: unless-stopped
     ports:
       - "8600:80"
     volumes:
-      - output_data:/usr/share/nginx/html:ro
+      - status_data:/usr/share/nginx/html:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
 
 volumes:
-  output_data:
+  status_data:
 ```
 
 ---
@@ -174,6 +175,7 @@ volumes:
   "site_name": "Winfield",
   "timestamp": "2026-08-06T22:37:42.131000+00:00",
   "status": "ok",
+  "check_interval_seconds": 300,
   "checks": [
     {
       "name": "cg2 (Proxmox + ZFS)",
@@ -187,7 +189,8 @@ volumes:
   "check_count": 6,
   "ok_count": 4,
   "error_count": 0,
-  "warning_count": 0
+  "warning_count": 0,
+  "known_down_count": 2
 }
 ```
 
@@ -197,7 +200,8 @@ volumes:
 |-------|---------|-------------------|
 | `ok` | All operational checks passing | None |
 | `warning` | Non-critical degradation | Log, surface in review |
-| `error` | Operational check failing | Alert (per escalation levels) |
+| `degraded` | Operational check failing | Alert (per escalation levels) |
+| `error` | Checker itself failed | Alert — checker container down |
 | `known_down` | Intentionally offline | Ignore |
 
 ---
@@ -243,7 +247,7 @@ The coordinator (`netstack-status.js`) runs every 30 min and:
 
 ## Deployment Steps (new site)
 
-1. Copy template from `wf/ops/templates/services/site-server/`
+1. Copy template from `wf/ops/templates/services/site-status/`
 2. Edit `checks.yml` for site infrastructure (nodes, services, disks)
 3. Build + start: `docker compose up -d --build`
 4. Add Cloudflare tunnel route: `site.domain.org → http://localhost:8600`
@@ -252,28 +256,37 @@ The coordinator (`netstack-status.js`) runs every 30 min and:
 
 ---
 
-## Planned Improvements (wf#11)
+## Federation Dashboard
 
-1. **Tunnel self-check** — verify own external URL is reachable
-2. **Additional service checks** — Gitea, Traefik, etc.
-3. **Config sync detection** — alert if deployed checks.yml diverges from git
-4. **Freshness field** — add `check_interval_seconds` to output so consumers know what "stale" means
-5. **History** — last N results for trend detection (future)
+A static HTML/JS page at [wip.2cld.net/docs/status/](https://wip.2cld.net/docs/status/) consumes the status.json endpoints from all sites and renders a unified view:
+
+- Per-site status cards with individual check results
+- Staleness detection (> 10 min = stale warning)
+- Auto-refresh every 60 seconds
+- Mobile-friendly responsive layout
+- No server-side code — pure client-side fetch from public endpoints
+- CORS headers on nginx (`Access-Control-Allow-Origin: *`) enable browser fetch
+
+Source: [wip/docs/status/index.html](https://github.com/2cld/wip/blob/main/docs/status/index.html)
+Issue: [netstack#16](https://github.com/2cld/netstack/issues/16)
+
+---
+
+## Implementations
+
+| Site | Status | Endpoint | Repo | Deploy Runbook |
+|------|--------|----------|------|----------------|
+| wf | ✅ Live | https://wf.klopfenstein.org/status.json | [2cld/wf](https://github.com/2cld/wf/tree/main/ops/templates/services/site-status) | — |
+| cf | 🔄 PR#5 | https://cf.2cld.net/status.json (pending) | [2cld/cf PR#5](https://github.com/2cld/cf/pull/5) | [ops-cf-status-deploy.md](https://github.com/2cld/wip/blob/main/docs/ops-cf-status-deploy.md) |
+| sl | Planned | https://sl.2cld.net/status.json | [2cld/sl](https://github.com/2cld/sl) | TBD |
 
 ---
 
 ## Related Patterns
 
+- [public-status-endpoint-pattern](./public-status-endpoint-pattern.md) — why public > SSH for monitoring
 - [site-status-page-pattern](./site-status-page-pattern.md) — rendered markdown status format (human-readable)
 - [status-freshness-cron-pattern](./status-freshness-cron-pattern.md) — check → compare → write → alert loop
 - [contract-driven-monitoring-pattern](./contract-driven-monitoring-pattern.md) — what to monitor per contract scope
 - [cross-platform-monitoring-pattern](./cross-platform-monitoring-pattern.md) — Linux/Windows/Proxmox check methods
 - [resilient-cron-pattern](./resilient-cron-pattern.md) — cron job reliability patterns
-
-## Implementations
-
-| Site | Status | Endpoint | Repo |
-|------|--------|----------|------|
-| wf | ✅ Live | https://wf.klopfenstein.org/status.json | [2cld/wf](https://github.com/2cld/wf/tree/main/ops/templates/services/site-server) |
-| cf | Planned | TBD | [2cld/cf](https://github.com/2cld/cf) |
-| sl | Planned | TBD | [2cld/sl](https://github.com/2cld/sl) |
