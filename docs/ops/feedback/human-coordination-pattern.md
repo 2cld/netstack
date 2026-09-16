@@ -92,6 +92,23 @@ Corollaries:
 
 ---
 
+## The ops-log (durable incident record per contract)
+
+Alerts on the calendar are ephemeral. Give each contract repo a standing **ops-log issue** — a
+single, long-lived issue where:
+- the **coordinator** appends every significant monitor observation (critical transition, flap,
+  recovery), and
+- the **human** appends resolution acknowledgments (a "fix" gesture — same `<verb>:` grammar as
+  other calendar gestures, routed by contract to the right repo's ops-log).
+
+This makes the incident *history* legible and queryable ("how often did this site flap?") — and it's
+the surface a *backup* human (or their coordinator) reads to service a site without asking the
+primary operator. Alerts flow to it; human acks flow to it; it is the shared, durable record.
+Route resolution acks by **contract** (site → servicing repo), so an alert and a human-filed ticket
+land in the same place regardless of who responds.
+
+---
+
 ## Why this matters for the federation
 
 A backup human at any site interacts with their own coordinator through the *same* channels and
