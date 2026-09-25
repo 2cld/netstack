@@ -2,7 +2,7 @@
 
 **Purpose:** Document the canonical keys that site-config.yml files use across the federation.
 **Consumers:** ns-site-template scripts (generate-site.sh, generate-docs.sh, collect-site.sh), BMR scripts (bootstrap.sh, deploy.sh, restore.sh, verify.sh)
-**Related:** [site-config-physical-schema.md](./site-config-physical-schema.md) (physical inventory extension), [netstack#18](https://github.com/2cld/netstack/issues/18)
+**Related:** [LAN Overview / Standard IP Map](https://netstack.org/docs/lan/) (the gateway model this schema follows), [site-config-physical-schema.md](./site-config-physical-schema.md) (physical inventory extension), [netstack#18](https://github.com/2cld/netstack/issues/18), [netstack#28](https://github.com/2cld/netstack/issues/28) (this rewrite)
 
 ---
 
@@ -10,211 +10,144 @@
 
 `site-config.yml` is the machine-readable source of truth for each federation site. Every site repo (cf, sl, wf) has one at the repo root. Scripts read it to generate docs, deploy services, monitor health, and rebuild from scratch.
 
+The config is organized around the **netstack gateway model** ([LAN Overview](https://netstack.org/docs/lan/)): a site's functions are expressed as **gateways** — network (ng), storage (sg), compute (cg), backups (bg), documents (dg). This is the primary organizing principle, matching how the operator reasons about any system.
+
+> **Schema status (2026-09-25, netstack#28):** cf and sl use the gateway model documented here. **wf still uses the earlier flat schema** (see [Appendix: Flat Schema (transitional)](#appendix-flat-schema-transitional)) and is pending migration. Tools should accept both during the transition.
+
+## The Gateway Model
+
+A **gateway** is a **logical role**, not a specific piece of hardware or a fixed IP. A node or container *declares* which gateway function it fulfills; where it actually lives (IP, container, VM) is a separate, changeable fact.
+
+| Gateway | Function |
+|---------|----------|
+| **ng** | network — routing, DNS, tunnels, VPN, the site's in/out |
+| **sg** | storage — drives, NAS, file shares, backup target |
+| **cg** | compute — hypervisors, containers, workstations, services |
+| **bg** | backups — the BMR (bare-metal rebuild) config/control portal |
+| **dg** | documents — document store/portal (optional) |
+
+**Key principle — map the function, not the IP.** We usually do NOT control IP assignment (Docker IPAM assigns in start-order, ISP DHCP, etc.). So gateways are declared by role; the IP is whatever it happens to be. On a single-machine site, several gateways resolve to the **same node** — that's the normal "munged together" case, and the schema expresses it honestly.
+
+### Standard IP Map (convention, NOT enforced)
+
+When you DO control address assignment (a subnet you own, static Docker IPs), prefer this layout so the address self-documents the role. It is an **aspirational convention** — a hint, not a requirement. Source: [netstack.org/docs/lan/](https://netstack.org/docs/lan/).
+
+| IP | name | role |
+|----|------|------|
+| `x.1` | ng | network gateway |
+| `x.2` | sg | storage gateway |
+| `x.3` | cg | compute gateway |
+| `x.4` | bg2 | backups gateway (secondary) |
+| `x.5` | ng2 | network gateway (secondary) |
+| `x.6` | sg2 | storage gateway (secondary) |
+| `x.7` | cg2 | compute gateway (secondary) |
+| `x.8` | bg | backups gateway |
+| `x.9` | dg | documents gateway |
+
+Secondaries (`ng2/sg2/cg2` at `.5/.6/.7`) are HA partners. The address is a hint for a human/AI glancing at it — never a thing scripts require.
+
 ## Schema Sections
 
 ### site (required)
 
-Identifies the site. Used by all scripts.
+Identifies the site.
 
 ```yaml
-site:
-  code: wf                              # Short identifier (used in scripts, hostnames, paths)
-  name: "Winfield"                      # Human-readable name
-  repo: "https://github.com/2cld/wf"   # Canonical repo URL
-  created: 2024-01-01                   # When site was first documented
-  timezone: "America/Chicago"           # System timezone for cron/logs
-  location: "Physical address"          # Physical address
-  owner: "TreesAES LLC"                 # Legal owner of hardware/location
-  email: "treesaes@gmail.com"           # Owner contact
-  admin: "christrees@gmail.com"         # Technical admin contact
+site: sl                                # Short code — used in scripts, hostnames, paths
+location: "St. Louis (O'Fallon)"        # Human-readable name / place
+primary_node: slwin11ops                # The site's main node
+repo: "https://github.com/2cld/sl"      # Canonical repo URL (optional but recommended)
+timezone: "America/Chicago"             # System timezone (optional)
 ```
+
+> The site code may appear as top-level `site:` (cf, sl) or as `site.code:` in a block (flat schema — see appendix). Tools accept either.
 
 | Key | Required | Used by |
 |-----|:--------:|--------|
-| code | YES | All scripts, hostname generation |
-| name | YES | Docs generation |
-| repo | YES | bootstrap.sh (clone source) |
-| timezone | YES | bootstrap.sh (timedatectl) |
-| location | no | Docs, physical inventory |
-| owner | no | Contract/legal reference |
-| email | no | .wip-contract.md generation |
-| admin | no | Escalation contact |
+| site (code) | YES | All scripts, hostname generation |
+| location / name | YES | Docs generation |
+| primary_node | YES | The declared entry node (see `access`) |
+| repo | no | bootstrap.sh (clone source) |
+| timezone | no | bootstrap.sh (timedatectl) |
 
-### network (required)
+### access (required) — the "one door"
 
-LAN configuration. Used by bootstrap.sh, generate-docs.sh.
+Every site declares **one SSH-reachable node** — the entry point for ops, verify, and BMR. This is the "there's always a door to knock on" guarantee, and it should be **testable** (verify.sh / monitoring confirms it opens).
 
 ```yaml
-network:
-  subnet: 192.168.9.0/24
-  gateway: 192.168.9.1
-  dns_primary: 1.1.1.1
-  dns_secondary: 8.8.8.8
-  isp: "Starlink"
-  dhcp:
-    enabled: true
-    range_start: 192.168.9.100
-    range_end: 192.168.9.199
-    server: 192.168.9.1
-  netstack_assignments:    # Named roles (ng, sg, cg, etc.)
-    ng:
-      ipv4: 192.168.9.1
-      hostname: mikrotik
-      model: "MikroTik RB951G-2HnD"
-      mac: "00:0C:42:B7:CA:E9"
-      enabled: true
+access:
+  ssh:
+    host: 10.147.17.94        # ZeroTier or LAN IP of the door node
+    port: 2020                # sl: WSL SSH on 2020 (NOT Windows :22)
+    user: ghadmin
+    note: "WSL Ubuntu on slwin11ops — the ops door"
 ```
 
-### devices (required)
+### gateways (required)
 
-All network-attached hardware. Used by generate-docs.sh, collect-site.sh.
+Declares each gateway function and the node/container that fulfills it. On a single-box site, multiple gateways point at the same node.
 
 ```yaml
-devices:
-  - hostname: mikrotik
-    type: router          # router, server, workstation, nas, isp, switch
-    role: ng              # netstack role assignment
-    ipv4: 192.168.9.1
-    mac: "00:0C:42:B7:CA:E9"
-    model: "MikroTik RB951G-2HnD"
-    location: wf-ops-rm1  # Physical location tag
-    services:
-      - name: "DHCP"
-        port: 67
-      - name: "Admin"
-        port: 80
-        url: "http://192.168.9.1"
-    notes: "RouterOS 7.5"
+gateways:
+  ng: { node: slwin11ops, function: network }   # routing, DNS, CF tunnel, ZeroTier
+  sg: { node: slwin11ops, function: storage }   # F: backup target + media
+  cg: { node: slwin11ops, function: compute }   # WSL Docker stack
+  bg: { node: slwin11ops, function: backup }    # BMR rebuild portal
+  # dg optional (documents gateway)
 ```
 
-### compute (optional -- extends base for BMR)
+The detailed per-gateway config lives in the matching top-level section below (`ng:`, `sg:`, `cg:`). The `gateways:` block is the index; the sections are the detail.
 
-Virtualization and compute roles. Used by bootstrap.sh, deploy.sh.
+### ng (network gateway detail)
+
+Network config for the site — ISP, gateway IP, DNS, VPN/overlay, tunnels.
 
 ```yaml
-compute:
-  host: cg2                # Primary compute host
-  platform: proxmox        # proxmox, docker, wsl, bare-metal
-  access: "https://192.168.9.3:8006"
-
-  # Compute role assignments (per compute-roles-pattern.md)
-  roles:
-    infra:
-      host: lxc-100
-      platform: docker
-      always_on: true
-      bmr_target: true
-    glacial:
-      - host: 1u-srv-01
-        wol_mac: "AA:BB:CC:DD:EE:01"
-        schedule: "0 2 * * 0"
-        client: "federation"
-    recovery:
-      host: 1u-srv-sg
-      purpose: "Synology drive extraction"
-      temporary: true
-    sort:
-      host: cg2
-      purpose: "USB shelf + SAS triage"
-
-  # VMs/containers on the compute host
-  vms:
-    - id: 100
-      name: docker
-      type: lxc            # lxc, vm
-      hostname: docker
-      ip: 192.168.9.11
-      cores: 2
-      memory: 2048
-      disk: "local-lvm:4G"
-      onboot: false
-      status: stopped
-      services:
-        - name: Portainer
-          port: 9443
+ng:
+  type: "residential"
+  isp: "Spectrum"
+  gateway: "192.168.1.1"
+  vpn:
+    zerotier:
+      network_id: "d5e5fb65371eb4a4"
+      ip: "10.147.17.94"
+  tunnel: "sl-2cld (Cloudflare, via Docker in WSL)"
+  dns: "192.168.1.1"
 ```
 
-### storage (optional)
+### sg (storage gateway detail)
 
-Storage pools and datasets. Used by generate-docs.sh, verify.sh.
+Drives, pools, shares, backup targets. (See sl/cf for the drives-list form; `storage:` / `storage_index:` extend this for detailed manifests.)
 
 ```yaml
-storage:
-  pools:
-    - name: MediaVolume
-      type: zfs             # zfs, btrfs, lvm, raw
-      layout: raidz1        # raidz1, mirror, stripe, single
-      host: cg2
-      size_tb: 21.8
-      used_tb: 12.4
-      free_tb: 9.37
-      drives:
-        - serial: Z4D0830X
-          model: ST6000DX000-1H217Z
-      datasets:
-        - name: Media
-          size: "8.86 TB"
-          tier: media        # media, scratch, warm, cold, archive
+sg:
+  drives:
+    - letter: "F:"
+      label: "slDriveF"
+      size_gb: 1863
+      purpose: "Media + Federation Backup"
 ```
 
-### services (optional)
+### cg (compute gateway detail)
 
-Running services. Used by deploy.sh, verify.sh, generate-docs.sh.
+Compute host(s), platform, and the services running on them. **Services live under `cg.services`.**
 
 ```yaml
-services:
-  - name: "wfMedia"
-    type: "media"           # media, infra, backup, web, database
-    application: "Plex"
-    host: cg2
-    vm_id: 101
-    port: 32400
-    status: running
-    access:
-      local: "http://192.168.9.x:32400"
-      remote: "none"
+cg:
+  pattern: "compute-wsl-docker-pattern"
+  nodes:
+    - name: slwin11ops
+      type: "Windows 11"
+      role: "Primary ops, backup receiver, Docker host (via WSL)"
+  services:
+    - { name: gitea, host: slwin11ops, port: 3000, critical: true, public: "gitea.2cld.com" }
+    - { name: traefik, host: slwin11ops, port: 443, critical: true }
+    - { name: cloudflared, host: slwin11ops, type: "cloudflare tunnel", critical: true }
 ```
 
-### zerotier (optional)
+### bg (backups gateway detail, optional)
 
-Overlay network membership. Used by bootstrap.sh.
-
-```yaml
-zerotier:
-  enabled: true
-  networks:
-    - id: d5e5fb65371eb4a4
-      name: cat-ghadmin-grid
-      purpose: federation
-  members:
-    - hostname: devwin10
-      zt_ip: 10.147.17.165
-      networks: [d5e5fb65371eb4a4]
-```
-
-### monitoring (optional)
-
-Monitoring goals and checks. Used by verify.sh, generate-docs.sh.
-
-```yaml
-monitoring:
-  enabled: true
-  script: "ops/scripts/wf-status.sh"
-  goals:
-    - name: "Federation backup target"
-      enabled: true
-      depends:
-        - service: ssh
-          host: devwin10
-          user: buadmin
-          port: 22
-      validated_by: ".backup-state file fresh < 24h"
-      current_status: "OPERATIONAL"
-  checks:
-    - name: devwin10
-      method: ping
-      target: 10.147.17.165
-```
+The BMR rebuild config/control portal + backup flows. May reference `backup_and_recovery:`.
 
 ### federation (required)
 
@@ -223,50 +156,83 @@ Cross-site relationships. Used by restore.sh, backup scripts.
 ```yaml
 federation:
   name: "2cld.net"
-  role: "bu-1"             # primary, bu-0 (first backup), bu-1 (second backup)
+  role: "bu-0"             # primary, bu-0 (first backup), bu-1 (second backup)
   backup_from: cf          # Which site sends backups here
-  backup_path: "D:\\cat9bu-wf\\"
-  reference: "https://netstack.org/docs/ops/deployments/"
+  backup_path: "F:/slMedia/catbu-sl/"
+  reference: "https://netstack.org/docs/lan/"
 ```
+
+### monitoring (optional)
+
+Monitoring goals + checks. Used by verify.sh, generate-docs.sh. See `.wip-monitor.yml` for the contract-driven form.
 
 ### physical (optional)
 
-Physical infrastructure (locations, switches, cables, power). See [site-config-physical-schema.md](./site-config-physical-schema.md) for full specification.
+Physical infrastructure (locations, switches, cables, power). See [site-config-physical-schema.md](./site-config-physical-schema.md).
 
 ## Validation Rules
 
-1. **site.code** must be unique across the federation (cf, sl, wf)
-2. **site.repo** must be a valid git clone URL
-3. **devices[*].hostname** must be unique within the site
-4. **devices[*].ipv4** must be within `network.subnet`
-5. **compute.vms[*].id** must be unique within the compute host
-6. **zerotier.networks[*].id** must be a valid 16-character hex string
-7. **federation.role** must be one of: primary, bu-0, bu-1, bu-2, etc.
+1. **site code** must be unique across the federation (cf, sl, wf)
+2. **access.ssh** must be present and reachable (the "one door" — testable)
+3. Each declared **gateway** must name a node that exists at the site
+4. On single-box sites, gateways sharing a node is valid (not an error)
+5. **federation.role** must be one of: primary, bu-0, bu-1, bu-2, etc.
+6. The **Standard IP Map is a convention, not a validation rule** — do not fail a config for using a different address
 
-## Cross-Site Validation
+## Current State (measured 2026-09-25, netstack#28)
 
-When validating across all federation sites:
-- No two sites should have the same `site.code`
-- `federation.backup_from` must reference a valid site code
-- ZeroTier network IDs should be consistent across sites that need connectivity
+| Site | schema shape | services location | conforms to gateway model? |
+|------|--------------|-------------------|:--------------------------:|
+| **cf** | `ng`/`sg`/`cg` + `goals` | `cg.services` | ✅ yes |
+| **sl** | `ng`/`sg`/`cg` + `goals` | `cg.services` | ✅ yes |
+| **wf** | flat: `network`/`devices`/`compute`/`services` | top-level `services` | ⏳ transitional — migration pending |
 
-## Current State (validated against actual configs)
+> Corrects the prior table, which incorrectly claimed all three sites had `network:`/`devices:`/`services:`. Measured reality: cf/sl use the gateway shape; wf uses the flat shape.
 
-| Site | site | network | devices | compute | storage | services | zerotier | monitoring | federation |
-|------|:----:|:-------:|:-------:|:-------:|:-------:|:--------:|:--------:|:----------:|:----------:|
-| cf | YES | YES | YES | YES | YES | YES | YES | YES | YES |
-| sl | YES | YES | YES | YES | YES | YES | YES | YES | YES |
-| wf | YES | YES | YES | YES | YES | YES | YES | YES | YES |
+**Open items (netstack#28):**
+- Migrate wf from flat → gateway shape (pending; subnet confirmation needed first)
+- Confirm real subnets (sl `.1` vs `.9`, wf `.9` vs `.254`) — needs operator/live-read, not docs
+- Update `generate-docs.sh` to read `cg.services` (validator already handles the gateway shape as of ns-site-template#3)
+- `dg` (documents gateway) — defined but not yet used by any site
 
-**Gaps identified:**
-- `compute.roles` section (from compute-roles-pattern.md) not yet present in any site config -- proposed addition
-- wf has the most complete config; sl has the most detailed physical inventory
-- cf compute section documents Proxmox VMs but not role assignments
+## Appendix: Flat Schema (transitional)
+
+wf currently uses an earlier **flat** schema with top-level `network:`, `devices:`, `compute:`, `storage:`, `services:`, `zerotier:`, `monitoring:`. It predates the gateway-model convergence (this doc, 2026-09-25). Tools accept it during the migration window. It will be removed once wf is migrated.
+
+<details>
+<summary>Flat schema sections (wf)</summary>
+
+```yaml
+site:
+  code: wf
+  name: "Winfield"
+  repo: "https://github.com/2cld/wf"
+network:
+  subnet: 192.168.9.0/24
+  gateway: 192.168.9.1
+  netstack_assignments:      # ng/sg/cg as device-role labels (the seed of the gateway model)
+    ng: { ipv4: 192.168.9.1, hostname: mikrotik }
+devices:
+  - hostname: mikrotik
+    role: ng                 # gateway role as a device attribute
+compute:
+  host: cg2
+  roles: { infra: {...}, glacial: [...] }   # compute-roles-pattern.md
+services:
+  - { name: "wfMedia", type: media, host: cg2, port: 32400 }
+federation:
+  name: "2cld.net"
+  role: "bu-1"
+```
+
+Note: the flat schema already carried ng/sg/cg as **device role labels** (`devices[*].role`, `network.netstack_assignments`) — the gateway model is the promotion of that idea to a first-class organizing structure.
+</details>
 
 ## Related
 
-- [compute-roles-pattern.md](./compute-roles-pattern.md) -- defines the `compute.roles` extension
-- [bmr-pattern.md](./bmr-pattern.md) -- scripts that consume this schema
+- [LAN Overview / Standard IP Map](https://netstack.org/docs/lan/) -- the gateway model + IP convention this schema follows
+- [compute-roles-pattern.md](./compute-roles-pattern.md) -- compute role assignments (infra/glacial/recovery/sort)
+- [bmr-pattern.md](./bmr-pattern.md) -- scripts that consume this schema (bg is their portal)
 - [site-config-physical-schema.md](./site-config-physical-schema.md) -- physical inventory extension
 - [site-docs-generator-pattern.md](./site-docs-generator-pattern.md) -- generating docs from config
 - [ns-site-template](https://gitea.cat9.me/nsadmin/ns-site-template) -- scaffold scripts that read this schema
