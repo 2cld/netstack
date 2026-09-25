@@ -32,16 +32,18 @@ This gateway model is the organizing principle for each site's `site-config.yml`
 | nslocation | subnet | gateway | PIP | note |
 |------------|--------|---------|-----|------|
 | cf.ns.lan  | 192.168.6.0/24 | 192.168.6.1 | 192.111.21.62 | cedar-falls (Fletch) |
-| sl.ns.lan  | 192.168.0.0/24 (ISP) / 192.168.9.0/24 (ns) | 192.168.0.1 | 24.216.208.251 | silver-lake |
-| wf.ns.lan  | 192.168.254.0/24 | 192.168.254.254 | x.x.x.x | winfield mikrotik |
+| sl.ns.lan  | 192.168.1.0/24 | 192.168.1.1 | 24.216.208.251 | silver-lake — ISP DHCP (Spectrum modem), NOT operator-controlled |
+| wf.ns.lan  | 192.168.254.0/24 (unverified) | 192.168.254.254 | x.x.x.x | winfield mikrotik — see note |
 
-> ⚠️ **Subnet drift — unverified (netstack#28, 2026-09-25).** This table disagrees with the repo
-> `site-config.yml` values for sl and wf. cf agrees (`192.168.6.0/24`). Discrepancies:
-> **sl** — here `192.168.0.0/24`(ISP)/`192.168.9.0/24`(ns) vs config `192.168.1.0/24`;
-> **wf** — here `192.168.254.0/24` vs config `192.168.9.0/24`.
-> The true values need operator confirmation (or a live network read) before either source is
-> normalized — a confidently-wrong value is worse than a flagged-inconsistent one. Do not treat
-> this row as authoritative for sl/wf until reconciled.
+> ⚠️ **Subnet reconciliation (netstack#28):**
+> - **cf** — `192.168.6.0/24` consistent.
+> - **sl** — resolved 2026-09-25 (operator-confirmed): `192.168.1.0/24`, gw `192.168.1.1`
+>   (Spectrum modem). The repo `site-config.yml` was correct; this table's old
+>   `192.168.0.0/24`/`192.168.9.0/24` entry was wrong and is now fixed. sl runs on **ISP DHCP the
+>   operator does NOT control** — exactly why the gateway model maps *function, not IP*.
+>   slwin11ops LAN `192.168.1.194`; primary ZT `10.147.17.94` (secondary ZT net `10.147.19.13`).
+> - **wf** — still unverified: table says `192.168.254.0/24` vs config `192.168.9.0/24`.
+>   Needs operator confirmation before normalizing. Do not treat the wf row as authoritative yet.
 
 Site-specific details: [ops/deployments](../ops/deployments/)
 
