@@ -33,7 +33,7 @@ This gateway model is the organizing principle for each site's `site-config.yml`
 |------------|--------|---------|-----|------|
 | cf.ns.lan  | 192.168.6.0/24 | 192.168.6.1 | 192.111.21.62 | cedar-falls (Fletch) |
 | sl.ns.lan  | 192.168.1.0/24 | 192.168.1.1 | 24.216.208.251 | silver-lake — ISP DHCP (Spectrum modem), NOT operator-controlled |
-| wf.ns.lan  | 192.168.254.0/24 (unverified) | 192.168.254.254 | x.x.x.x | winfield mikrotik — see note |
+| wf.ns.lan  | 192.168.9.0/24 | 192.168.9.1 | x.x.x.x | winfield — mikrotik/pfsense gw; WAN via Starlink; devwin10 currently moved off-netstack |
 
 > ⚠️ **Subnet reconciliation (netstack#28):**
 > - **cf** — `192.168.6.0/24` consistent.
@@ -42,8 +42,13 @@ This gateway model is the organizing principle for each site's `site-config.yml`
 >   `192.168.0.0/24`/`192.168.9.0/24` entry was wrong and is now fixed. sl runs on **ISP DHCP the
 >   operator does NOT control** — exactly why the gateway model maps *function, not IP*.
 >   slwin11ops LAN `192.168.1.194`; primary ZT `10.147.17.94` (secondary ZT net `10.147.19.13`).
-> - **wf** — still unverified: table says `192.168.254.0/24` vs config `192.168.9.0/24`.
->   Needs operator confirmation before normalizing. Do not treat the wf row as authoritative yet.
+> - **wf** — resolved 2026-09-25 (operator-confirmed): `192.168.9.0/24`, gw `192.168.9.1`
+>   (mikrotik/pfsense); WAN uplink via Starlink (`192.168.4.1`). The repo `site-config.yml` was
+>   correct; this table's old `192.168.254.0/24` entry was wrong and is now fixed. Reach into wf
+>   over ZeroTier: docker LXC `10.147.17.26` (→ `192.168.9.11`, the SSH door) and Proxmox cg2
+>   `10.147.17.65` (→ `192.168.9.3`). **Note:** devwin10's physical ethernet is currently moved to
+>   a non-netstack segment (`192.168.0.x`), so devwin10 is not on the wf LAN right now — ZT reaches
+>   the site regardless.
 
 Site-specific details: [ops/deployments](../ops/deployments/)
 
