@@ -4,6 +4,11 @@
 **Consumers:** ns-site-template scripts (generate-site.sh, generate-docs.sh, collect-site.sh), BMR scripts (bootstrap.sh, deploy.sh, restore.sh, verify.sh)
 **Related:** [LAN Overview / Standard IP Map](https://netstack.org/docs/lan/) (the gateway model this schema follows), [site-config-physical-schema.md](./site-config-physical-schema.md) (physical inventory extension), [netstack#18](https://github.com/2cld/netstack/issues/18), [netstack#28](https://github.com/2cld/netstack/issues/28) (this rewrite)
 
+> **Pattern vs data:** netstack documents the *schema shape* (keys, structure, meaning) with
+> placeholder examples. **Actual IPs, node names, ZT addresses, credentials, and operational
+> data live in the per-site private repos** (`2cld/sl`, `2cld/cf`, `2cld/wf`) and the wip
+> coordinator repo (`2cld/wip`) — never in public netstack.
+
 ---
 
 ## Overview
