@@ -20,6 +20,7 @@
 - An **application** = *where* (hostname and optional path) + *which policies apply* + session length. An app **attaches** policies by reference; it does not own them. Editing a policy changes every app using it; the policy list shows an app count, and a policy with 0 apps is safe to delete.
 - **Most specific app wins.** `gitea.cat9.me/v2/` beats `gitea.cat9.me`, which beats `*.cat9.me`. A path app can only open its own path.
 - An app's policies evaluate in order: Bypass/Service Auth first, then Allow. If nothing matches, access is denied.
+- **One destination, one app.** Cloudflare rejects a new app whose hostname is already in another app. To move to a wildcard, **edit the existing lockdown app** (rename it, replace its hostnames with `*.cat9.me` + `cat9.me`) rather than creating a second one. Path apps (`host/status.json`) are different destinations, so they coexist.
 - **Names mislead.** An app called `gitea` that covers only `/v2/` is not the gitea lock. Name apps by what they cover: `<site>-lockdown` for the wildcard, `<site>-<service>-<path>` for bypasses (e.g. `gitea-registry`).
 
 ## Default deny: every hostname is locked unless listed
