@@ -120,15 +120,24 @@ Multi-container projects: only the web-facing container gets labels. Name router
 |----------|---------|----------------|
 | `<name>.<domain>` | `https://traefik:443` | No TLS Verify = on |
 
+**Origin request settings (required):** set **Origin Server Name** = `<name>.<domain>` (preferred: cloudflared connects to `traefik` but the cert is `*.<domain>`, so without this the TLS name check fails and Cloudflare returns 502). Fallback: **No TLS Verify** = on. Leave HTTP Host Header unset so Traefik sees the original `Host`. Do **not** turn TLS off; the origin is `https://traefik:443`.
+
+**Rule order matters:** ingress rules are matched **top to bottom, first match wins**. A wildcard rule (`*.<domain>`) matches every hostname listed below it, so those rules never run. Keep no wildcard rule (preferred), or put it last, just above the final `http_status:404`. New hostnames go anywhere above it.
+
 Always target the container name `traefik` on the `proxy` network. **Never** use a host IP such as `https://192.168.x.x`; it breaks when the host's LAN address changes.
 
-### 4. Deploy and verify
+### 4. Deploy and verify (both paths)
 
 ```bash
 mkdir -p /opt/appdata/<name>/data
 cd /opt/appdata/<name> && docker compose up -d
 docker logs traefik 2>&1 | grep <name>
+# Public path (Cloudflare tunnel) - run from a host WITHOUT a local override for <name>:
 curl -sI https://<name>.<domain>     # expect 200/302, server: cloudflare
+# ZeroTier path (direct to Traefik):
+curl -sI --resolve <name>.<domain>:443:<zt-ip> https://<name>.<domain>
+# Tunnel errors:
+docker logs --tail 20 cf-cat9me      # check ingressRule=N and originService for the failing request
 ```
 
 ### 5. Document
@@ -139,6 +148,7 @@ curl -sI https://<name>.<domain>     # expect 200/302, server: cloudflare
 ## Cleanup / audit checklist
 
 - Every proxied DNS CNAME has a matching tunnel ingress entry, and every ingress hostname has a DNS record.
+- No wildcard ingress rule above a specific hostname (first match wins); every Traefik origin has Origin Server Name set (or No TLS Verify).
 - Every ingress service is `https://traefik:443` (or `http://traefik:80`), except deliberate non-Traefik origins, which must be listed in the site's services doc with a reason.
 - Every running container with `traefik.enable=true` has a DNS record and ingress entry.
 - No `:latest` image tags; versions pinned.
