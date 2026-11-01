@@ -1,6 +1,7 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/wan/cloudflare/README.md)
 
 # cloudflare
+- Pattern: [Docker service on `<name>.<domain>` (tunnel → Traefik)](./docker-service-subdomain-pattern.md)
 - dashboard https://dash.cloudflare.com/
   - Add domain in website
   - tbd
