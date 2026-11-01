@@ -53,6 +53,7 @@ Every service lives in one folder under a single appdata root. Default root: `/o
 Rules:
 - `~/code` holds git repos only. No service data, no secrets, no live compose files.
 - Persistent data uses **bind mounts** under `${DATA_ROOT:-/opt/appdata}/<name>/`. Named volumes are only for rebuildable output (generated sites, caches).
+- One-time host setup: `sudo mkdir -p /opt/appdata && sudo chown nsadmin:nsadmin /opt/appdata` (top level only, **not** `-R`). Each `/opt/appdata/<name>/` is owned by the user its container runs as (nsadmin for `PUID=1000` images; root for images that run as root; a fixed UID for databases). A recursive chown of the whole tree breaks those.
 - Containers run with `PUID`/`PGID` (the service owner, e.g. 1000:1000) where the image supports it, so files in appdata are owned by a normal user.
 - Large media/shares (NAS) are mounted from `/media/<share>` and are not part of appdata.
 - Traefik is a service like any other: `/opt/appdata/traefik/` holds `config/traefik.yaml`, `config/dynamic/`, `acme.json` (600) and `logs/`.
