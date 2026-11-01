@@ -14,6 +14,14 @@
 | `/health` | 🔓 Bypass (Everyone) | infra liveness checks |
 | `/` and everything else | 🔒 Protected (owner + named users) | docs/portals expose IPs, schedules, control surfaces |
 
+## How Access fits together (read this first)
+
+- A **policy** = *who* (Allow / Bypass / Service Auth + include rules). Created **once**, reusable.
+- An **application** = *where* (hostname and optional path) + *which policies apply* + session length. An app **attaches** policies by reference; it does not own them. Editing a policy changes every app using it; the policy list shows an app count, and a policy with 0 apps is safe to delete.
+- **Most specific app wins.** `gitea.cat9.me/v2/` beats `gitea.cat9.me`, which beats `*.cat9.me`. A path app can only open its own path.
+- An app's policies evaluate in order: Bypass/Service Auth first, then Allow. If nothing matches, access is denied.
+- **Names mislead.** An app called `gitea` that covers only `/v2/` is not the gitea lock. Name apps by what they cover: `<site>-lockdown` for the wildcard, `<site>-<service>-<path>` for bypasses (e.g. `gitea-registry`).
+
 ## Default deny: every hostname is locked unless listed
 
 > **No hostname is public by accident.** A new tunnel hostname is born locked; opening a path is a deliberate, listed exception.
