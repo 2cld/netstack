@@ -60,5 +60,7 @@ All site repos use the same build pattern:
 ## Related
 
 - [Federation Node Topology](./federation-node-topology.md) — standard node structure
+- [Site Repo Flow + Reproducible Build](./site-repo-flow-pattern.md) — repo layers, pinned versions, air-gap rebuild
+- [Docker Service on `<name>.<domain>`](../../wan/cloudflare/docker-service-subdomain-pattern.md) — tunnel → Traefik routing and `/opt/appdata` layout
 - [Federation Backup Plan](../backup/federation-backup-plan.md) — cross-site backup strategy
 - [Sensitive Data Pattern](../security/sensitive-data-pattern.md) — what stays private

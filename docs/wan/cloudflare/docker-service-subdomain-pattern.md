@@ -2,7 +2,7 @@
 
 **Pattern type:** Service deployment
 **Applies to:** Any federation site that runs Docker + Traefik + a `cloudflared` tunnel (reference site: cf, domain `cat9.me`)
-**Related:** [cloudflare-tunnel-monitoring-pattern](./cloudflare-tunnel-monitoring-pattern.md), [site-docs-generator-pattern](../../ops/deployments/site-docs-generator-pattern.md)
+**Related:** [site-repo-flow-pattern](../../ops/deployments/site-repo-flow-pattern.md) (rebuild/BMR, version pinning), [cloudflare-tunnel-monitoring-pattern](./cloudflare-tunnel-monitoring-pattern.md), [site-docs-generator-pattern](../../ops/deployments/site-docs-generator-pattern.md)
 
 ## Overview
 
@@ -104,6 +104,10 @@ networks:
     external: true
 ```
 
+Pin the image tag (`image: <image>:<version>`, version from `.env`). No `:latest`; see [site-repo-flow-pattern](../../ops/deployments/site-repo-flow-pattern.md#version-pinning-rules). Updates are a deliberate act.
+
+Two compose files per app when it must also run offline: the repo-root `docker-compose.yml` is for **local/offline events** (published port, no Traefik, no tunnel); `deploy/docker-compose.yml` is the tunnel/Traefik deployment (this recipe) and is the one copied to `/opt/appdata/<name>/compose.yml`.
+
 Multi-container projects: only the web-facing container gets labels. Name routers/services `<name>` (no `-secure` suffixes, no duplicate http router; the entrypoint redirect handles port 80).
 
 ### 2. DNS (Cloudflare zone)
@@ -137,6 +141,7 @@ curl -sI https://<name>.<domain>     # expect 200/302, server: cloudflare
 - Every proxied DNS CNAME has a matching tunnel ingress entry, and every ingress hostname has a DNS record.
 - Every ingress service is `https://traefik:443` (or `http://traefik:80`), except deliberate non-Traefik origins, which must be listed in the site's services doc with a reason.
 - Every running container with `traefik.enable=true` has a DNS record and ingress entry.
+- No `:latest` image tags; versions pinned.
 - Compose files contain no secrets (tunnel token, API tokens); use `.env` (git-ignored, 600).
 - One Traefik config directory (`/opt/appdata/traefik/config`), one source of truth.
 - Persistent data is under `/opt/appdata/<name>/`, not `~/code` and not a hidden named volume.
