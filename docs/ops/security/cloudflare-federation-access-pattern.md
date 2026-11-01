@@ -45,6 +45,22 @@ Rules:
 
 **Exposed data:** public `/status.json` and `/health` are read-only and must contain no internal IPs, credentials or action endpoints (wf lesson, [netstack#21](https://github.com/2cld/netstack/issues/21)).
 
+## cat9.me: apply checklist (2026-11-01, [netstack#38](https://github.com/2cld/netstack/issues/38))
+
+Manual dashboard work (Zero Trust -> Access -> Applications / Policies). After each step run `verify-access.sh`; target `ACCESS OK 13/13`.
+
+1. **Policies -> reusable policies:**
+   - `owners` (Allow): Include `Emails` = christrees@gmail.com (add other named people); Include `Emails ending in` = `horseoff.com` (this is the `email_domain` selector). No `trinkala.com`.
+   - `public-readonly` (Bypass): Include `Everyone`.
+2. **Fix existing policies:** `ho-emails` and `sl-2cld-com`/`Default`: replace the literal `@horseoff.com` `email` rule with `email_domain`; remove `trinkala.com`; inspect and record the `Default` require rule.
+3. **Create app `cat9-lockdown`** (Self-hosted): destinations `*.cat9.me` and `cat9.me`; policy `owners`; session **24h**; auto-redirect to the identity provider if only one.
+4. **Keep the existing bypass apps** (`cf-status`, `cf-health`, `wip-status`, `wip-health`) and the gitea `/v2/` app; they are more specific and win over the wildcard.
+5. **Admin hosts:** optional per-host apps (traefik, portainer) with an **8h** session and `owners`.
+6. **Retire the old app:** delete `tunnellockdown` once `cat9-lockdown` is verified (this also drops the removed `cp` hostname).
+7. **Scope the service token:** attach the `gitea-bypass` service-auth policy to the gitea app only.
+8. **Rename** `wip-heath` -> `wip-health`; then update `wip/docs/ops-federation-access-model.md` and cf `docs/services.md`.
+9. **Verify:** `bash cf/ops/services/site-status/verify-access.sh` -> `ACCESS OK 13/13`. Then uncomment the check in `checks.yml` and `docker compose up -d checker`.
+
 ## The mechanism that actually matters
 
 > **A path-scoped Access application takes precedence over a broad domain application.**
