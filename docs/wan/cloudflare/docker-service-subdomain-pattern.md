@@ -120,11 +120,15 @@ Multi-container projects: only the web-facing container gets labels. Name router
 |----------|---------|----------------|
 | `<name>.<domain>` | `https://traefik:443` | No TLS Verify = on |
 
-**Origin request settings (required):** set **Origin Server Name** = `<name>.<domain>` (preferred: cloudflared connects to `traefik` but the cert is `*.<domain>`, so without this the TLS name check fails and Cloudflare returns 502). Fallback: **No TLS Verify** = on. Leave HTTP Host Header unset so Traefik sees the original `Host`. Do **not** turn TLS off; the origin is `https://traefik:443`.
+**Origin request settings (required):** Edit the public hostname → **Additional application settings → TLS → Origin Server Name** = `<name>.<domain>`. This is a separate setting from the public "Full hostname" field. cloudflared connects to `traefik` but the cert is `*.<domain>`, so without it the TLS name check fails and Cloudflare returns 502. Fallback: **No TLS Verify** = on (less strict; avoid unless needed). Leave HTTP Host Header unset so Traefik sees the original `Host`. Do **not** turn TLS off; the origin is `https://traefik:443`. API field: `originRequest.originServerName`.
 
 **Rule order matters:** ingress rules are matched **top to bottom, first match wins**. A wildcard rule (`*.<domain>`) matches every hostname listed below it, so those rules never run. Keep no wildcard rule (preferred), or put it last, just above the final `http_status:404`. New hostnames go anywhere above it.
 
 Always target the container name `traefik` on the `proxy` network. **Never** use a host IP such as `https://192.168.x.x`; it breaks when the host's LAN address changes.
+
+### Non-Traefik origins (host services such as Cockpit)
+
+A service running on the host (not a container) cannot use the container name. Preferred: add `extra_hosts: ["host.docker.internal:host-gateway"]` to the cloudflared container and use `http://host.docker.internal:<port>`. Acceptable: the host's ZeroTier IP (stable, but the route then depends on ZeroTier). Never the LAN IP. Origin Server Name has no effect on `http://` origins. Admin tools like Cockpit must sit behind Cloudflare Access.
 
 ### 4. Deploy and verify (both paths)
 
@@ -144,6 +148,10 @@ docker logs --tail 20 cf-cat9me      # check ingressRule=N and originService for
 
 1. Add a row to the site repo's `docs/services.md` (published at `<site>.<domain>`).
 2. Add a check to the site's `checks.yml` if the service is operational-tier.
+
+## Cloudflare Access
+
+Sensitive hostnames (git, admin tools, site portals) are protected by a Cloudflare Access application (see netstack#21). Machine-readable endpoints (`/status.json`, `/health`, registry `/v2/`) get separate path-specific Bypass applications; Cloudflare matches the most specific application first. Record which hostnames are covered in the site's services doc. When testing the public path, a `302` to `*.cloudflareaccess.com` means the tunnel works and Access is answering.
 
 ## Cleanup / audit checklist
 
