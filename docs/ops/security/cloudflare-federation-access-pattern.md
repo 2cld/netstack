@@ -29,7 +29,7 @@
 
 | Policy | Decision | Include | Attach to |
 |--------|----------|---------|-----------|
-| `owners` | Allow | named owner emails (`email`) + domains we control (`email_domain`, e.g. `horseoff.com`) | the lockdown app and per-host apps |
+| `owners` | Allow | named owner emails (`email`, e.g. christrees@gmail.com) + `email_domain` `horseoff.com` (decided 2026-11-01; `trinkala.com` dropped) | the lockdown app and per-host apps |
 | `public-readonly` | Bypass | Everyone | **only** the path-scoped bypass apps |
 | `svc-<consumer>` | Service Auth (non_identity) | one named service token | **one** app/host that consumer needs |
 
@@ -91,6 +91,8 @@ For each hostname it asserts, **as the public sees it** (names resolved over DNS
 | `GET /` | 302 to `*.cloudflareaccess.com` |
 | `GET /__access_probe__` (arbitrary path) | 302 to Access (catches path-scoped apps that leave the rest open) |
 | each listed bypass path | NOT an Access redirect, expected status (default 200) |
+
+Bypass paths `/status.json` and `/health` are also held to the [status contract](../monitor/public-status-endpoint-pattern.md) (valid JSON, required keys, no private IPs, fresh timestamp), so an open path cannot quietly leak or go stale.
 
 Output ends with `ACCESS OK n/n` or `ACCESS FAIL k/n: <hosts>` (exit 0/1). It is read-only, needs no credentials and takes about 1 s for 13 hosts.
 

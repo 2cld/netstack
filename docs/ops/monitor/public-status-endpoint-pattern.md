@@ -51,6 +51,22 @@ Each site generates its own `status.json` locally, then publishes it via a Cloud
 └─────────────────────────────────────────────────────┘
 ```
 
+## Status contract (normalized 2026-11-01)
+
+Publish status **per site, not per service**: one `/status.json` and `/health` on the site's hostname (e.g. `cf.cat9.me`). The checker probes each service from inside, so the public view is a single endpoint. Every other hostname stays fully behind Cloudflare Access ([access pattern](../security/cloudflare-federation-access-pattern.md)).
+
+| Path | Required keys | Notes |
+|------|---------------|-------|
+| `/status.json` | `site`, `site_name`, `timestamp` (ISO 8601 UTC), `status` (`ok`/`degraded`/`error`), `check_interval_seconds`, `checks[]` (`name`, `type`, `status`, `message`, `tier`, `goal`), counts | read-only, no actions |
+| `/health` | `service`, `site`, `status`, `timestamp`, `check_interval_seconds` | liveness of the status service only; `ok` even when `/status.json` says `degraded` |
+
+Rules, all enforced by `verify-access.sh` on every bypass path (cf `ops/services/site-status/`):
+- valid JSON with the required keys
+- **no private, ZeroTier (100.64/10) or loopback IPs** and no long token-like strings in any field, including `message`
+- **fresh:** `timestamp` no older than 3 x `check_interval_seconds`, so a dead checker serving an old file turns red
+
+Verified 2026-11-01: cf and wip match this contract (same checker output).
+
 ## Architecture Principles
 
 1. **Status is public, data is private.** The status endpoint reports health (ok/error/warning) and capacity (GB free). It does NOT expose file contents, credentials, or user data.
