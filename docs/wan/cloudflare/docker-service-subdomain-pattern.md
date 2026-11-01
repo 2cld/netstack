@@ -151,7 +151,7 @@ docker logs --tail 20 cf-cat9me      # check ingressRule=N and originService for
 
 ## Cloudflare Access
 
-Sensitive hostnames (git, admin tools, site portals) are protected by a Cloudflare Access application (see netstack#21). Machine-readable endpoints (`/status.json`, `/health`, registry `/v2/`) get separate path-specific Bypass applications; Cloudflare matches the most specific application first. Record which hostnames are covered in the site's services doc. When testing the public path, a `302` to `*.cloudflareaccess.com` means the tunnel works and Access is answering.
+Every hostname is locked behind Cloudflare Access by default (wildcard lockdown app); only read-only `/status.json` and `/health` paths are opened. Full design, policies, sessions and the `verify-access.sh` check: [cloudflare-federation-access-pattern](../../ops/security/cloudflare-federation-access-pattern.md). Adding a hostname = tunnel route + DNS + a line in the site's `access-policy.conf`. Machine-readable endpoints (`/status.json`, `/health`, registry `/v2/`) get separate path-specific Bypass applications; Cloudflare matches the most specific application first. Record which hostnames are covered in the site's services doc. When testing the public path, a `302` to `*.cloudflareaccess.com` means the tunnel works and Access is answering.
 
 ## Cleanup / audit checklist
 
