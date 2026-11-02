@@ -6,6 +6,7 @@ Backup procedures, scripts, and tools for netstack operations.
 
 - [backup-catMediaShare](backup-catMediaShare.md) - powershell media backup
 - [backup-diagram](backup-diagram.md) - backup flow diagram
+- [service-data-backup-restore-pattern](service-data-backup-restore-pattern.md) - Docker service data under `/opt/appdata`: backup, restore, and the required restore test (draft)
 - [backup-powershell-script](https://netstack.org/docs/ops/backup/backup-powershell-script) - powershell scripts
 - [backup-powershell-wbadmin](./backup-powershell-wbadmin) - wbadmin backup
 - [backup-proxmox-server](./backup-proxmox-server) - proxmox backup
