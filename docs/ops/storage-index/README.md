@@ -360,6 +360,64 @@ budget; Wip must not sum the same capacity twice. Raw `free_gb` is not allocatab
 capacity. The serving site rechecks capacity and serializes reservation decisions
 to prevent competing requests from overcommitting the same storage.
 
+### Hardware identity and independent backup placement
+
+A reusable BMDR hardware profile is not an inventory of available machines.
+Keep one asset record per physical chassis, linked to the fleet/profile and its
+current role. Record stable asset ID, verified make/model and chassis serial,
+physical location, installed CPU/RAM/controllers/NICs, boot/virtualization
+capabilities, condition, test evidence and inspection time. Record variations
+between units; do not copy an unverified model or capability to the whole fleet.
+Hostnames, VM IDs and service names refer to deployments, not chassis identities.
+
+Identify each physical drive by its asset ID and hardware serial/WWN as exposed
+by the physical host, enclosure or storage controller. Link its current bay and
+chassis/enclosure, capacity and pool/array membership. Device names such as
+`/dev/sda` and drive letters are local observations, not persistent identity.
+Filesystem UUIDs and guest-presented disk serials are useful cross-references,
+but can be cloned or virtualized; they do not prove physical drive identity.
+
+For each service source and backup target, publish the applicable backing links:
+
+```text
+service / backup allocation
+  -> filesystem / dataset / container bind or volume
+  -> guest virtual disk or mount
+  -> hypervisor image / logical volume / passthrough device
+  -> storage pool / RAID / LUN / NAS backend
+  -> physical member drives
+  -> enclosure / controller / chassis / site
+```
+
+Skip layers that do not apply, but do not stop at a VM disk or an exported share.
+Include every backing member of mirrored, striped, parity and thin-provisioned
+storage, and shared metadata/cache devices on which the allocation depends.
+Use stable, owner-scoped IDs and links so aliases on different guests resolve
+to the same backing resource. Record observer, observation time and unresolved
+layers. A VM collector reports what it sees; the hypervisor/storage owner
+supplies the underlying mapping. This does not grant guest agents host access.
+
+Before accepting a backup placement, compare source and target backing evidence:
+
+| Finding | Permitted claim |
+|---------|-----------------|
+| Overlapping physical drives, or the same backing pool/array exposed through different paths, VMs or shares | Shared storage; not an independent physical backup copy |
+| Separate physical drives but shared controller, enclosure, chassis or site | Drive separation only; explicitly retain the shared failure domains |
+| Verified separation at every level required by the accepted recovery terms | Independent at those named levels, not a blanket DR guarantee |
+| Missing, stale, conflicting or guest-only backing evidence | Independence unverified; do not assume different names mean different hardware |
+
+Report drive, pool/array, chassis and site separation separately. Two VMs on one
+server can lose both copies with that server; two servers using the same NAS can
+lose both copies with that NAS. RAID redundancy and snapshots within a pool are
+not independent backup copies. Independent backup receipts and successful
+restores do not, on their own, prove independent physical placement.
+
+For externally managed storage, obtain the backing/failure-domain evidence from
+its owner. If the required separation cannot be established, retain that gap
+instead of inventing physical IDs or declaring independence. Keep detailed
+hardware identifiers and topology protected; Wip reconciles approved reports
+without requiring direct access to every drive.
+
 ### Freshness, availability and visibility
 
 Agree observation cadence, maximum evidence age and escalation per storage
@@ -428,7 +486,8 @@ Before calling a site's storage offer operational:
    consumer verification and attributed Wip reconciliation.
 3. Demonstrate stale/missing evidence, unavailable backing storage, capacity
    pressure, duplicate requests and failed provisioning without false success
-   or double allocation.
+   or double allocation. Demonstrate that two guest targets sharing physical
+   backing are detected as shared, and unresolved backing stays unverified.
 4. Verify the agreed rebuild/reattachment or restore procedure. Exercise release
    only with an approved test allocation and disposal plan, preserving live data.
 5. Record dates, commands, results, unresolved gaps and operator ownership in the
