@@ -57,6 +57,14 @@ acceptance is an open adoption decision, not permission to choose one silently.
 New probes require target-owner approval; a documentation change does not enable
 monitoring or grant data/admin access.
 
+Provider/receiver arrangements also link source and target
+[hardware identity and backing evidence](../storage-index/README.md#hardware-identity-and-independent-backup-placement).
+Verify the required physical failure-domain separation before counting a target
+as an independent copy. Different VMs, paths or logical volumes can share the
+same drives; missing backing evidence is unverified, not independent storage.
+This assessment remains provider/receiver operational evidence, not topology
+the service client must administer.
+
 The client needs only its provider's service-level result and Wip's assessment.
 Changing an offsite peer must not require changing the client contract when the
 promised service remains the same. Receiver topology, storage paths, credentials,
