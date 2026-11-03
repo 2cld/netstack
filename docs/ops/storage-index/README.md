@@ -14,8 +14,9 @@ Data is scattered across multiple locations, device types, and services with no 
 3. **Offline drives get indexed when attached** - Plug in, scan, unplug, index persists
 4. **Physical assets get indexed when inspected** - Look at it, write manifest, label it
 5. **Tiers drive decisions** - Tag everything, then decide what to keep/move/delete/sell
-6. **Federation-aware** - Each site indexes its own assets, netstack holds the method
+6. **Federation-aware** - Each site publishes its own index, allocations, and fresh status; Wip rolls up and coordinates resource requests; netstack holds the method
 7. **One manifest per item** - Whether it's a hard drive or a rack server, same pattern
+8. **Inventory is not allocation** - An indexed device or free-space measurement is not permission to use, reclaim, or promise its capacity
 
 ## Tiers (applies to both data and physical assets)
 
@@ -166,6 +167,12 @@ notes: "Pulled from old datacenter. 2x Xeon E5-2670, 64GB RAM. Needs rails."
     └── generate-summary.ps1     <- Roll up all manifests into overview
 ```
 
+This is a reference layout, not a requirement to move existing inventories.
+Each site's `.wip-contract.md` links its canonical index, allocation register, and
+read-only status source, including access requirements. Keep those links current
+when paths change; Wip follows the site's references rather than inventing a
+second authoritative inventory.
+
 ## Indexing Workflow
 
 ### 1. Attach Device
@@ -311,6 +318,129 @@ blkid
 
 The manifest tracks the full lifecycle of the physical media.
 
+## Federation storage services and resource requests
+
+**Adoption status:** this defines the publication and coordination contract.
+It does not claim that sites already publish these records, that Wip reconciles
+them, or that a provisioning API exists. Site adoption and any new checks require
+owner approval; this document does not grant filesystem or administrative access.
+
+The content index answers **"where is my stuff?"** A storage-service catalog
+answers **"what capacity can a site commit, on what terms?"** Link these views
+using stable IDs; do not treat an old scan or an offline archive as an available
+storage offer.
+
+### Ownership and publication
+
+| Owner | Publishes / maintains | Authority |
+|-------|----------------------|-----------|
+| Netstack | Shared method, required evidence, request lifecycle | Defines the pattern, not site-specific capacity or allocations |
+| Each site | Canonical inventory, storage offers, allocation register, fresh local observations, operator and escalation references | Accepts or rejects requests; owns reservations, provisioning, access and release |
+| Requesting site | Service/data scope, required capacity and availability, consumer-side verification | Accepts the offered terms and owns its use of the allocation |
+| Wip | Attributed federation rollup, linked requests/decisions, reconciled status and follow-up | Coordinates between sites; does not grant another site's capacity, credentials, or deletion permission |
+
+Each serving site publishes three linked kinds of evidence:
+
+| Record | Required information |
+|--------|----------------------|
+| Index / storage offer | Stable site, asset and storage IDs; backing device/pool/volume; owner; purpose/tier; access method; availability schedule; persistence/rebuild procedure; allocation constraints |
+| Allocation register | Stable request/allocation IDs; consumer site/service; backing storage ID; approved amount and terms; reservation/usage accounting; lifecycle state; approval and operator evidence; retention, expiry/review, release and deletion authority |
+| Fresh status | Storage/allocation IDs; observation time and collection result; measured capacity, usage and free space; outstanding reservations and safety reserve; site-calculated allocatable amount; relevant mount, access, capacity and availability results |
+
+For persistent service storage, trace the backing chain: physical/cloud storage
+to filesystem/dataset, host/LXC mount, and consuming service. Identify what
+survives container/host rebuilds and what must be restored. An LXC root disk, a
+live workstation, and a dedicated backup volume are different resources even if
+they are at the same site.
+
+Account for existing commitments, growth, retention, staging and safety reserve.
+Document units and how reservations are counted, so already-used allocated space
+is not subtracted twice. Offers sharing a backing pool share a reservation
+budget; Wip must not sum the same capacity twice. Raw `free_gb` is not allocatable
+capacity. The serving site rechecks capacity and serializes reservation decisions
+to prevent competing requests from overcommitting the same storage.
+
+### Freshness, availability and visibility
+
+Agree observation cadence, maximum evidence age and escalation per storage
+service. Report the source's observation time separately from Wip's retrieval
+time; rebuilding a dashboard does not refresh a disk measurement. Missing,
+expired or failed observations are unknown/stale or failed, not healthy capacity.
+
+Distinguish always-on, scheduled/wake-on-demand, offline and failed storage.
+Scheduled availability includes the agreed access window and activation owner.
+A device tier is not an availability guarantee. A reachable site endpoint or a
+healthy host boot disk is not proof that the allocated volume is mounted,
+accessible or within its capacity terms.
+
+Wip retains source IDs, timestamps and links in its rollup, and separates local
+storage evidence from coordinator visibility. A mismatch between an approved
+allocation and observed use needs follow-up, not a silent rewrite of the site's
+record. Missing Wip visibility must not stop existing storage use or backup jobs;
+do not make peer aggregate health recursively depend on Wip's aggregate health.
+
+Publish only approved, sanitized summaries. Detailed file inventories, internal
+paths, identities and client allocations remain in access-controlled operational
+records; credentials and customer contents do not belong in the rollup. This
+pattern does not change the existing
+[public status schema](../monitor/public-status-endpoint-pattern.md).
+
+### Cross-site request lifecycle
+
+Use the owning repos' linked issues and records before adding automation:
+
+1. **Request:** the consumer records a stable request ID, service/data scope,
+   capacity estimate and growth, purpose, availability/access needs, persistence
+   and DR requirements, timing, and responsible owner. Wip routes it to candidate
+   sites using their current published offers and evidence.
+2. **Agree:** the serving and requesting owners accept the amount, schedule,
+   access scope, retention, recovery terms, monitoring, costs if applicable, and
+   release/deletion authority. Pending or rejected requests are not allocations;
+   Wip records the decision rather than choosing unspecified terms.
+3. **Reserve:** the serving site checks current capacity, records the approved
+   allocation and updates its remaining offer. Reprocessing the same request ID
+   must not create another reservation. Record reservation expiry/review terms;
+   expiry alone never authorizes deleting stored data.
+4. **Provision and verify:** the authorized site operator provisions storage and
+   least-privilege access using the site runbook. The consumer verifies the agreed
+   attachment/access and the serving site publishes its evidence. A failed
+   provision stays failed/pending with an operator-owned rollback or cleanup
+   task, not an active allocation or silently abandoned reservation.
+5. **Use and monitor:** publish fresh allocation-specific evidence and capacity
+   pressure. Wip reconciles both sites' reports and routes exceptions. Changes in
+   size, scope, receiver or access terms require an updated accepted allocation.
+6. **Release:** the owners approve migration/retention/disposal steps, verify
+   required alternate copies, revoke access and record the disposition. The
+   serving site closes the allocation and returns only verified released capacity
+   to its offer. Wip records closure; it does not wipe, prune or reclaim data.
+
+Owner approval, reservation, provisioned access and operational verification are
+separate claims. A request accepted in an issue is not proof that storage exists;
+a mounted directory is not proof of agreed persistence or disaster recovery.
+
+### Adoption proof
+
+Before calling a site's storage offer operational:
+
+1. Publish contract links and matching inventory/allocation/status IDs, with
+   accepted terms, owners and freshness policy.
+2. Demonstrate one owner-approved request through reservation, provisioning,
+   consumer verification and attributed Wip reconciliation.
+3. Demonstrate stale/missing evidence, unavailable backing storage, capacity
+   pressure, duplicate requests and failed provisioning without false success
+   or double allocation.
+4. Verify the agreed rebuild/reattachment or restore procedure. Exercise release
+   only with an approved test allocation and disposal plan, preserving live data.
+5. Record dates, commands, results, unresolved gaps and operator ownership in the
+   site issue. Until then, report adoption as pending/partial, not implemented.
+
+For offsite backup storage, this lifecycle supplies receiver allocation and
+availability evidence to the
+[service-data backup/restore contract](../backup/service-data-backup-restore-pattern.md#service-contracts-client-provider-receiver-coordinator).
+It does not replace independent backup receipt, integrity checks or an isolated
+application restore. A service client still contracts with its provider for the
+recovery outcome; it need not administer the provider's storage peer.
+
 ## Naming Convention
 
 Device manifest filenames: `<descriptive-name>.md`
@@ -326,7 +456,7 @@ Use lowercase, hyphens, descriptive names. Include capacity or purpose in the na
 Each site implements this method:
 - [cf storage index](https://cf.2cld.net/ops/storage-index/) — Cedar Falls
 - [sl storage index](https://sl.2cld.net/ops/storage-index/) — St. Louis
-- [wf storage index](https://wf.2cld.net/ops/storage-index/) — Winfield
+- [wf storage index](https://github.com/2cld/wf/tree/main/ops/storage) — Winfield
 
 ## Tools
 
