@@ -17,6 +17,117 @@ How a site backs up the data of its small Docker services (Gitea, Traefik certif
 | [bmr-pattern](../deployments/bmr-pattern.md) | the rebuild; this doc is its `restore.sh` half |
 | [service-recovery-pattern](./service-recovery-pattern.md) | per-service recovery notes |
 
+## Service contracts: client, provider, receiver, coordinator
+
+**Proposed extension (2026-11-03):** the responsibilities and evidence below are
+the adoption contract, not a description of deployed checks.
+
+A service client buys a recovery outcome, not a particular backup destination.
+The hosting site is responsible for delivering it; a federation peer can provide
+offsite storage without becoming a dependency the client must administer.
+
+| Role | Owns | Must not delegate to the client |
+|------|------|--------------------------------|
+| Client | Service identity, required data scope, agreed recovery point/time objectives (RPO/RTO), escalation contact | Choosing disks, transport, receiver paths, or backup tooling |
+| Provider site | Executable backup/recovery procedure, coverage, consistent dumps, encryption, delivery, restore proof, client-facing DR report | Responsibility for the promised recovery outcome |
+| Receiver site | Accepted storage arrangement, receipt/integrity evidence, capacity, retention enforcement agreed with the provider | Verification that the application actually restores |
+| Wip | Contract tracking, reconciliation of provider/receiver evidence, independent assessment, alerts and follow-up | Running the backup or declaring recovery proven from a successful transfer |
+
+RPO is the maximum acceptable age of recoverable data; RTO is the maximum
+acceptable recovery duration. Record owner-approved values, not assumed defaults.
+Until terms and restore evidence exist, report protection as pending/unverified,
+not as a fulfilled DR promise.
+
+### What `.wip-contract.md` points to
+
+Contracts link to this standard; they do not copy it. Use the existing
+[contract-driven monitoring](../monitor/contract-driven-monitoring-pattern.md)
+split between human-readable contracts and machine-readable checks.
+
+| Contract | Required references and terms |
+|----------|-------------------------------|
+| Client | Service ID, provider, this standard, required data scope, agreed RPO/RTO, provider and Wip status lookup, escalation contact |
+| Provider | This standard, owning repo's executable backup/recovery procedure, covered service IDs, agreed targets/retention, receiver agreement, status evidence and restore-test record |
+| Receiver | Provider/backup-set ID, accepted storage allocation, transport/identity, retention and deletion authority, capacity threshold, receipt evidence, owner |
+| Wip | Participating contracts, accepted monitoring endpoints/cadence, reconciliation rules, alert owner and escalation path |
+
+An unspecified RPO, RTO, retention period, capacity threshold, or receiver
+acceptance is an open adoption decision, not permission to choose one silently.
+New probes require target-owner approval; a documentation change does not enable
+monitoring or grant data/admin access.
+
+The client needs only its provider's service-level result and Wip's assessment.
+Changing an offsite peer must not require changing the client contract when the
+promised service remains the same. Receiver topology, storage paths, credentials,
+and other clients' results stay in provider/receiver operational records.
+
+## Three-way evidence and communication check
+
+```text
+Provider: "I captured and sent backup B for the contracted data."
+Receiver: "I received B and verified its expected contents."
+Wip:      "The reports for B agree; freshness and restore evidence meet terms."
+Provider site view: shows its result, receiver evidence, and Wip's assessment.
+Client view: shows only its service's protection and Wip's assessment.
+```
+
+These are separate claims. A reachable receiver, an existing directory, or an
+`scp` exit code is not independent proof of receipt or recoverability.
+
+For each backup set, retain a stable service/backup-set ID and a unique,
+non-secret run ID. Provider and receiver reports correlate on the same IDs.
+Evidence includes:
+
+| Producer | Evidence |
+|----------|----------|
+| Provider | Capture time, expected coverage manifest, successful database-dump results, artifact sizes/digests, per-target send result and time |
+| Receiver | Matching run ID and manifest, received time, observed sizes/digests or repository-native verification result, available capacity and retention result |
+| Restore operator | Service ID, backup run/snapshot restored, test time, database/application checks, elapsed recovery time, result |
+| Wip | Source-report timestamps and run IDs, checked-at time, match/mismatch/missing evidence, freshness/RPO and restore-age assessment |
+
+Keep manifests, hashes, customer records, and internal paths in protected
+operational evidence. Public status exposes only approved non-secret IDs, times,
+and sanitized results under the existing
+[per-site status contract](../monitor/public-status-endpoint-pattern.md).
+This extension does not add a per-service public endpoint or change the current
+`status.json` schema. Machine-readable evidence fields need implementation and
+validation before adoption.
+
+The provider's report must project coverage **per service**. A backup set passes
+for a client only if that client's required data is included. Restoring one
+unrelated service cannot certify every client. Check the age of the captured data
+and the receiver's evidence; a freshly generated dashboard cannot refresh an old
+backup. Keep the last successful run visible when a newer run fails.
+
+Wip reconciles the accepted reports; it does not need customer data or direct
+access to the receiver's disk. The provider site can read Wip and peer status
+without making backup execution depend on either monitoring endpoint.
+
+Show backup protection, receiver evidence, restore proof, and coordinator
+visibility separately. Missing/stale/mismatched evidence is unverified and maps to
+`warning` (or `error` for an explicit failure) in the existing check vocabulary.
+An unavailable Wip report must not erase a valid local backup result, and a
+healthy Wip report must not turn a failed backup green. Do not feed peer aggregate
+health recursively into local health; assess the relevant local evidence instead.
+
+### Adoption proof before calling the loop operational
+
+1. Owners accept the client/provider terms and provider/receiver arrangement.
+2. Record expected service coverage, backup tooling, encryption/key recovery,
+   retention, capacity thresholds, and read-only status lookup.
+3. Capture a consistent backup and verify the same run at the receiver.
+4. Restore from that offsite copy into isolation and verify the contracted
+   service/data, measuring recovery time without contacting production.
+5. Demonstrate missing-file, failed-transfer, stale-receipt, and mismatched-run
+   detection. Demonstrate that losing Wip does not stop backups.
+6. Publish sanitized provider/receiver evidence and Wip's correlated assessment;
+   verify the provider and client views consume the intended service result.
+7. Record commands, dates, results, unresolved gaps, and operator ownership in the
+   implementation issue. Feed corrections back here.
+
+Retain existing backup routes during a pilot. Do not prune or remove rollback
+copies until the new route, retention policy, and restore proof are approved.
+
 ## What gets backed up
 
 One backup root per host: **`/opt/appdata`** ([layout](../../wan/cloudflare/docker-service-subdomain-pattern.md)).
@@ -63,10 +174,15 @@ Required additions to be a conforming baseline:
 
 `restic` over SFTP to the same offsite hosts. It provides what the baseline needs scripts for: client-side encryption, deduplicated snapshots, `forget --prune` retention, and `restic check` plus `restore` to verify.
 
+`BACKUP_STAGE` below must point to a fresh, complete run's staging directory,
+prepared by the service hooks with consistent database backups and required
+config/secrets. Do not substitute live database directories or reuse stale
+staging contents.
+
 ```bash
 export RESTIC_REPOSITORY=sftp:buadmin@<offsite-zt-ip>:<path>/<site>
 export RESTIC_PASSWORD_FILE=/root/.config/restic/password   # mode 600
-restic backup /opt/appdata --exclude '*/logs' --exclude-caches
+restic backup "${BACKUP_STAGE:?set the consistent staging directory}" --exclude '*/logs' --exclude-caches
 restic forget --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --prune
 restic check --read-data-subset=5%
 ```
@@ -77,7 +193,7 @@ Move to B when a site has restic available on a Linux infra node and the offsite
 
 ## State file and monitoring
 
-The job writes one line, read by the site-status checker:
+The existing job writes one line, read by the site-status checker:
 
 ```
 <YYYYMMDD-HHMM> OK|FAIL <source>=<size> <target>=OK|FAIL ...
@@ -87,6 +203,10 @@ Checks (see [public-status-endpoint-pattern](../monitor/public-status-endpoint-p
 - **Freshness:** state file newer than 26 h.
 - **Every target OK**, not just the first.
 - **Restore-test age:** the date of the last successful restore test is recorded (`last-restore-test` in the site's recovery doc or state), and the check warns after 90 days. A passing backup job with a stale restore test is amber.
+
+This legacy summary is not the independent receiver receipt or per-client
+coverage proof defined above. Keep existing consumers working while adding those
+signals; do not infer them from an overall `OK`.
 
 ## Restore
 
