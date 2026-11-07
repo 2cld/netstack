@@ -13,6 +13,7 @@ How a site backs up the data of its small Docker services (Gitea, Traefik certif
 | [federation-backup-plan](./federation-backup-plan.md) | strategy, 3-2-1, offsite targets for big data |
 | [ssh-rsync-pattern](./ssh-rsync-pattern.md) | transport and the `buadmin` user |
 | [backup-cron-pattern](./backup-cron-pattern.md) | schedule and state file |
+| [service backup receiver prototype](./service-backup-receiver-pattern.md) | synthetic reference lifecycle, receipt boundaries, and site-adoption gates |
 | [storage index and resource requests](../storage-index/README.md#federation-storage-services-and-resource-requests) | site-owned storage offers, allocations, fresh status and Wip-coordinated requests |
 | **this doc** | **what to back up under the appdata layout, how to restore, how to test it** |
 | [bmr-pattern](../deployments/bmr-pattern.md) | the rebuild; this doc is its `restore.sh` half |
