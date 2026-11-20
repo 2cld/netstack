@@ -55,10 +55,12 @@ A contract should link here and keep a short reminder, in case a session does no
 
 ```markdown
 ## How work is recorded
-Follow [the work recording pattern](https://netstack.org/docs/ops/work-recording-pattern/).
+Follow [the work recording pattern](https://netstack.org/docs/ops/work-recording-pattern).
 In short: issue before work; Problem / Suggested Solution / Definition of Done / `Effort:`;
 milestone or `ready`; changes by pull request.
 ```
+
+The link has no trailing slash: this site serves `/docs/ops/<name>` and returns 404 for `/docs/ops/<name>/`.
 
 ---
 
