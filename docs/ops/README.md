@@ -8,3 +8,4 @@ Day-to-day management, site deployments, backup procedures, monitoring, and user
 - [monitor](./monitor/) - monitoring and alerting
 - [tools](./tools/) - operational tools and utilities
 - [users](./users/) - user management, SSH keys, dev setup
+- [work-recording-pattern](./work-recording-pattern.md) - how work is recorded in a Wip-managed repo
