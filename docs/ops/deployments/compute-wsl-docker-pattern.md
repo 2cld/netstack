@@ -1,424 +1,136 @@
-# Pattern: Docker on WSL for Windows Federation Sites
+# Pattern: Docker on WSL for a Windows Host (the documented exception to the Proxmox default)
 
-**Category:** `ns-site-template/templates/`  
-**Purpose:** Deploy Docker Compose services inside WSL on Windows hosts that lack resources for a full Hyper-V Ubuntu VM.  
-**Audience:** Federation sites running Windows as primary OS that need containerized services (reverse proxy, tunnel, monitoring).  
-**Reference implementation:** sl site (slwin11ops)
+**Purpose:** Run a small Docker stack (tunnel, reverse proxy, status endpoint) inside WSL2 on a Windows host that cannot also be a Proxmox or Hyper-V Docker host.
+**Audience:** A federation site whose only machine is a Windows PC, and the wip/human who maintains it.
+**Reference implementation:** the sl site, rebuild tracked in [sl#15](https://github.com/2cld/sl/issues/15).
+**Status:** Revised 2026-11-24 to match the sl#15 target design. The WSL start-up task (Step 7) has not been validated on a real rebuild yet; sl#15 is that test.
+**Related:** [site-repo-flow-pattern](./site-repo-flow-pattern.md), [bmr-pattern](./bmr-pattern.md), [docker-service-subdomain-pattern](../../wan/cloudflare/docker-service-subdomain-pattern.md), [public-status-endpoint-pattern](../monitor/public-status-endpoint-pattern.md), [cloudflare-federation-access-pattern](../security/cloudflare-federation-access-pattern.md), [service-data-backup-restore-pattern](../backup/service-data-backup-restore-pattern.md), [service-backup-receiver-pattern](../backup/service-backup-receiver-pattern.md), [wsl-monitoring-node-pattern](../monitor/wsl-monitoring-node-pattern.md)
+**Issues behind this pattern:** [netstack#37](https://github.com/2cld/netstack/issues/37) (host path), [#38](https://github.com/2cld/netstack/issues/38) (service layout), [#28](https://github.com/2cld/netstack/issues/28) (site-config schema), [#32](https://github.com/2cld/netstack/issues/32) (BMR to restore to monitor loop), [#43](https://github.com/2cld/netstack/issues/43) and [#45](https://github.com/2cld/netstack/issues/45) (receiver and backup agreements)
 
----
-
-## The Problem
-
-Federation sites need to run Docker services (Traefik, Cloudflare tunnel, Portainer, site-specific apps), but not every site can afford a dedicated Hyper-V VM:
-
-| Site | Compute Model | Why |
-|------|---------------|-----|
-| **cf** | Full Hyper-V Ubuntu VM (nsdockerhv) | CyberTruck has 128 GB RAM, plenty of headroom |
-| **sl** | WSL on primary Windows host | slwin11ops is i3 / limited RAM — can't spare 8 GB for a VM |
-| **wf** | Proxmox (cg2) — separate hardware | Has dedicated compute box |
-
-WSL gives us a Linux Docker environment on the existing Windows host with minimal overhead (~300 MB RAM idle vs 4-8 GB for a VM).
-
-## The Solution: Docker Engine in WSL
-
-```
-┌─────────────────────────────────────────────────────┐
-│  Windows 11 Host (slwin11ops)                       │
-│                                                     │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  WSL2 (Ubuntu 22.04)                         │   │
-│  │                                              │   │
-│  │  Docker Engine (not Docker Desktop)          │   │
-│  │  ┌────────────────────────────────────────┐  │   │
-│  │  │  docker-compose stack                  │  │   │
-│  │  │  ├─ traefik (reverse proxy)            │  │   │
-│  │  │  ├─ cloudflared (CF tunnel)            │  │   │
-│  │  │  ├─ portainer (management)             │  │   │
-│  │  │  └─ [site-specific services]           │  │   │
-│  │  └────────────────────────────────────────┘  │   │
-│  │                                              │   │
-│  │  ~/ops/site-status.sh (monitoring cron)      │   │
-│  │  ~/docker/ (compose files + data)            │   │
-│  └──────────────────────────────────────────────┘   │
-│                                                     │
-│  Port forwards: host:80 → WSL:80, host:443 → WSL   │
-│  SSH: host:2020 → WSL:22                            │
-│  ZeroTier: 10.147.17.x (host-level, WSL inherits)  │
-└─────────────────────────────────────────────────────┘
-         │
-         │ Cloudflare Tunnel (encrypted)
-         ▼
-    *.2cld.com (public endpoints)
-```
-
-## Why Not Docker Desktop?
-
-- **License:** Docker Desktop requires a paid license for commercial use
-- **Overhead:** Runs its own WSL distro + GUI + Kubernetes — too heavy for a backup node
-- **Control:** We want direct Docker Engine matching the cf pattern (compose files, volumes, networks)
-- **Consistency:** Same `docker compose` commands as nsdockerhv
+> Netstack holds patterns only. Site names, IPs, serials and domains below are placeholders (`<site>`, `<domain>`). The site's own repo holds the values.
 
 ---
 
-## Prerequisites
-
-- Windows 10/11 with WSL2 enabled
-- Ubuntu 22.04+ installed in WSL (`wsl --install -d Ubuntu`)
-- WSL SSH already working (per [wsl-monitoring-node-pattern](https://github.com/2cld/netstack/blob/master/docs/ops/monitor/wsl-monitoring-node-pattern.md))
-- ZeroTier on the Windows host (WSL inherits network access)
-- Cloudflare account with tunnel token for this site's domain
-
-## Setup Procedure
-
-### Step 1: Install Docker Engine in WSL
-
-```bash
-# In WSL (Ubuntu)
-sudo apt update
-sudo apt install -y ca-certificates curl gnupg
-
-# Add Docker's official GPG key
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-# Add the repository (single line — do not break with backslash)
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+## 1. When this pattern applies
 
-# Install Docker Engine + Compose plugin
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+Proxmox is the default host path for netstack services ([netstack#37](https://github.com/2cld/netstack/issues/37)): services run as LXC or VM, can move to another host during maintenance, and are reached the same way at every site. Use this WSL pattern only when **all** of these hold:
 
-# Add user to docker group (no sudo needed for docker commands)
-sudo usermod -aG docker $USER
-```
+| Test | Why |
+|------|-----|
+| The site has one physical machine, and it runs Windows | No spare box for Proxmox |
+| A Windows-bound application must stay on that machine (for example Plex native or GPU transcode) | Moving it is not worth the cost |
+| The Docker stack is small and stateless (see Section 2) | A single-disk failure then costs a rebuild, not data |
 
-### Step 2: Auto-start Docker on WSL Launch
+If the stack needs data that cannot be recreated from git or a dashboard, do not put it here. Move it to a host with a backup path, or give that service its own backup per [service-data-backup-restore-pattern](../backup/service-data-backup-restore-pattern.md).
 
-WSL doesn't run systemd by default (older installs). Two options:
+**The trade-off, stated plainly.** WSL on a single Windows host shares a failure domain with the drive that holds the WSL disk image. A failed drive takes down the tunnel and the status endpoint together. This pattern limits the damage in three ways: the stack holds no data, it rebuilds from git in one pass, and monitoring reads a public status endpoint, so the coordinator notices from outside the box.
 
-**Option A: Enable systemd (Ubuntu 22.04+ with WSL 2.0+)**
+## 2. Design rules
 
-Edit `/etc/wsl.conf`:
-```ini
-[boot]
-systemd=true
+1. **Stack from config, minimal by default.** The services are the ones the site's `site-config.yml` lists. The usual minimum: `cloudflared`, `traefik`, a status checker, and an nginx site container. Anything else (Gitea, Portainer, Home Assistant) is added only when a site needs it and has a backup for it.
+2. **No data volumes.** Container state is the compose file, the `.env`, and the git repo. A tunnel token can be re-extracted from the Cloudflare dashboard. If a service gains state, this rule is broken and the service needs a backup entry.
+3. **Layout inside WSL** follows [docker-service-subdomain-pattern](../../wan/cloudflare/docker-service-subdomain-pattern.md): `/opt/appdata/<name>/{compose.yml,.env,config/,data/}`. Compose files are versioned in the site repo under `ops/services/<name>/`. `.env` files are never committed.
+4. **Pin images.** No `:latest`. A rebuild reproduces the working versions; updates are a deliberate act ([site-repo-flow-pattern](./site-repo-flow-pattern.md)).
+5. **Docker Engine, not Docker Desktop.** Desktop needs a commercial licence, runs its own distro and GUI, and is too heavy for a small node.
+6. **Put the WSL disk where you decide.** Import the distro onto a named drive (`wsl --import`), not wherever the default installer puts it. Record that drive and its serial in the site's storage map, so a drive failure maps to this pattern's rebuild path.
+7. **Tunnel only.** The `cloudflared` container connects outbound. Do not use `netsh portproxy`: the WSL IP changes on every host reboot, which breaks the rules.
 
-[user]
-default=ghadmin
-```
+## 3. Naming and routing
 
-Then restart WSL: `wsl --shutdown` from PowerShell, relaunch.
-
-**Option B: Manual start in .bashrc (legacy fallback)**
+Two tiers of public hostname, one domain per site (sites do not share a domain):
 
-```bash
-# Add to ~/.bashrc
-if ! pgrep -x dockerd > /dev/null; then
-    sudo dockerd > /dev/null 2>&1 &
-    sleep 2
-fi
-```
+| Hostname | Serves | Source |
+|----------|--------|--------|
+| `<site>.<domain>` | The site's own pages: `/status.json`, `/health`, `/docs` | Built from the site repo; served by the nginx site container |
+| `<service>.<domain>` | One Docker service each, routed by Traefik on `Host()` | That service's compose file |
 
-With corresponding sudoers entry:
-```bash
-echo "%docker ALL=(ALL) NOPASSWD: /usr/bin/dockerd" | sudo tee /etc/sudoers.d/docker
-```
+Rules:
 
-**Prefer Option A** (systemd) — it's cleaner and also gives you `systemctl` for cron, ssh, etc.
+- Every public hostname is a proxied CNAME to the tunnel, with an ingress entry that targets Traefik by service name (never a host IP).
+- **Origin scheme.** `https://traefik:443` with a wildcard certificate (ACME DNS challenge) is the cf default. When the site has no wildcard certificate and no DNS API token, use `http://traefik:80`: Cloudflare terminates TLS to the public, and the tunnel is the only path to Traefik. State the choice in the site's `site-config.yml`.
+- **Access.** Default-deny on Cloudflare Access for the site's hostnames, with bypass only for `/status.json` and `/health`, following [cloudflare-federation-access-pattern](../security/cloudflare-federation-access-pattern.md).
+- ZeroTier clients may need local name overrides, as described in the service-subdomain pattern. Test both the public and the ZeroTier path.
 
-### Step 3: Create Docker Network
+## 4. Setup procedure
 
-```bash
-# Create the shared network (same as cf pattern)
-docker network create proxy
-```
+Run on the Windows host unless marked WSL.
 
-### Step 4: Directory Layout
+1. **Install WSL2 and a base image** (PowerShell, elevated): `wsl --install --no-distribution`, then obtain the Ubuntu root filesystem for the version you pin (24.04 or later).
+2. **Import the distro onto the chosen drive:**
+   ```powershell
+   wsl --import <DistroName> <D:\wsl\path> <ubuntu-rootfs.tar.gz>
+   ```
+   Record `<DistroName>`, the install path and the drive serial in the site repo.
+3. **Enable systemd** in the distro's `/etc/wsl.conf`, then `wsl --shutdown` and relaunch:
+   ```ini
+   [boot]
+   systemd=true
 
-```bash
-mkdir -p ~/docker/docker-compose/{traefik,cloudflared,portainer}
-mkdir -p ~/docker/traefik/{dynamic,certs}
-mkdir -p ~/docker/data
-```
+   [user]
+   default=<admin-user>
+   ```
+4. **Install Docker Engine and the compose plugin** inside WSL from Docker's apt repository (`docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`). Add the admin user to the `docker` group.
+5. **Create the `proxy` network and the appdata directory:** `docker network create proxy`, `mkdir -p /opt/appdata`.
+6. **Deploy from the site repo.** Clone the repo, copy each `ops/services/<name>/` to `/opt/appdata/<name>/`, put the `.env` files in place from the secret store, and `docker compose up -d` per service.
+7. **Start WSL and Docker at boot** with a Windows scheduled task that launches the distro. WSL distros are registered **per Windows user**. A task that runs as `SYSTEM` may not see a distro imported by another user. Run the task as the user that owns the distro, and **test it with a reboot and nobody logged in**. If the task runs only at logon, enable automatic sign-in or switch trigger options. Record which option survived the reboot test. *(Untested as of this revision; sl#15 is the first validation.)*
+8. **Configure the tunnel and Access** per Section 3.
 
-Convention (matches cf):
-```
-~/docker/
-├── docker-compose/          ← compose files per service
-│   ├── traefik/
-│   │   ├── docker-compose.yaml
-│   │   ├── .env
-│   │   └── cf-token
-│   ├── cloudflared/
-│   │   └── docker-compose.yaml
-│   └── portainer/
-│       └── docker-compose.yaml
-├── traefik/                 ← traefik runtime data
-│   ├── traefik.yaml         ← static config
-│   ├── acme.json            ← TLS certs
-│   └── dynamic/             ← dynamic config
-└── data/                    ← service volumes
-    └── portainer/
-```
+## 5. Rebuild path (BMR, WSL variant)
 
-### Step 5: Deploy Services
+Maps to the four-script path in [bmr-pattern](./bmr-pattern.md):
 
-Each service gets its own compose file (same structure as `gitea.cat9.me/nsadmin/docker-compose`). The service selection comes from `site-config.yml`.
+| BMR step | WSL variant |
+|----------|-------------|
+| `bootstrap` | Windows prerequisites, WSL import, systemd, Docker Engine, boot task (Section 4, steps 1 to 5, 7). Several steps are PowerShell and manual until scripted |
+| `deploy` | `docker compose up -d` for each `ops/services/<name>/`. Hand-written compose in the repo; **do not depend on generating compose from `site-config.yml`** until the generator reads the nested schema ([netstack#28](https://github.com/2cld/netstack/issues/28)) |
+| `restore` | Nothing, for a no-data stack. A service that has data follows its own restore procedure |
+| `verify` | The checks in Section 7 |
 
-**Minimal sl stack:**
+**Rebuild proof.** For a stack with no data, "restore works" means: from a clean WSL import and the repo, the stack comes up and the public status endpoint reports every expected container. Record rebuild time and every runbook gap in the site's rebuild issue. This is the loop in [netstack#32](https://github.com/2cld/netstack/issues/32): BMR, restore, then monitor, written as one testable path.
 
-| Service | Purpose | Public URL | Required? |
-|---------|---------|-----------|:---------:|
-| traefik | Reverse proxy + TLS | — (internal) | ✅ |
-| cloudflared | Tunnel to Cloudflare | *.2cld.com | ✅ |
-| portainer | Container management UI | portainer.2cld.com | ✅ |
-| [future] | Site-specific apps | — | Optional |
+## 6. Failure modes
 
-### Step 6: Port Forwarding (Windows → WSL)
+| Failure | Effect | Recovery |
+|---------|--------|----------|
+| Drive holding the WSL image fails | Tunnel and status endpoint down; Windows apps and backup reception keep running | Replace drive, then Section 4 from step 2 |
+| OS drive fails | Whole node down | Reinstall Windows, then Section 4 from step 1 |
+| Host reboot (power, Windows update) | WSL stops until the boot task starts it | Boot task (step 7); verify with the reboot test |
+| WSL IP changes | Breaks any `portproxy` rule | Tunnel-only design avoids it |
+| Windows update changes WSL behaviour | Possible start-up change | Re-run the reboot test after major updates |
 
-For services that need direct LAN/ZeroTier access (not tunneled):
+## 7. Verification checklist
 
-```powershell
-# PowerShell (elevated) — forward 80/443 from host to WSL
-$wslIP = (wsl hostname -I).Trim()
+- [ ] Reboot the host with nobody logged in: WSL and all containers start without intervention
+- [ ] `docker ps` shows exactly the containers the site config lists, with pinned tags
+- [ ] The tunnel has at least one connection
+- [ ] `https://<site>.<domain>/status.json` and `/health` answer without login; `/` and `/docs` require Cloudflare Access
+- [ ] The status checker's expected container count matches the site config
+- [ ] Rebuild time and runbook gaps recorded on the rebuild issue
 
-netsh interface portproxy add v4tov4 listenport=80 listenaddress=0.0.0.0 connectport=80 connectaddress=$wslIP
-netsh interface portproxy add v4tov4 listenport=443 listenaddress=0.0.0.0 connectport=443 connectaddress=$wslIP
+## 8. Monitoring
 
-# Firewall rules
-New-NetFirewallRule -DisplayName "Docker HTTP" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 80
-New-NetFirewallRule -DisplayName "Docker HTTPS" -Direction Inbound -Action Allow -Protocol TCP -LocalPort 443
-```
+The coordinator reads the site's **public** `/status.json` ([public-status-endpoint-pattern](../monitor/public-status-endpoint-pattern.md)). Do not make SSH into WSL a requirement: it adds Windows OpenSSH key and port issues to every check. If the site also keeps a WSL SSH door for administration, treat it as a convenience path, not the monitor.
 
-**Note:** If everything goes through the Cloudflare tunnel (no direct ingress needed), port forwarding for 80/443 is optional. The tunnel container connects outbound — no inbound ports required.
+## 9. Backup reception on the same host
 
-### Step 7: Auto-start WSL + Docker on Windows Boot
+If the Windows host also receives federation backups (a Windows `sshd` writing to a data drive), that receiver is **not** part of the WSL stack and does not depend on it. Follow [service-backup-receiver-pattern](../backup/service-backup-receiver-pattern.md). Two cautions from [netstack#43](https://github.com/2cld/netstack/issues/43) and [#45](https://github.com/2cld/netstack/issues/45):
 
-Create a Windows Scheduled Task:
+- A freshness marker written by the sender is sender-written evidence. It shows the sender thinks it finished, not that the receiver holds the bytes.
+- Terms, reservations and permission to run operations are separate from a successful transfer. This pattern does not authorize any of them.
 
-```powershell
-# PowerShell (elevated)
-$action = New-ScheduledTaskAction -Execute "wsl.exe" -Argument "-d Ubuntu -u root -- bash -c 'service docker start; service ssh start; service cron start'"
-$trigger = New-ScheduledTaskTrigger -AtStartup
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
-Register-ScheduledTask -TaskName "WSL-Docker-AutoStart" -Action $action -Trigger $trigger -Settings $settings -User "SYSTEM" -RunLevel Highest
-```
+## 10. Host paths compared
 
-**Verify after reboot:**
-```bash
-# From coordination layer (nsdockerhv)
-ssh -p 2020 ghadmin@10.147.17.94 "docker ps"
-```
+| Aspect | Proxmox LXC or VM (default) | Hyper-V Ubuntu VM | WSL on Windows (this pattern) |
+|--------|----------------------------|-------------------|-------------------------------|
+| Fit | Sites with spare hardware | A Windows host with RAM to spare | One Windows box, limited RAM |
+| Can move to another host | Yes | With effort | No |
+| Start at boot | Proxmox | Hyper-V auto-start | Scheduled task (Section 4, step 7) |
+| IP stability | Reserved | Reserved | Changes on every reboot |
+| Failure domain | Per host, movable | The host | The drive holding the WSL image, plus the host OS |
+| Overhead | Low | A few GB of RAM | About 300 MB |
 
----
+## 11. Open items
 
-## Networking Model
-
-### How Traffic Flows
-
-```
-Internet → Cloudflare Edge → Tunnel (outbound from WSL) → traefik → container
-
-                                    No inbound ports needed!
-                                    Tunnel connects OUT to Cloudflare.
-```
-
-The Cloudflare tunnel model means:
-- No port forwarding required on the ISP router
-- No firewall holes for HTTP/HTTPS
-- Cloudflare handles TLS termination and DDoS protection
-- Each site gets its own tunnel with its own domain(s)
-
-### ZeroTier Access
-
-WSL inherits the host's ZeroTier connection. Services running in Docker containers can be reached from other federation nodes via the host's ZeroTier IP:
-
-```bash
-# From nsdockerhv (coordination layer)
-curl http://10.147.17.94:9000   # → portainer (if port-forwarded)
-```
-
-### DNS for Internal Services
-
-Internal services (not public) can be accessed via:
-- ZeroTier IP + port (e.g., `10.147.17.94:9000`)
-- Traefik with Host header (if running locally)
-
----
-
-## Differences from CF Model
-
-| Aspect | cf (nsdockerhv) | sl (WSL) |
-|--------|-----------------|----------|
-| Compute layer | Hyper-V Ubuntu VM | WSL2 Ubuntu |
-| Docker install | Native on VM | Docker Engine in WSL |
-| Startup | VM auto-starts with host | Scheduled Task starts WSL |
-| IP stability | VM gets DHCP reservation | WSL IP changes on reboot |
-| Port access | Direct (VM has own IP) | Port-forward from host OR tunnel only |
-| RAM overhead | 8 GB allocated to VM | ~300 MB for WSL + containers |
-| Tunnel domain | *.cat9.me | *.2cld.com |
-| Compose repo | gitea.cat9.me/nsadmin/docker-compose | local ~/docker/docker-compose (git push to gitea) |
-
-### The WSL IP Problem
-
-WSL gets a new IP on every host reboot. This breaks `netsh portproxy` rules.
-
-**Solutions (pick one):**
-1. **Tunnel-only mode** — no port forwarding needed, everything goes through Cloudflare tunnel. Internal access via `docker exec` or SSH into WSL. **Recommended for sl.**
-2. **Startup script** — re-run portproxy with fresh WSL IP on every boot (fragile but works).
-3. **Bridge mode** — configure WSL networking in bridged mode (gives WSL a stable LAN IP). More complex setup.
-
----
-
-## Connection to site-config.yml
-
-The `services` and `cloudflare` sections in site-config.yml define what gets deployed:
-
-```yaml
-# In sl-site-config.yml
-services:
-  - name: "Traefik"
-    type: "reverse-proxy"
-    host: "slwin11ops-wsl"
-    port: 8080
-    enabled: true
-
-  - name: "Cloudflared"
-    type: "tunnel"
-    host: "slwin11ops-wsl"
-    tunnel_name: "sl-2cld"
-    enabled: true
-
-  - name: "Portainer"
-    type: "container-management"
-    url: "https://portainer.2cld.com"
-    host: "slwin11ops-wsl"
-    port: 9000
-    enabled: true
-
-cloudflare:
-  enabled: true
-  tunnels:
-    - name: "sl-2cld"
-      tunnel_id: "TUNNEL_ID_HERE"
-      domain: "2cld.com"
-      services:
-        - hostname: "portainer.2cld.com"
-          local_url: "http://localhost:9000"
-        - hostname: "traefik.2cld.com"
-          local_url: "http://localhost:8080"
-```
-
-**Future:** `generate-docker-compose.sh` reads this config and produces the compose files + traefik dynamic config automatically.
-
----
-
-## Backup Integration
-
-Docker data in WSL needs to be included in the site backup:
-
-```yaml
-# In sl-site-config.yml — storage.backups section
-storage:
-  backups:
-    - name: "sl-docker"
-      source: "wsl://~/docker/data"
-      description: "Docker volumes (portainer, future app data)"
-      schedule: "daily"
-      method: "tar from WSL → scp to cf"
-      retention:
-        daily: 7
-        weekly: 4
-```
-
-Backup script (runs inside WSL via cron):
-```bash
-#!/bin/bash
-# backup-sl-docker.sh — tar Docker data, push to cf
-DATE=$(date +%Y%m%d-%H%M)
-DEST="/tmp/sl-docker-backup-${DATE}.tar.gz"
-
-tar -czf "$DEST" -C ~/docker data/ docker-compose/
-scp "$DEST" nsadmin@10.147.17.176:/home/nsadmin/backups/sl-docker/
-rm "$DEST"
-
-echo "${DATE} OK $(du -sh "$DEST" 2>/dev/null | cut -f1)" > ~/docker/.backup-state
-```
-
----
-
-## Monitoring Integration
-
-The existing WSL monitoring node (site-status.sh) adds Docker health checks:
-
-```bash
-# Additional checks for site-status.sh
-CHECK_DOCKER_STATUS="unknown"
-CHECK_DOCKER_MSG=""
-
-if command -v docker &>/dev/null; then
-  RUNNING=$(docker ps -q | wc -l)
-  EXPECTED=3  # traefik + cloudflared + portainer
-  if [ "$RUNNING" -ge "$EXPECTED" ]; then
-    CHECK_DOCKER_STATUS="ok"
-    CHECK_DOCKER_MSG="${RUNNING} containers running"
-  else
-    CHECK_DOCKER_STATUS="warning"
-    CHECK_DOCKER_MSG="${RUNNING}/${EXPECTED} containers (expected ${EXPECTED})"
-  fi
-else
-  CHECK_DOCKER_STATUS="error"
-  CHECK_DOCKER_MSG="Docker not installed"
-fi
-```
-
----
-
-## Deployment Checklist
-
-### One-Time Setup
-- [ ] Docker Engine installed in WSL (Step 1)
-- [ ] systemd enabled in /etc/wsl.conf (Step 2)
-- [ ] Docker network `proxy` created (Step 3)
-- [ ] Directory layout created (Step 4)
-- [ ] Windows Scheduled Task for auto-start (Step 7)
-- [ ] Cloudflare tunnel token obtained for sl domain
-
-### Per-Service Deployment
-- [ ] Create docker-compose.yaml in ~/docker/docker-compose/SERVICE/
-- [ ] Test: `docker compose up -d`
-- [ ] Verify via tunnel or direct access
-- [ ] Add to site-config.yml
-- [ ] Update site-status.sh expected container count
-
-### Verification
-- [ ] Reboot Windows host → WSL + Docker auto-start
-- [ ] `docker ps` shows all expected containers
-- [ ] Tunnel endpoints respond (curl from external)
-- [ ] Wip daily cron reads docker health from site-status.json
-- [ ] Backup script runs and produces .backup-state
-
----
-
-## Evolution Path
-
-| Stage | What | Status |
-|:-----:|------|:------:|
-| 1 | WSL monitoring node (site-status.sh, SSH, cron) | ✅ DONE |
-| 2 | Docker Engine in WSL + manual compose deploy | ← NEXT |
-| 3 | Cloudflare tunnel live (*.2cld.com restored) | NEXT |
-| 4 | site-config.yml drives service selection | FUTURE |
-| 5 | generate-docker-compose.sh produces compose files from config | FUTURE |
-| 6 | Full site generation: docs + compose + monitoring + backup | FUTURE |
-
----
-
-## Related
-
-- [wsl-monitoring-node-pattern](https://github.com/2cld/netstack/blob/master/docs/ops/monitor/wsl-monitoring-node-pattern.md) — prerequisite (WSL + SSH + cron)
-- [federation-setup-guide](https://github.com/2cld/netstack/blob/master/docs/ops/deployments/federation-setup-guide.md) — full site standup
-- [backup-cron-pattern](https://github.com/2cld/netstack/blob/master/docs/ops/backup/backup-cron-pattern.md) — daily backup integration
-- [docker-compose repo](https://gitea.cat9.me/nsadmin/docker-compose) — cf reference implementation
-- [site-config-template.yml](../site-config-template.yml) — config schema that drives generation
-- [netstack#11](https://github.com/2cld/netstack/issues/11) — monitoring + site-status.json generation
+- Validate the boot task user and trigger on a real reboot (sl#15).
+- Decide how bootstrap becomes a script for a Windows host. Until then, the PowerShell steps stay manual.
+- Reconcile with [netstack#28](https://github.com/2cld/netstack/issues/28) when the schema rewrite lands, so `deploy` can read the config.

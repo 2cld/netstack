@@ -95,7 +95,7 @@ Each script reads `site-config.yml` as its single source of truth.
 | site-config.yml | Site repo (cf, sl, wf) | Site-specific values -- WHAT |
 | .wip-monitor.yml | Site repo | Monitoring contract |
 | .wip-contract.md | Site repo | Communication contract |
-| Docker compose | Site repo `ops/docker/` | Service definitions |
+| Docker compose | Site repo `ops/services/<name>/` | Service definitions (layout: [docker-service-subdomain-pattern](../../wan/cloudflare/docker-service-subdomain-pattern.md)) |
 | Backup scripts | Site repo `ops/scripts/` | Site-specific backup logic |
 
 **The contract between generic and specific:**
@@ -124,7 +124,7 @@ Each script reads `site-config.yml` as its single source of truth.
 | Ubuntu 22.04+ (bare metal) | YES | YES | Primary target |
 | Proxmox LXC (Ubuntu) | YES | YES | wf Phase 1 |
 | Raspberry Pi OS (arm64) | YES | YES | wf Phase 2 |
-| WSL2 (Ubuntu on Windows) | PARTIAL | YES | sl pattern -- some steps differ (no systemd) |
+| WSL2 (Ubuntu on Windows) | PARTIAL | YES | Windows-host exception, see [compute-wsl-docker-pattern](./compute-wsl-docker-pattern.md). Windows and WSL setup steps are manual PowerShell until scripted; deploy is hand-written compose, not generated, until [netstack#28](https://github.com/2cld/netstack/issues/28) lands |
 | MikroTik RouterOS containers | NO | PARTIAL | Different runtime -- document separately |
 
 ## Testing BMR
@@ -162,6 +162,6 @@ Each script reads `site-config.yml` as its single source of truth.
 
 - [Compute Roles Pattern](./compute-roles-pattern.md) -- defines which hardware role is the BMR target
 - [Federation User Model](./federation-user-model-pattern.md) -- user roles created by bootstrap.sh
-- [Compute WSL Docker Pattern](./compute-wsl-docker-pattern.md) -- WSL-specific deployment (sl)
+- [Compute WSL Docker Pattern](./compute-wsl-docker-pattern.md) -- the Windows-host exception to the Proxmox default (sl)
 - [Site Tenant Contract](./site-tenant-contract-pattern.md) -- .wip-contract.md defines scope
 - [Contract-Driven Monitoring](../monitor/contract-driven-monitoring-pattern.md) -- .wip-monitor.yml drives verify.sh
