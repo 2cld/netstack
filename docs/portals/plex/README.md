@@ -25,6 +25,56 @@
   ```
   Get-NetFirewallRule -DisplayName "Plex Media Server (Remote Access)"
   ```
+  
+## Plex Library Map
+Get the Plex Library Map on windows
+
+- Get token for cli
+```ps
+$Token = (Get-ItemProperty "HKCU:\Software\Plex, Inc.\Plex Media Server").PlexOnlineToken
+```
+
+- Pull data
+```ps
+[xml]$Sections = Invoke-RestMethod -Uri "http://localhost:32400/library/sections?X-Plex-Token=$Token"
+$Sections.MediaContainer.Directory | ForEach-Object {
+    [PSCustomObject]@{
+        ID      = $_.key
+        Library = $_.title
+        Type    = $_.type
+        Paths   = ($_.Location.path -join "; ")
+    }
+} | Format-Table -AutoSize
+```
+- example from sl
+```ps
+PS C:\Users\ghadmin> $Token = (Get-ItemProperty "HKCU:\Software\Plex, Inc.\Plex Media Server").PlexOnlineToken
+PS C:\Users\ghadmin> [xml]$Sections = Invoke-RestMethod -Uri "http://localhost:32400/library/sections?X-Plex-Token=$Token"
+PS C:\Users\ghadmin> $Sections.MediaContainer.Directory | ForEach-Object {
+>>     [PSCustomObject]@{
+>>         ID      = $_.key
+>>         Library = $_.title
+>>         Type    = $_.type
+>>         Paths   = ($_.Location.path -join "; ")
+>>     }
+>> } | Format-Table -AutoSize
+
+ID Library             Type   Paths
+-- -------             ----   -----
+5  gusHorrorClassic100 movie  F:\slMedia\slPlex\gusHorrorClassic100
+6  gusMovies           movie  F:\slMedia\slPlex\gusMovies
+4  gusCuts             show   F:\slMedia\slPlex\gusCuts
+3  gusDVR              show   F:\slMedia\slPlex\gusDVR
+7  gusShows            show   F:\slMedia\slPlex\gusShows
+1  gusVHSProject       show   F:\slMedia\slPlex\gusVHSProject
+10 BooMusic            artist F:\slMedia\slPlex\gusMusic\Boo Music
+9  catMusic            artist F:\slMedia\catMedia\catMusic
+8  gusMusic            artist F:\slMedia\slPlex\gusMusic\music
+11 SipMusic            artist F:\slMedia\slPlex\gusMusic\SIP music
+
+
+PS C:\Users\ghadmin>
+```
 
 ## Silicondust HDHomeRun
 - winget
