@@ -210,6 +210,40 @@ ssh -i ~/.ssh/id_backup user@host "powershell Get-VM | Select Name,State"
 ssh -i ~/.ssh/id_backup user@host "tasklist /FI \"MEMUSAGE gt 500000\" /FO CSV /NH"
 ```
 
+## Managing a Windows node over SSH: copy a .ps1 file and run it
+
+**Rule:** to run anything non-trivial on a Windows node, `scp` a `.ps1` file to it and run the file. Do not pass PowerShell as a one-line `ssh host "..."` string.
+
+**Why:** the shell SSH lands in differs by node. On sl (2026-11-26) it is `cmd.exe`, so `ssh host "Get-PhysicalDisk"` fails with "not recognized". On other nodes it may be PowerShell or WSL (see the default shell fix above). Quotes, `$` variables and `|` are handled differently by each shell and by the local shell. A file behaves the same on every node, can be tested, and can live in the site repo.
+
+```bash
+K="-i ~/.ssh/id_backup -o IdentitiesOnly=yes -o BatchMode=yes"
+H=ghadmin@<node-ip>
+
+scp -q $K script.ps1 $H:C:/Windows/Temp/script.ps1
+ssh $K $H 'powershell -NoProfile -ExecutionPolicy Bypass -File C:\Windows\Temp\script.ps1 & del C:\Windows\Temp\script.ps1'
+```
+
+- The `&` and `del` are `cmd.exe` syntax: they remove the temp copy whether or not the script succeeded. If the node's default shell is PowerShell, use `; Remove-Item C:\Windows\Temp\script.ps1` instead.
+- Pass parameters after `-File <path>` (for example `-OutFile C:\Windows\Temp\x.txt`).
+- Check you have admin before anything that changes the system: `ssh $K $H 'powershell -NoProfile -Command "([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)"'` prints `True`.
+- Read-only inspection scripts first. Run a script that changes state (a scheduled task, a service) only after the read-only run looks right, and record it in the site repo.
+- Scripts that belong to the site (for example a health-collection task) live in the site repo, and the node runs a copy of them. Install steps go in the same folder's README.
+
+### Commands inside WSL on the same node
+
+Reach WSL through Windows, not through a second SSH door:
+
+```bash
+ssh $K $H 'wsl -d Ubuntu-24.04 -- bash -lc "cd ~/<site> && git pull --ff-only && docker ps"'
+```
+
+- `wsl -l -v` prints UTF-16, so pipe it through `tr -d '\0'` before reading it.
+- Keep the quoting simple. For anything longer than a line, put it in a `.sh` file in the repo (already cloned inside WSL) and run that.
+- Example of the whole loop (sl#23, 2026-11-26): `scp` a read-only `.ps1`, run it, `scp` an install `.ps1` that registers a scheduled task as SYSTEM, then `wsl -d Ubuntu-24.04 -- bash -lc "cd ~/sl && git pull --ff-only && cd ops/services && ./deploy.sh"`. No on-site step.
+
+**Key hygiene:** the key used above is the nsdockerhv backup key (`id_backup`). A key that does admin work should be separate from the key backups use. See netstack#22.
+
 ## Related
 - [SSH/rsync Backup Pattern](ssh-rsync-pattern.md) — overall backup transport pattern
 - [Federation Backup Plan](federation-backup-plan.md) — 3-2-1 strategy
