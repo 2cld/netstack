@@ -1,6 +1,8 @@
 [edit](https://github.com/2cld/netstack/edit/master/docs/ops/storage-index/README.md)
 # Storage and Asset Indexing Method
 
+> **Media and data collections:** the loop that joins inventory, library map, classification, copy counting and config sync is in [media-storage-process](./media-storage-process.md).
+
 A federation-wide approach to inventorying, tagging, and managing **storage and physical assets** across all 2cld sites.
 
 ## Problem
