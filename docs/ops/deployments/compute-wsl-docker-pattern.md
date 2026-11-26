@@ -92,7 +92,7 @@ Run on the Windows host unless marked WSL.
 4. **Install Docker Engine and the compose plugin** inside WSL from Docker's apt repository (`docker-ce`, `docker-ce-cli`, `containerd.io`, `docker-buildx-plugin`, `docker-compose-plugin`). Add the admin user to the `docker` group.
 5. **Create the `proxy` network and the appdata directory:** `docker network create proxy`, `mkdir -p /opt/appdata`.
 6. **Deploy from the site repo.** Clone the repo, copy each `ops/services/<name>/` to `/opt/appdata/<name>/`, put the `.env` files in place from the secret store, and `docker compose up -d` per service.
-7. **Start WSL and Docker at boot** with a Windows scheduled task that launches the distro. WSL distros are registered **per Windows user**. A task that runs as `SYSTEM` may not see a distro imported by another user. Run the task as the user that owns the distro, and **test it with a reboot and nobody logged in**. If the task runs only at logon, enable automatic sign-in or switch trigger options. Record which option survived the reboot test. *(Untested as of this revision; sl#15 is the first validation.)*
+7. **Start WSL and Docker at boot** with a Windows scheduled task that launches the distro. WSL distros are registered **per Windows user**. A task that runs as `SYSTEM` may not see a distro imported by another user. Run the task as the user that owns the distro, and **test it with a reboot and nobody logged in**. If the task runs only at logon, enable automatic sign-in or switch trigger options. The whole chain, from BIOS power-on to the public status page, and how to test it, is in [windows-host-boot-recovery-pattern](./windows-host-boot-recovery-pattern.md). Record which option survived the reboot test. *(Untested as of this revision; sl#15 is the first validation.)*
 8. **Configure the tunnel and Access** per Section 3.
 
 ## 5. Rebuild path (BMR, WSL variant)
@@ -114,7 +114,7 @@ Maps to the four-script path in [bmr-pattern](./bmr-pattern.md):
 |---------|--------|----------|
 | Drive holding the WSL image fails | Tunnel and status endpoint down; Windows apps and backup reception keep running | Replace drive, then Section 4 from step 2 |
 | OS drive fails | Whole node down | Reinstall Windows, then Section 4 from step 1 |
-| Host reboot (power, Windows update) | WSL stops until the boot task starts it | Boot task (step 7); verify with the reboot test |
+| Host reboot (power, Windows update) | WSL stops until the boot task starts it; an add-on that starts at logon (Plex) stays down until someone signs in | Boot task (step 7) plus auto sign-in if an add-on needs it; see [windows-host-boot-recovery-pattern](./windows-host-boot-recovery-pattern.md) |
 | WSL IP changes | Breaks any `portproxy` rule | Tunnel-only design avoids it |
 | Windows update changes WSL behaviour | Possible start-up change | Re-run the reboot test after major updates |
 
