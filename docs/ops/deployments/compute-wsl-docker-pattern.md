@@ -109,7 +109,7 @@ Maps to the four-script path in [bmr-pattern](./bmr-pattern.md):
 
 ## 8. Monitoring
 
-The coordinator reads the site's **public** `/status.json` ([public-status-endpoint-pattern](../monitor/public-status-endpoint-pattern.md)). Do not make SSH into WSL a requirement: it adds Windows OpenSSH key and port issues to every check. If the site also keeps a WSL SSH door for administration, treat it as a convenience path, not the monitor.
+The coordinator reads the site's **public** `/status.json` ([public-status-endpoint-pattern](../monitor/public-status-endpoint-pattern.md)). Do not make SSH into WSL a requirement: it adds Windows OpenSSH key and port issues to every check. If the site also keeps a WSL SSH door for administration, treat it as a convenience path, not the monitor. To administer WSL from the coordinator, go through Windows SSH with `wsl -d <distro> -- ...`; see [Managing a Windows node over SSH](../backup/windows-openssh-setup.md#managing-a-windows-node-over-ssh-copy-a-ps1-file-and-run-it).
 
 ## 9. Backup reception on the same host
 
