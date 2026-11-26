@@ -35,6 +35,26 @@ If the stack needs data that cannot be recreated from git or a dashboard, do not
 6. **Put the WSL disk where you decide.** Import the distro onto a named drive (`wsl --import`), not wherever the default installer puts it. Record that drive and its serial in the site's storage map, so a drive failure maps to this pattern's rebuild path.
 7. **Tunnel only.** The `cloudflared` container connects outbound. Do not use `netsh portproxy`: the WSL IP changes on every host reboot, which breaks the rules.
 
+### Core site and add-on services
+
+A site has a **core** that every site runs the same way, and **add-ons** that a site chooses to manage.
+
+| | Core | Add-on |
+|--|------|--------|
+| What | Status, backup reception, restore, monitoring: `traefik`, `cloudflared`, status checker, site web container, and the host's backup receiver | Anything else the site manages: Plex, Gitea, Portainer, Home Assistant, a DVR |
+| Who decides | The federation (this pattern) | The site and its owner |
+| If it is down | The site is down | Only that service is down |
+| Public hostname | `<site>.<domain>` (`/status.json`, `/health`, `/docs`) | `<service>.<domain>`, one each (Section 3) |
+
+An add-on is admitted to a site only when it brings these three things:
+1. **A config entry.** The service is listed in the site's `site-config.yml` (where it runs, who owns it, what it needs).
+2. **A monitor check.** A line in the site's `checks.yml`, or a recorded reason there is none. A service with a known outage is `known_down` with a tracking issue, not silently unchecked.
+3. **A backup line.** Either a backup path with a restore note, or "not backed up, by design" with the reason. Add-ons that hold data the site cannot recreate follow [service-data-backup-restore-pattern](../backup/service-data-backup-restore-pattern.md). Media libraries follow the storage process in [netstack#51](https://github.com/2cld/netstack/issues/51).
+
+Add-ons do not have to run in Docker. Plex on a Windows host is an add-on, and the same three things apply.
+
+Example (sl, 2026-11-26): the sl#15 rebuild kept the four core containers and dropped Gitea, Portainer and Home Assistant. Plex stayed as a Windows add-on with its check in `checks.yml`. The DVR is an add-on with `known_down` tracked in sl#33.
+
 ## 3. Naming and routing
 
 Two tiers of public hostname, one domain per site (sites do not share a domain):
