@@ -50,8 +50,9 @@ A tested sl run:
 ## What an unclean power loss breaks
 
 The chain brings the machine back. It does not bring back work that was cut off.
-- **Jobs in flight.** On 2026-11-26 the sl host lost power at 02:28, shortly after the 02:00 Docker backups from cf had landed. cf's `hwpc-rp` sync to sl did not land that day (newest file from the day before). The power loss is the likely cause; it was not confirmed from cf's log. The failure was noticed because Wip's contract runner flagged `hwpc-rp-sl not OK` the next morning.
-- **Rule.** A sender that cannot reach or finish at the receiver must record the failure and retry the same day, and the receiver's own file times must show what arrived ([service-backup-receiver-pattern](../backup/service-backup-receiver-pattern.md)). Do not rely on a morning flag. This pattern does not build that retry; it is open (below).
+- **Jobs in flight.** On 2026-11-26 the sl host lost power at 02:28:55, but trouble started ten minutes earlier. The Windows event log shows the network card link dropping at 02:18:45 and again at 02:19:16, which is when cf's `hwpc-rp` push to sl ran (cf's log: step 4 of 5, finished 02:20:47). The pull from the source host worked and the push to sl failed, so that day's copy did not land (newest file on sl was the day before). The 02:00 Docker backups had landed before the glitch. A glitch can take the network down well before it takes the machine down.
+- **What hid it.** cf's `backup-daily.sh` discards the error text of a failed transfer (`2>/dev/null`), has no retry, and reports the overall state as `OK` when only the `hwpc-rp` copy failed (`OK ... hwpc-rp-sl=FAIL`). It was caught because Wip's contract runner flagged `hwpc-rp-sl not OK` the next morning.
+- **Rule.** A sender that cannot finish a transfer must log why, retry the same day, and count the failure in its overall state. The receiver's own file times must show what arrived ([service-backup-receiver-pattern](../backup/service-backup-receiver-pattern.md)). Do not rely on a morning flag.
 - **File system.** NTFS and the WSL disk image recovered cleanly three times at sl. A host with an important WSL data volume should still plan for repair after repeated unclean stops.
 - **Power quality.** sl sits on a generator (sl#1 was closed for that), and glitches still reached only this site. A generator transfer can interrupt power for seconds. A small UPS to ride through the transfer is a separate decision; this pattern assumes the loss will happen and makes recovery automatic.
 
@@ -63,7 +64,7 @@ The chain brings the machine back. It does not bring back work that was cut off.
 
 ## Open items
 
-- A sender-side retry for interrupted backups (same day), and a way for the receiver to ask for a re-send. Related: [netstack#43](https://github.com/2cld/netstack/issues/43), [netstack#45](https://github.com/2cld/netstack/issues/45).
+- A sender-side retry for interrupted backups (same day), error text in the log, and an overall state that includes every copy (cf: see the issue linked from sl#31). A way for the receiver to ask for a re-send. Related: [netstack#43](https://github.com/2cld/netstack/issues/43), [netstack#45](https://github.com/2cld/netstack/issues/45).
 - Unexpected-shutdown counter in `status.json`.
 - Whether to lock the console after auto sign-in (keeps the session and Plex running, adds a lock screen).
 - The cause of the sl 2026-11-25 boot-task failure was never captured. If it returns, capture the Task Scheduler history first (`wevtutil sl Microsoft-Windows-TaskScheduler/Operational /e:true`).
