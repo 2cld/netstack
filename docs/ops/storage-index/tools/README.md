@@ -133,3 +133,32 @@ Read the lines it prints: the serial matches the drive's label and sticker, file
 - Identity in WSL asks Windows through `powershell.exe`. On Linux it uses `lsblk`; some USB bridges hide the real disk serial. Use `--serial` and say so in the manifest.
 - Drift is checked only at the top level (L0).
 - No hashes yet (L3, L4), no reading of the site's `site-config.yml`, no automatic manifest update.
+
+## Site collector (v0.2.0)
+`site-storage-collect.sh` and `site-storage-collect.ps1` turn the site's device manifests, the per-drive index output and the health file into the site's storage picture. They are read-only on their inputs and write three files:
+
+| Output | For | Content |
+|--------|-----|---------|
+| `storage.json` | Wip and the site's protected `/storage.json` | One record per registered device plus the unregistered ones (format `cat9-storage/1`) |
+| `storage-map.md` | Humans, and the generated block in `docs/storage-map.md` | A table between `<!-- storage-map:begin -->` and `<!-- storage-map:end -->` markers |
+| `visit-list.md` | Whoever is next at the site | One checkbox per device that needs something |
+
+```bash
+./site-storage-collect.sh --site wf --manifests ops/storage/devices --index ~/storage-index-out --out ./collected \
+                          [--health disk-health.txt] [--stale-days 30]
+```
+```powershell
+.\site-storage-collect.ps1 -Site sl -Manifests .\ops\storage\devices -Index C:\storage-index\out -Out .\collected -Health C:\ProgramData\sl-ops\disk-health.txt
+```
+
+**Manifest fields it reads** (flat `key: value` lines in the front matter; values are literal text, no YAML escapes or nesting):
+`device_id` (or `asset_id`), `serial`, `label`, `kind` (`disk` default, or `pool`), `state` (`attached`, `offline`, `in-transit`, `retired`; default `unknown`), `index_serial` (the index folder name if it is not the serial, for example a pool name), `last_indexed_date` and `last_indexed_level` (used only when there is no index output), `power_on_requires`, `members`, `redundancy`, `holds`, `next_index`. Existing manifests that use `status:` are read, but `state` stays `unknown` until the field is added.
+
+**Index output it reads:** `<index>/<serial>/<date>/summary.json` from the per-drive tool; the latest date wins. **Health:** lines `disk <serial> <health> <op> reads=<n> hours=<h> ...` as written by sl's `disk-health.ps1`.
+
+**Flags** (information, never a failure): `NEVER-INDEXED`, `STALE` (older than `--stale-days`), `DRIFT` (last drift exit was 3), `IDENTITY` (2), `TRUNCATED`, `HEALTH` (not Healthy and OK), `OFFLINE`. A device that is offline by design is `known_down`-like: it appears on the visit list, not as an alert.
+**Pools** (`kind: pool`) are listed as one failure domain, one copy, however much redundancy they have inside. An index folder with no manifest is listed as **unregistered**.
+
+**Tests:** `test-site-storage-collect.sh` and `test-site-storage-collect.ps1`, 27 checks each. On 2026-11-27 both tools produced byte-identical `storage.json`, `storage-map.md` and `visit-list.md` (apart from the tool name) on one fixture that included an offline pool, a stale, drifted, sick and never-indexed device, an unregistered index folder and a label with quotes and a backslash. A run of the index tool followed by the collector showed the new drive as fresh with no flags.
+
+**Not in v0.2.0:** pool mode for the index tool (`zpool` and `zfs list`), reading `site-config.yml`, writing the generated block into `docs/storage-map.md` automatically, and publishing `/storage.json` through the site's web container.
