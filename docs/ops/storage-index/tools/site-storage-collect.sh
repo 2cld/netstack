@@ -7,7 +7,7 @@
 #                                [--health <disk-health.txt>] [--stale-days 30] [--now YYYY-MM-DD]
 # Exit codes: 0 ok, 1 usage or error. (Flags in the report are information, not failures.)
 set -u
-VERSION="0.2.0"; TOOL="site-storage-collect.sh $VERSION"
+VERSION="0.2.1"; TOOL="site-storage-collect.sh $VERSION"
 SITE=""; MAN=""; IDX=""; OUT=""; HEALTH=""; STALE=30; NOW="$(date +%F)"
 die() { echo "error: $*" >&2; exit 1; }
 while [ $# -gt 0 ]; do
@@ -39,12 +39,12 @@ for f in $(ls "$MAN"/*.md 2>/dev/null | LC_ALL=C sort); do
   idxkey="$(fm "$f" index_serial)"; idxkey="${idxkey:-$serial}"
   holds="$(fm "$f" holds)"; members="$(fm "$f" members)"; redundancy="$(fm "$f" redundancy)"; power="$(fm "$f" power_on_requires)"; nextidx="$(fm "$f" next_index)"
   ldate="$(fm "$f" last_indexed_date)"; llevel="$(fm "$f" last_indexed_level)"
-  files=""; bytes=""; drift=""; skipped=""; trunc=""; source="manifest"
+  files=""; bytes=""; drift=""; skipped=""; trunc=""; skacc=""; skdep=""; source="manifest"
   sdir="$IDX/$(safe "$idxkey")"; latest=""
   [ -d "$sdir" ] && latest="$(ls -d "$sdir"/*/ 2>/dev/null | while read -r d; do [ -f "${d}summary.json" ] && echo "${d%/}"; done | LC_ALL=C sort | tail -1)"
   if [ -n "$latest" ]; then
     s="$latest/summary.json"; scanned="$(jv "$s" scanned)"; ldate="${scanned%%T*}"; llevel="$(jv "$s" level)"
-    files="$(jv "$s" files_total)"; bytes="$(jv "$s" bytes_total)"; drift="$(jv "$s" drift_exit)"; skipped="$(jv "$s" skipped)"; trunc="$(jv "$s" truncated)"; source="index"
+    files="$(jv "$s" files_total)"; bytes="$(jv "$s" bytes_total)"; drift="$(jv "$s" drift_exit)"; skipped="$(jv "$s" skipped)"; skacc="$(jv "$s" skipped_access)"; skdep="$(jv "$s" skipped_depth)"; trunc="$(jv "$s" truncated)"; source="index"
   fi
   age=""; [ -n "$ldate" ] && age="$(days_between "$ldate")"
   hl=""; ho=""; hr=""; hh=""
@@ -56,10 +56,11 @@ for f in $(ls "$MAN"/*.md 2>/dev/null | LC_ALL=C sort); do
   if [ -z "$ldate" ]; then addf NEVER-INDEXED; elif [ -n "$age" ] && [ "$age" -gt "$STALE" ]; then addf STALE; fi
   [ "$drift" = 3 ] && addf DRIFT; [ "$drift" = 2 ] && addf IDENTITY
   [ "$trunc" = yes ] && addf TRUNCATED
+  { [[ "$skdep" =~ ^[0-9]+$ ]] && [ "$skdep" -gt 0 ]; } || { [[ "$skacc" =~ ^[0-9]+$ ]] && [ "$skacc" -gt 0 ]; } && addf INCOMPLETE
   { [ -n "$hl" ] && { [ "$hl" != "Healthy" ] || [ "$ho" != "OK" ]; }; } && addf HEALTH
   [ "$state" = offline ] && addf OFFLINE
   SEEN["$(safe "$idxkey")"]=1
-  printf '%s\037' "$id" "$serial" "$label" "$kind" "$state" "$ldate" "$llevel" "$age" "$files" "$bytes" "$drift" "$skipped" "$trunc" "$hl" "$ho" "$hr" "$hh" "$flags" "$holds" "$members" "$redundancy" "$power" "$nextidx" "$source" >> "$OUT/.devices.tsv"; echo >> "$OUT/.devices.tsv"
+  printf '%s\037' "$id" "$serial" "$label" "$kind" "$state" "$ldate" "$llevel" "$age" "$files" "$bytes" "$drift" "$skipped" "$trunc" "$hl" "$ho" "$hr" "$hh" "$flags" "$holds" "$members" "$redundancy" "$power" "$nextidx" "$source" "$skacc" "$skdep" >> "$OUT/.devices.tsv"; echo >> "$OUT/.devices.tsv"
 done
 LC_ALL=C sort -t"$US" -k1,1 "$OUT/.devices.tsv" -o "$OUT/.devices.tsv"
 
@@ -79,6 +80,7 @@ action() {  # flags state next_index -> action text
   case ",$fl," in *,DRIFT,*) a="${a:+$a; }review what changed, then re-index";; esac
   case ",$fl," in *,IDENTITY,*) a="${a:+$a; }STOP: serial differs from the breadcrumb; confirm which drive this is";; esac
   case ",$fl," in *,TRUNCATED,*) a="${a:+$a; }re-run: the last scan was cut off";; esac
+  case ",$fl," in *,INCOMPLETE,*) a="${a:+$a; }re-run with a higher depth or as an administrator: the last scan did not read everything";; esac
   case ",$fl," in *,HEALTH,*) a="${a:+$a; }check disk health now";; esac
   echo "$a"
 }
@@ -87,12 +89,12 @@ action() {  # flags state next_index -> action text
 {
   printf '{"format":"cat9-storage/1","site":"%s","generated":"%s","stale_days":%s,"collector":"%s","devices":[' "$(je "$SITE")" "$NOW" "$STALE" "$TOOL"
   first=1
-  while IFS="$US" read -r id serial label kind state ldate llevel age files bytes drift skipped trunc hl ho hr hh flags holds members redundancy power nextidx source; do
+  while IFS="$US" read -r id serial label kind state ldate llevel age files bytes drift skipped trunc hl ho hr hh flags holds members redundancy power nextidx source skacc skdep; do
     [ "$first" = 1 ] || printf ','; first=0
     n() { [[ "$1" =~ ^[0-9]+$ ]] && printf '%s' "$1" || printf 'null'; }; sj() { [ -n "$1" ] && printf '"%s"' "$(je "$1")" || printf 'null'; }
     fl="[]"; [ -n "$flags" ] && fl="[\"$(echo "$flags" | sed 's/,/","/g')\"]"
-    printf '{"id":%s,"serial":%s,"label":%s,"kind":%s,"state":%s,"last_indexed_date":%s,"last_indexed_level":%s,"age_days":%s,"files_total":%s,"bytes_total":%s,"drift_exit":%s,"skipped":%s,"truncated":%s,"health":%s,"op_status":%s,"read_errors":%s,"power_on_hours":%s,"flags":%s,"holds":%s,"members":%s,"redundancy":%s,"power_on_requires":%s,"next_index":%s,"source":%s}' \
-      "$(sj "$id")" "$(sj "$serial")" "$(sj "$label")" "$(sj "$kind")" "$(sj "$state")" "$(sj "$ldate")" "$(sj "$llevel")" "$(n "$age")" "$(n "$files")" "$(n "$bytes")" "$(n "$drift")" "$(n "$skipped")" "$(sj "$trunc")" "$(sj "$hl")" "$(sj "$ho")" "$(n "$hr")" "$(n "$hh")" "$fl" "$(sj "$holds")" "$(sj "$members")" "$(sj "$redundancy")" "$(sj "$power")" "$(sj "$nextidx")" "$(sj "$source")"
+    printf '{"id":%s,"serial":%s,"label":%s,"kind":%s,"state":%s,"last_indexed_date":%s,"last_indexed_level":%s,"age_days":%s,"files_total":%s,"bytes_total":%s,"drift_exit":%s,"skipped":%s,"skipped_access":%s,"skipped_depth":%s,"truncated":%s,"health":%s,"op_status":%s,"read_errors":%s,"power_on_hours":%s,"flags":%s,"holds":%s,"members":%s,"redundancy":%s,"power_on_requires":%s,"next_index":%s,"source":%s}' \
+      "$(sj "$id")" "$(sj "$serial")" "$(sj "$label")" "$(sj "$kind")" "$(sj "$state")" "$(sj "$ldate")" "$(sj "$llevel")" "$(n "$age")" "$(n "$files")" "$(n "$bytes")" "$(n "$drift")" "$(n "$skipped")" "$(n "$skacc")" "$(n "$skdep")" "$(sj "$trunc")" "$(sj "$hl")" "$(sj "$ho")" "$(n "$hr")" "$(n "$hh")" "$fl" "$(sj "$holds")" "$(sj "$members")" "$(sj "$redundancy")" "$(sj "$power")" "$(sj "$nextidx")" "$(sj "$source")"
   done < "$OUT/.devices.tsv"
   printf '],"unregistered":['
   first=1
@@ -108,7 +110,7 @@ action() {  # flags state next_index -> action text
   echo "<!-- storage-map:begin (generated by $TOOL on $NOW; do not edit by hand) -->"
   echo "## Storage map: $SITE ($NOW)"; echo
   echo "| Device | Kind | State | Last indexed | Files | GiB | Health | Flags |"; echo "|---|---|---|---|--:|--:|---|---|"
-  while IFS="$US" read -r id serial label kind state ldate llevel age files bytes drift skipped trunc hl ho hr hh flags holds members redundancy power nextidx source; do
+  while IFS="$US" read -r id serial label kind state ldate llevel age files bytes drift skipped trunc hl ho hr hh flags holds members redundancy power nextidx source skacc skdep; do
     li="never"; [ -n "$ldate" ] && li="$ldate ${llevel:-?} (${age:-?} d)"
     g="?"; [ -n "$bytes" ] && g="$(gib "$bytes")"; hs="?"; [ -n "$hl" ] && hs="$hl/$ho, reads ${hr:-?}, ${hh:-?} h"
     echo "| ${label:-$id} (${serial:-no serial}) | $kind | $state | $li | ${files:-?} | $g | $hs | ${flags:--} |"
@@ -126,7 +128,7 @@ action() {  # flags state next_index -> action text
   echo "# Visit list: $SITE ($NOW)"; echo
   echo "What to do when someone is at the site. Generated from the storage map; nothing here has been done."; echo
   cnt=0
-  while IFS="$US" read -r id serial label kind state ldate llevel age files bytes drift skipped trunc hl ho hr hh flags holds members redundancy power nextidx source; do
+  while IFS="$US" read -r id serial label kind state ldate llevel age files bytes drift skipped trunc hl ho hr hh flags holds members redundancy power nextidx source skacc skdep; do
     [ -n "$flags" ] || continue
     a="$(action "$flags" "$state" "$nextidx")"; [ -n "$a" ] || continue; cnt=$((cnt+1))
     extra=""; [ -n "$power" ] && extra=" Needs: $power."; [ -n "$holds" ] && extra="$extra Holds: $holds."; [ "$kind" = pool ] && extra="$extra Pool: one failure domain."

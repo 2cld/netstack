@@ -42,4 +42,22 @@ chk "history still 1 line" "$(wc -l < "$D/cat9-history.txt")" 1
 echo "8 missing serial refuses to write"
 "$HERE/storage-index.sh" "$D" --site test --label T --out "$O" --no-disk-lookup --write-breadcrumb --yes >/dev/null 2>&1; [ "$?" != 0 ] && ok "refused" || bad "wrote without a serial"
 
+echo "9 deep tree: default depth reads it all; a low --depth flags INCOMPLETE"
+DD="$T/deep"; p="$DD/top"; for i in $(seq 1 20); do p="$p/d$i"; done; mkdir -p "$p"; head -c 777 /dev/zero > "$p/leaf.bin"
+"$HERE/storage-index.sh" "$DD" --site test --serial DEEP1 --out "$T/o9" --no-disk-lookup > "$T/o9.txt"
+grep -q 'done: 1 files' "$T/o9.txt" && ok "20 levels deep counted with the default depth" || bad "deep file not counted: $(grep done "$T/o9.txt")"
+"$HERE/storage-index.sh" "$DD" --site test --serial DEEP1 --out "$T/o9b" --no-disk-lookup --depth 5 > "$T/o9b.txt"
+grep -q 'WARNING INCOMPLETE' "$T/o9b.txt" && ok "low depth warns INCOMPLETE" || bad "no INCOMPLETE warning"
+grep -q '"skipped_depth":1' "$T"/o9b/DEEP1/*/summary.json && ok "skipped_depth recorded in summary.json" || bad "skipped_depth not recorded"
+
+echo "10 cannot write: refused before YES, exit 5, nothing written"
+if [ "$(id -u)" = 0 ]; then ok "skipped (running as root, permissions not enforced)"; else
+  RO="$T/ro"; mkdir -p "$RO/x"; echo a > "$RO/x/a"; chmod 555 "$RO"
+  "$HERE/storage-index.sh" "$RO" --site test --serial RO1 --out "$T/o10" --no-disk-lookup --write-breadcrumb --yes > "$T/o10.txt" 2>&1; rc=$?
+  chk "exit 5" "$rc" 5
+  grep -q 'cannot write' "$T/o10.txt" && ok "says cannot write" || bad "no clear message"
+  chk "no breadcrumb on read-only drive" "$(ls "$RO" | grep -c '^cat9-')" 0
+  chmod 755 "$RO"
+fi
+
 echo; echo "passed $pass, failed $fail"; [ "$fail" = 0 ]

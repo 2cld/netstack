@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  site-storage-collect.ps1 0.2.0: build the site's storage picture from device manifests, per-drive index output and health.
+  site-storage-collect.ps1 0.2.1: build the site's storage picture from device manifests, per-drive index output and health.
 .DESCRIPTION
   Read-only on its inputs. Writes storage.json, storage-map.md and visit-list.md to -Out. Same output as site-storage-collect.sh.
   Spec: docs/ops/storage-index/tools/README.md (section "Site collector"). Windows PowerShell 5.1 or later.
@@ -13,7 +13,7 @@ param(
   [string]$Health = '', [int]$StaleDays = 30, [string]$Now = (Get-Date).ToString('yyyy-MM-dd')
 )
 $ErrorActionPreference = 'Stop'
-$Tool = 'site-storage-collect.ps1 0.2.0'
+$Tool = 'site-storage-collect.ps1 0.2.1'
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
 function Fail($m) { Write-Host "error: $m" -ForegroundColor Red; exit 1 }
 if (-not (Test-Path -LiteralPath $Manifests -PathType Container)) { Fail "manifests folder not found: $Manifests" }
@@ -49,11 +49,11 @@ foreach ($f in $files) {
   $id = G $m 'device_id'; if (-not $id) { $id = G $m 'asset_id' }; if (-not $id) { continue }
   $serial = G $m 'serial'; $kind = G $m 'kind'; if (-not $kind) { $kind = 'disk' }; $state = G $m 'state'; if (-not $state) { $state = 'unknown' }
   $idxkey = G $m 'index_serial'; if (-not $idxkey) { $idxkey = $serial }
-  $d = [ordered]@{ id=$id; serial=$serial; label=(G $m 'label'); kind=$kind; state=$state; ldate=(G $m 'last_indexed_date'); llevel=(G $m 'last_indexed_level'); age=''; files=''; bytes=''; drift=''; skipped=''; trunc=''; hl=''; ho=''; hr=''; hh=''; flags=''; holds=(G $m 'holds'); members=(G $m 'members'); redundancy=(G $m 'redundancy'); power=(G $m 'power_on_requires'); nextidx=(G $m 'next_index'); source='manifest' }
+  $d = [ordered]@{ id=$id; serial=$serial; label=(G $m 'label'); kind=$kind; state=$state; ldate=(G $m 'last_indexed_date'); llevel=(G $m 'last_indexed_level'); age=''; files=''; bytes=''; drift=''; skipped=''; trunc=''; skacc=''; skdep=''; hl=''; ho=''; hr=''; hh=''; flags=''; holds=(G $m 'holds'); members=(G $m 'members'); redundancy=(G $m 'redundancy'); power=(G $m 'power_on_requires'); nextidx=(G $m 'next_index'); source='manifest' }
   $latest = Get-Latest (Join-Path $Index (Safe $idxkey))
   if ($latest) {
     $s = Get-Content -LiteralPath (Join-Path $latest 'summary.json') -Raw | ConvertFrom-Json
-    $d.ldate = ("$($s.scanned)").Split('T')[0]; $d.llevel = "$($s.level)"; $d.files = "$($s.files_total)"; $d.bytes = "$($s.bytes_total)"; $d.drift = "$($s.drift_exit)"; $d.skipped = "$($s.skipped)"; $d.trunc = "$($s.truncated)"; $d.source = 'index'
+    $d.ldate = ("$($s.scanned)").Split('T')[0]; $d.llevel = "$($s.level)"; $d.files = "$($s.files_total)"; $d.bytes = "$($s.bytes_total)"; $d.drift = "$($s.drift_exit)"; $d.skipped = "$($s.skipped)"; $d.skacc = "$($s.skipped_access)"; $d.skdep = "$($s.skipped_depth)"; $d.trunc = "$($s.truncated)"; $d.source = 'index'
   }
   if ($d.ldate) { try { $d.age = [string][int](($NowDay - [datetime]::ParseExact($d.ldate,'yyyy-MM-dd',[Globalization.CultureInfo]::InvariantCulture)).TotalDays) } catch { $d.age = '' } }
   if ($Health -and $serial) {
@@ -64,6 +64,7 @@ foreach ($f in $files) {
   if (-not $d.ldate) { $fl.Add('NEVER-INDEXED') } elseif ($d.age -ne '' -and [int]$d.age -gt $StaleDays) { $fl.Add('STALE') }
   if ($d.drift -eq '3') { $fl.Add('DRIFT') }; if ($d.drift -eq '2') { $fl.Add('IDENTITY') }
   if ($d.trunc -eq 'yes') { $fl.Add('TRUNCATED') }
+  if (($d.skdep -match '^[0-9]+$' -and [int]$d.skdep -gt 0) -or ($d.skacc -match '^[0-9]+$' -and [int]$d.skacc -gt 0)) { $fl.Add('INCOMPLETE') }
   if ($d.hl -and ($d.hl -ne 'Healthy' -or $d.ho -ne 'OK')) { $fl.Add('HEALTH') }
   if ($state -eq 'offline') { $fl.Add('OFFLINE') }
   $d.flags = ($fl -join ',')
@@ -89,6 +90,7 @@ function Get-Action([string]$fl,[string]$ni) {
   if ($f.Contains(',DRIFT,')) { $a = $(if ($a) { "$a; " } else { '' }) + 'review what changed, then re-index' }
   if ($f.Contains(',IDENTITY,')) { $a = $(if ($a) { "$a; " } else { '' }) + 'STOP: serial differs from the breadcrumb; confirm which drive this is' }
   if ($f.Contains(',TRUNCATED,')) { $a = $(if ($a) { "$a; " } else { '' }) + 're-run: the last scan was cut off' }
+  if ($f.Contains(',INCOMPLETE,')) { $a = $(if ($a) { "$a; " } else { '' }) + 're-run with a higher depth or as an administrator: the last scan did not read everything' }
   if ($f.Contains(',HEALTH,')) { $a = $(if ($a) { "$a; " } else { '' }) + 'check disk health now' }
   $a
 }
@@ -102,7 +104,7 @@ $first = $true
 foreach ($d in $sorted) {
   if (-not $first) { [void]$j.Append(',') }; $first = $false
   $fl = '[]'; if ($d.flags) { $fl = '["' + ($d.flags.Replace(',','","')) + '"]' }
-  [void]$j.Append("{`"id`":$(Sj $d.id),`"serial`":$(Sj $d.serial),`"label`":$(Sj $d.label),`"kind`":$(Sj $d.kind),`"state`":$(Sj $d.state),`"last_indexed_date`":$(Sj $d.ldate),`"last_indexed_level`":$(Sj $d.llevel),`"age_days`":$(Num $d.age),`"files_total`":$(Num $d.files),`"bytes_total`":$(Num $d.bytes),`"drift_exit`":$(Num $d.drift),`"skipped`":$(Num $d.skipped),`"truncated`":$(Sj $d.trunc),`"health`":$(Sj $d.hl),`"op_status`":$(Sj $d.ho),`"read_errors`":$(Num $d.hr),`"power_on_hours`":$(Num $d.hh),`"flags`":$fl,`"holds`":$(Sj $d.holds),`"members`":$(Sj $d.members),`"redundancy`":$(Sj $d.redundancy),`"power_on_requires`":$(Sj $d.power),`"next_index`":$(Sj $d.nextidx),`"source`":$(Sj $d.source)}")
+  [void]$j.Append("{`"id`":$(Sj $d.id),`"serial`":$(Sj $d.serial),`"label`":$(Sj $d.label),`"kind`":$(Sj $d.kind),`"state`":$(Sj $d.state),`"last_indexed_date`":$(Sj $d.ldate),`"last_indexed_level`":$(Sj $d.llevel),`"age_days`":$(Num $d.age),`"files_total`":$(Num $d.files),`"bytes_total`":$(Num $d.bytes),`"drift_exit`":$(Num $d.drift),`"skipped`":$(Num $d.skipped),`"skipped_access`":$(Num $d.skacc),`"skipped_depth`":$(Num $d.skdep),`"truncated`":$(Sj $d.trunc),`"health`":$(Sj $d.hl),`"op_status`":$(Sj $d.ho),`"read_errors`":$(Num $d.hr),`"power_on_hours`":$(Num $d.hh),`"flags`":$fl,`"holds`":$(Sj $d.holds),`"members`":$(Sj $d.members),`"redundancy`":$(Sj $d.redundancy),`"power_on_requires`":$(Sj $d.power),`"next_index`":$(Sj $d.nextidx),`"source`":$(Sj $d.source)}")
 }
 [void]$j.Append('],"unregistered":[')
 $first = $true

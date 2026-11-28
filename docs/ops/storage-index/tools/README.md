@@ -1,4 +1,4 @@
-# storage-index tools (v0.1.0)
+# storage-index tools (index v0.1.1, collector v0.2.1)
 
 Two scripts that do the same job, one for Windows (`storage-index.ps1`) and one for Linux and WSL (`storage-index.sh`). They index a storage device, keep a local index, and **only when asked** leave three small breadcrumb files on the device. Part of [netstack#57](https://github.com/2cld/netstack/issues/57); the process around them is in [media-storage-process](../media-storage-process.md).
 
@@ -6,7 +6,7 @@ Two scripts that do the same job, one for Windows (`storage-index.ps1`) and one 
 
 ## What they do
 1. **Identify** the device: serial, model, label, filesystem, size.
-2. **Scan safely** to the level you ask for (default L1). Symlinks, junctions and other filesystems are never followed. Depth cap 12. Time cap 25 minutes per top-level folder. Every skipped folder is counted, and a cut-off scan says `truncated`.
+2. **Scan safely** to the level you ask for (default L1). Symlinks, junctions and other filesystems are never followed. Depth cap 64. Time cap 25 minutes per top-level folder. Every skipped folder is counted by reason (access, links, depth) and a cut-off scan says `truncated`. If any folder was not read for access or depth, the tool prints `WARNING INCOMPLETE` and the collector flags the device `INCOMPLETE`.
 3. **Write a local index** in `<out>/<serial>/<date>/`: `L0.csv`, `L1.csv`, optional `L2.csv`, `cat9-contents.txt`, `summary.json`, plus a line in `<out>/custody.csv`.
 4. **Check drift** if the drive already carries a `cat9-contents.txt`: checksum, serial, then top-level folders added, removed or changed.
 5. **Leave breadcrumbs on the drive** only with `--write-breadcrumb` / `-WriteBreadcrumb`, after showing exactly what will be written and asking you to type `YES`.
@@ -50,6 +50,7 @@ tool: storage-index.ps1 0.1.0
 files_total: 28060
 bytes_total: 1102548807211
 skipped: 0
+skipped_detail: access 0, links 0, depth 0
 truncated: no
 index_ref: <where the full index lives>
 [L0] name|kind|files|bytes|oldest|newest|skipped|truncated
@@ -76,11 +77,12 @@ body-sha256: <sha256 of every line above this one, LF line endings>
 | 2 | Identity mismatch |
 | 3 | Drift |
 | 4 | Breadcrumb write declined |
+| 5 | Cannot write to the drive: checked **before** asking for YES, nothing written (on Windows: run PowerShell as Administrator) |
 
 ## Safe-walk rules (from the 2024 hash database that failed on nested storage)
 - Never follow symlinks, junctions or other reparse points; count them as skipped.
 - Never cross into another filesystem (bash: `find -xdev`).
-- Depth cap (default 12), time cap per top-level folder (default 25 minutes), one drive per run.
+- Depth cap (default 64; v0.1.0 used 12, which missed 2,052 folders on bs5: old user profiles nest deeply), time cap per top-level folder (default 25 minutes), one drive per run.
 - Record what was skipped and whether the scan was truncated. A scan with `truncated: yes` is incomplete.
 
 ## Manual run checklist (what wip/chris asks a site-ops human to do)
@@ -89,13 +91,13 @@ Do this once per drive visit. Stop at any step that does not look right and tell
 **0. Get the scripts** (netstack is public). Windows PowerShell:
 ```powershell
 mkdir C:\storage-index; cd C:\storage-index
-$b = 'https://raw.githubusercontent.com/2cld/netstack/master/docs/ops/storage-index/tools'   # use the branch name until the PR is merged
+$b = 'https://raw.githubusercontent.com/2cld/netstack/master/docs/ops/storage-index/tools'
 iwr "$b/storage-index.ps1" -OutFile storage-index.ps1
 iwr "$b/test-storage-index.ps1" -OutFile test-storage-index.ps1
 ```
 In WSL (or Linux): `curl -fsSLO "$b/storage-index.sh" -O "$b/test-storage-index.sh"; chmod +x *.sh`.
 
-**1. Test the tool on a fake drive first** (safe, touches only a temp folder). It must say `passed 17, failed 0`:
+**1. Test the tool on a fake drive first** (safe, touches only a temp folder). It must say `passed 23, failed 0`:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\test-storage-index.ps1
 ```
@@ -125,10 +127,10 @@ Read the lines it prints: the serial matches the drive's label and sticker, file
 **To validate bash against PowerShell:** scan the same attached drive with both (Windows `D:\` and WSL `/mnt/d`), same `-Level`, then compare the top-level and second-level files after sorting: `diff <(sort ps/L0.csv) <(sort wsl/L0.csv)`. Differences in `skipped` or in system folders are expected; anything else is a bug to report.
 
 ## Tests
-`test-storage-index.sh` (17 checks) and `test-storage-index.ps1` (17 checks) build a fake drive in a temp folder and check: read-only default, breadcrumb write, checksum, no drift on a second run, system folders ignored, drift on an added file and a removed folder, identity mismatch, a declined write, and refusal to write without a serial. On 2026-11-27 both passed, and both tools produced identical `L0.csv`, `L1.csv`, `L2.csv` and `cat9-contents.txt` (apart from time, host, tool and checksum) on the same fixture. Each tool also accepted and verified a breadcrumb written by the other.
+`test-storage-index.sh` (23 checks) and `test-storage-index.ps1` (23 checks) build a fake drive in a temp folder and check: read-only default, breadcrumb write, checksum, no drift on a second run, system folders ignored, drift on an added file and a removed folder, identity mismatch, a declined write, refusal to write without a serial, a 20-level deep tree read in full with the default depth and flagged `INCOMPLETE` with a low depth, and a drive that cannot be written refused before YES with exit 5. On 2026-11-27 both passed, and both tools produced identical `L0.csv`, `L1.csv`, `L2.csv` and `cat9-contents.txt` (apart from time, host, tool and checksum) on the same fixture. Each tool also accepted and verified a breadcrumb written by the other.
 
 ## Limits (v0.1.0)
-- Windows: run elevated to read `System Volume Information`; otherwise it is counted as skipped.
+- Windows: run PowerShell **as Administrator**. Without it, writing breadcrumbs fails on drives whose root only lets Administrators create files (found on bs5, 2026-11-28; the tool now says so before YES and exits 5), and some folders are counted as skipped for access. Even elevated, a few folders may be denied (9 on bs5).
 - Dates are the file's modified date in local time. Names with newlines are not supported in the bash tool.
 - Identity in WSL asks Windows through `powershell.exe`. On Linux it uses `lsblk`; some USB bridges hide the real disk serial. Use `--serial` and say so in the manifest.
 - Drift is checked only at the top level (L0).
@@ -156,9 +158,9 @@ Read the lines it prints: the serial matches the drive's label and sticker, file
 
 **Index output it reads:** `<index>/<serial>/<date>/summary.json` from the per-drive tool; the latest date wins. **Health:** lines `disk <serial> <health> <op> reads=<n> hours=<h> ...` as written by sl's `disk-health.ps1`.
 
-**Flags** (information, never a failure): `NEVER-INDEXED`, `STALE` (older than `--stale-days`), `DRIFT` (last drift exit was 3), `IDENTITY` (2), `TRUNCATED`, `HEALTH` (not Healthy and OK), `OFFLINE`. A device that is offline by design is `known_down`-like: it appears on the visit list, not as an alert.
+**Flags** (information, never a failure): `NEVER-INDEXED`, `STALE` (older than `--stale-days`), `DRIFT` (last drift exit was 3), `IDENTITY` (2), `TRUNCATED`, `INCOMPLETE` (folders not read for access or depth), `HEALTH` (not Healthy and OK), `OFFLINE`. A device that is offline by design is `known_down`-like: it appears on the visit list, not as an alert.
 **Pools** (`kind: pool`) are listed as one failure domain, one copy, however much redundancy they have inside. An index folder with no manifest is listed as **unregistered**.
 
-**Tests:** `test-site-storage-collect.sh` and `test-site-storage-collect.ps1`, 27 checks each. On 2026-11-27 both tools produced byte-identical `storage.json`, `storage-map.md` and `visit-list.md` (apart from the tool name) on one fixture that included an offline pool, a stale, drifted, sick and never-indexed device, an unregistered index folder and a label with quotes and a backslash. A run of the index tool followed by the collector showed the new drive as fresh with no flags.
+**Tests:** `test-site-storage-collect.sh` and `test-site-storage-collect.ps1`, 29 checks each. On 2026-11-27 both tools produced byte-identical `storage.json`, `storage-map.md` and `visit-list.md` (apart from the tool name) on one fixture that included an offline pool, a stale, drifted, sick and never-indexed device, an unregistered index folder and a label with quotes and a backslash. A run of the index tool followed by the collector showed the new drive as fresh with no flags.
 
 **Not in v0.2.0:** pool mode for the index tool (`zpool` and `zfs list`), reading `site-config.yml`, writing the generated block into `docs/storage-map.md` automatically, and publishing `/storage.json` through the site's web container.

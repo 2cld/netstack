@@ -4,15 +4,16 @@
 # Needs GNU find, awk, sha256sum. Works on Linux and in WSL (drives appear under /mnt/<letter>).
 #
 # Usage: storage-index.sh <root> --site <site> [--label <name>] [--serial <serial>] [--out <dir>]
-#                         [--level L0|L1|L2] [--depth 12] [--cap-min 25]
+#                         [--level L0|L1|L2] [--depth 64] [--cap-min 25]
 #                         [--index-ref <text>] [--manifest-url <url>]
 #                         [--write-breadcrumb [--yes]] [--no-disk-lookup]
 # Exit codes: 0 ok, 1 usage or error, 2 identity mismatch (serial differs from the breadcrumb),
-#             3 drift (drive changed since the breadcrumb), 4 breadcrumb write declined.
+#             3 drift (drive changed since the breadcrumb), 4 breadcrumb write declined,
+#             5 cannot write to the drive.
 set -u
-VERSION="0.1.0"
+VERSION="0.1.1"
 TOOL="storage-index.sh $VERSION"
-LEVEL="L1"; DEPTH=12; CAPMIN=25; OUT="./storage-index-out"; SITE=""; LABEL=""; SERIAL=""
+LEVEL="L1"; DEPTH=64; CAPMIN=25; OUT="./storage-index-out"; SITE=""; LABEL=""; SERIAL=""
 INDEXREF="(not set)"; MANIFESTURL=""; WRITE=0; YES=0; ROOT=""; NODISK=0
 SYSTEM_RE='^(\$RECYCLE\.BIN|System Volume Information|RECYCLER|lost\+found|\.Trash-[0-9]+|\.Spotlight-V100|\.fseventsd)$'
 
@@ -75,7 +76,7 @@ L0="$TMP/L0.csv"; L1="$TMP/L1.csv"; L2="$OUTDIR/L2.csv"; L0P="$TMP/L0.pipe"; L1P
 echo "child,kind,files,bytes,oldest,newest,skipped,truncated" > "$L0"
 echo "path,kind,files,bytes,oldest,newest,skipped,truncated" > "$L1"
 [ "$LEVEL" = "L2" ] && echo "path,bytes,mtime" > "$L2"
-TOTFILES=0; TOTBYTES=0; TOTSKIP=0; ANYTRUNC="no"
+TOTFILES=0; TOTBYTES=0; TOTSKIP=0; SKACC=0; SKLNK=0; SKDEP=0; ANYTRUNC="no"
 csvq() { sed 's/"/""/g'; }
 pq() { printf '%s' "$1" | sed 's/|/%7C/g'; }
 
@@ -96,7 +97,7 @@ scan_dir() {  # $1 = top-level directory name
   sl="$(find "$dir" -xdev -maxdepth "$DEPTH" -type l 2>/dev/null | wc -l)"
   dd="$(find "$dir" -xdev -mindepth "$DEPTH" -maxdepth "$DEPTH" -type d 2>/dev/null | wc -l)"
   er="$(grep -c . "$TMP/err.$$" 2>/dev/null || true)"; [ "$rc" = 124 ] && er=0
-  skipped=$((sl+dd+er))
+  skipped=$((sl+dd+er)); SKLNK=$((SKLNK+sl)); SKDEP=$((SKDEP+dd)); SKACC=$((SKACC+er))
   local res; res="$(awk -v l2="$([ "$LEVEL" = L2 ] && echo "$L2")" -v pre="$name" "$AGG" "$raw")"
   local tline; tline="$(echo "$res" | grep '^T' | head -1)"
   local fc bc old new
@@ -121,7 +122,7 @@ while IFS= read -r -d '' e; do
   base="$(basename "$e")"
   case "$base" in cat9-asset-tag.txt|cat9-contents.txt|cat9-history.txt) continue;; esac   # our own breadcrumbs are not content
   if [ -L "$e" ]; then
-    echo "\"$(printf '%s' "$base" | csvq)\",symlink-skipped,0,0,,,1,False" >> "$L0"; echo "$(pq "$base")|symlink-skipped|0|0|||1|False" >> "$L0P"; TOTSKIP=$((TOTSKIP+1))
+    echo "\"$(printf '%s' "$base" | csvq)\",symlink-skipped,0,0,,,1,False" >> "$L0"; echo "$(pq "$base")|symlink-skipped|0|0|||1|False" >> "$L0P"; TOTSKIP=$((TOTSKIP+1)); SKLNK=$((SKLNK+1))
   elif [ -d "$e" ]; then scan_dir "$base"
   elif [ -f "$e" ]; then
     sz="$(stat -c %s "$e")"; dt="$(date -r "$e" +%Y-%m-%d)"
@@ -130,7 +131,10 @@ while IFS= read -r -d '' e; do
   fi
 done < <(find "$ROOT" -mindepth 1 -maxdepth 1 -print0 | LC_ALL=C sort -z)
 cp "$L0" "$OUTDIR/L0.csv"; [ "$LEVEL" != "L0" ] && cp "$L1" "$OUTDIR/L1.csv"
-echo "   done: $TOTFILES files, $(awk -v b="$TOTBYTES" 'BEGIN{printf "%.1f", b/1073741824}') GiB, skipped $TOTSKIP, truncated $ANYTRUNC"
+echo "   done: $TOTFILES files, $(awk -v b="$TOTBYTES" 'BEGIN{printf "%.1f", b/1073741824}') GiB, skipped $TOTSKIP (access $SKACC, links $SKLNK, depth $SKDEP), truncated $ANYTRUNC"
+[ "$SKDEP" -gt 0 ] && echo "   WARNING INCOMPLETE: $SKDEP folder(s) deeper than --depth $DEPTH were not read, so their files are not counted. Re-run with a higher --depth."
+[ "$SKACC" -gt 0 ] && echo "   WARNING INCOMPLETE: $SKACC path(s) could not be read (permission denied). Re-run with enough rights (sudo, or as the owner)."
+[ "$ANYTRUNC" = yes ] && echo "   WARNING INCOMPLETE: the time cap cut a scan short. Re-run with a higher --cap-min."
 
 # ---------- contents text (the breadcrumb body) ----------
 build_contents() {
@@ -141,7 +145,7 @@ build_contents() {
     echo "size_gib: ${SIZE_GIB:-unknown}"; echo "filesystem: ${FSTYPE:-unknown}"
     echo "unit: GiB (1 GiB = 2^30 bytes)"; echo "hidden_files_included: yes"
     echo "level: $LEVEL"; echo "scanned: $NOW_ISO"; echo "site: $SITE"; echo "host: $HOST"; echo "tool: $TOOL"
-    echo "files_total: $TOTFILES"; echo "bytes_total: $TOTBYTES"; echo "skipped: $TOTSKIP"; echo "truncated: $ANYTRUNC"
+    echo "files_total: $TOTFILES"; echo "bytes_total: $TOTBYTES"; echo "skipped: $TOTSKIP"; echo "skipped_detail: access $SKACC, links $SKLNK, depth $SKDEP"; echo "truncated: $ANYTRUNC"
     echo "index_ref: $INDEXREF"
     echo "[L0] name|kind|files|bytes|oldest|newest|skipped|truncated"
     cat "$L0P"
@@ -192,13 +196,21 @@ fi
 [ -f "$OUT/custody.csv" ] || echo "date,serial,label,site,host,root,level,files,bytes,drift_exit" > "$OUT/custody.csv"
 echo "$TODAY,$SERIAL,\"$LABEL\",$SITE,$HOST,\"$ROOT\",$LEVEL,$TOTFILES,$TOTBYTES,$EXIT" >> "$OUT/custody.csv"
 cat > "$OUTDIR/summary.json" <<JSON
-{"format":"cat9-index-summary/1","tool":"$TOOL","serial":"$SERIAL","model":"${MODEL:-}","label":"$LABEL","site":"$SITE","host":"$HOST","root":"$ROOT","level":"$LEVEL","scanned":"$NOW_ISO","unit":"GiB (2^30)","hidden_files_included":true,"files_total":$TOTFILES,"bytes_total":$TOTBYTES,"skipped":$TOTSKIP,"truncated":"$ANYTRUNC","contents_sha256":"$BODYSHA","drift_exit":$EXIT}
+{"format":"cat9-index-summary/1","tool":"$TOOL","serial":"$SERIAL","model":"${MODEL:-}","label":"$LABEL","site":"$SITE","host":"$HOST","root":"$ROOT","level":"$LEVEL","scanned":"$NOW_ISO","unit":"GiB (2^30)","hidden_files_included":true,"files_total":$TOTFILES,"bytes_total":$TOTBYTES,"skipped":$TOTSKIP,"skipped_access":$SKACC,"skipped_links":$SKLNK,"skipped_depth":$SKDEP,"truncated":"$ANYTRUNC","contents_sha256":"$BODYSHA","drift_exit":$EXIT}
 JSON
 echo "== local index written to $OUTDIR (L0.csv$([ "$LEVEL" != L0 ] && echo ", L1.csv")$([ "$LEVEL" = L2 ] && echo ", L2.csv"), cat9-contents.txt, summary.json) and $OUT/custody.csv"
 
 # ---------- breadcrumbs on the drive (only on request) ----------
 if [ "$WRITE" = 1 ]; then
   [ "$SERIAL_KNOWN" = 1 ] || die "refusing to write breadcrumbs without a known serial (use --serial)"
+  # preflight: can we write to the drive root? (checked before asking you to type YES)
+  probe="$ROOT/cat9-write-test-$$.tmp"
+  if ! { : > "$probe"; } 2>/dev/null; then
+    echo "error: cannot write to $ROOT (permission denied or read-only). Nothing was written to the drive." >&2
+    echo "   Re-run with enough rights (sudo, or as the drive's owner), or remount it read-write." >&2; exit 5
+  fi
+  rm -f "$probe"
+  for o in cat9-asset-tag.txt cat9-contents.txt cat9-history.txt; do [ -e "$ROOT/$o" ] && [ ! -w "$ROOT/$o" ] && { echo "error: $ROOT/$o exists and is not writable. Nothing was written." >&2; exit 5; }; done
   MURL="${MANIFESTURL:-the site repo, ops/storage/devices/$SAFE_ID.md}"
   cat > "$TMP/tag.txt" <<TAG
 Asset: $LABEL ($SERIAL)
@@ -219,8 +231,10 @@ TAG
     printf 'Type YES to write these three files to %s: ' "$ROOT"; read -r ans
     [ "$ans" = "YES" ] || { echo "declined; nothing written to the drive"; exit 4; }
   fi
-  cp "$TMP/tag.txt" "$ROOT/cat9-asset-tag.txt" && cp "$TMP/contents.txt" "$ROOT/cat9-contents.txt" && echo "$HIST" >> "$ROOT/cat9-history.txt" \
-    || die "write failed (read-only drive?)"
+  wrote=""
+  { cp "$TMP/tag.txt" "$ROOT/cat9-asset-tag.txt" && wrote="cat9-asset-tag.txt" && cp "$TMP/contents.txt" "$ROOT/cat9-contents.txt" && wrote="$wrote cat9-contents.txt" \
+    && echo "$HIST" >> "$ROOT/cat9-history.txt" && wrote="$wrote cat9-history.txt"; } \
+    || { echo "error: write stopped after: ${wrote:-nothing}. Files not listed were not written." >&2; exit 5; }
   echo "== written. Read back and verified checksum: $(head -n -1 "$ROOT/cat9-contents.txt" | sha256sum | cut -d' ' -f1)  (expected $BODYSHA)"
 fi
 exit "$EXIT"

@@ -10,7 +10,7 @@
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File storage-index.ps1 -Root D:\ -Site sl -Out C:\storage-index-out -WriteBreadcrumb
 .NOTES
-  Exit codes: 0 ok, 1 usage or error, 2 identity mismatch, 3 drift, 4 breadcrumb write declined.
+  Exit codes: 0 ok, 1 usage or error, 2 identity mismatch, 3 drift, 4 breadcrumb write declined, 5 cannot write to the drive.
 #>
 param(
   [Parameter(Mandatory=$true)][string]$Root,
@@ -18,12 +18,12 @@ param(
   [string]$Label = '', [string]$Serial = '',
   [string]$Out = '.\storage-index-out',
   [ValidateSet('L0','L1','L2')][string]$Level = 'L1',
-  [int]$Depth = 12, [int]$CapMin = 25,
+  [int]$Depth = 64, [int]$CapMin = 25,
   [string]$IndexRef = '(not set)', [string]$ManifestUrl = '',
   [switch]$WriteBreadcrumb, [switch]$Yes, [switch]$NoDiskLookup
 )
 $ErrorActionPreference = 'Stop'
-$Version = '0.1.0'; $Tool = "storage-index.ps1 $Version"
+$Version = '0.1.1'; $Tool = "storage-index.ps1 $Version"
 $SystemRe = '^(\$RECYCLE\.BIN|System Volume Information|RECYCLER|lost\+found|\.Trash-[0-9]+|\.Spotlight-V100|\.fseventsd)$'
 $Own = @('cat9-asset-tag.txt','cat9-contents.txt','cat9-history.txt')
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
@@ -65,10 +65,10 @@ $L0p = New-Object System.Collections.Generic.List[string]; $L1p = New-Object Sys
 $L0.Add('child,kind,files,bytes,oldest,newest,skipped,truncated'); $L1.Add('path,kind,files,bytes,oldest,newest,skipped,truncated')
 $L2w = $null
 if ($Level -eq 'L2') { $L2w = New-Object System.IO.StreamWriter((Join-Path $OutDir 'L2.csv'), $false, $Utf8); $L2w.NewLine = "`n"; $L2w.WriteLine('path,bytes,mtime') }
-$script:TotFiles = [int64]0; $script:TotBytes = [int64]0; $script:TotSkip = 0; $script:AnyTrunc = 'no'
+$script:TotFiles = [int64]0; $script:TotBytes = [int64]0; $script:TotSkip = 0; $script:SkAcc = 0; $script:SkLnk = 0; $script:SkDep = 0; $script:AnyTrunc = 'no'
 
 function Invoke-Walk([string]$dir, [string]$name, [datetime]$deadline) {
-  $groups = @{}; $tc = [int64]0; $tb = [int64]0; $to = ''; $tn = ''; $skipped = 0; $trunc = $false; $tick = 0
+  $groups = @{}; $tc = [int64]0; $tb = [int64]0; $to = ''; $tn = ''; $skipped = 0; $skA = 0; $skL = 0; $skD = 0; $trunc = $false; $tick = 0
   $stack = New-Object System.Collections.Stack
   $stack.Push(@($dir, 0, ''))
   while ($stack.Count -gt 0) {
@@ -77,7 +77,7 @@ function Invoke-Walk([string]$dir, [string]$name, [datetime]$deadline) {
     try {
       $di = New-Object System.IO.DirectoryInfo $d
       foreach ($f in $di.EnumerateFiles()) {
-        if ($f.Attributes -band [IO.FileAttributes]::ReparsePoint) { $skipped++; continue }
+        if ($f.Attributes -band [IO.FileAttributes]::ReparsePoint) { $skipped++; $skL++; continue }
         $g = if ($dp -eq 0) { '(files in this folder)' } else { $grp }
         $dt = $f.LastWriteTime.ToString('yyyy-MM-dd'); $len = [int64]$f.Length
         if (-not $groups.ContainsKey($g)) { $groups[$g] = @{ c=[int64]0; b=[int64]0; o=$dt; n=$dt } }
@@ -86,12 +86,12 @@ function Invoke-Walk([string]$dir, [string]$name, [datetime]$deadline) {
         if ($L2w) { $rel = $f.FullName.Substring($dir.Length).TrimStart('\').Replace('\','/'); $L2w.WriteLine((Cq "$name/$rel") + ",$len,$dt") }
       }
       foreach ($s in $di.EnumerateDirectories()) {
-        if ($s.Attributes -band [IO.FileAttributes]::ReparsePoint) { $skipped++; continue }
-        if (($dp + 1) -ge $Depth) { $skipped++; continue }
+        if ($s.Attributes -band [IO.FileAttributes]::ReparsePoint) { $skipped++; $skL++; continue }
+        if (($dp + 1) -ge $Depth) { $skipped++; $skD++; continue }
         $ng = if ($dp -eq 0) { $s.Name } else { $grp }
         $stack.Push(@($s.FullName, ($dp + 1), $ng))
       }
-    } catch { $skipped++ }
+    } catch { $skipped++; $skA++ }
   }
   $tr = if ($trunc) { 'True' } else { 'False' }
   if ($tc -eq 0) { $to = ''; $tn = '' }
@@ -101,7 +101,7 @@ function Invoke-Walk([string]$dir, [string]$name, [datetime]$deadline) {
     foreach ($k in $keys) { $e = $groups[$k]
       $L1.Add("$(Cq "$name/$k"),dir,$($e.c),$($e.b),$($e.o),$($e.n),0,$tr"); $L1p.Add("$(Pq "$name/$k")|dir|$($e.c)|$($e.b)|$($e.o)|$($e.n)|0|$tr") }
   }
-  $script:TotFiles += $tc; $script:TotBytes += $tb; $script:TotSkip += $skipped; if ($trunc) { $script:AnyTrunc = 'yes' }
+  $script:TotFiles += $tc; $script:TotBytes += $tb; $script:TotSkip += $skipped; $script:SkAcc += $skA; $script:SkLnk += $skL; $script:SkDep += $skD; if ($trunc) { $script:AnyTrunc = 'yes' }
 }
 
 Write-Host "== scanning $Level (depth cap $Depth, time cap $CapMin min per top-level folder; reparse points are not followed)"
@@ -113,7 +113,7 @@ foreach ($n in $names) {
   if ($Own -contains $n) { continue }
   $e = $byName[$n]
   if ($e.Attributes -band [IO.FileAttributes]::ReparsePoint) {
-    $L0.Add("$(Cq $n),symlink-skipped,0,0,,,1,False"); $L0p.Add("$(Pq $n)|symlink-skipped|0|0|||1|False"); $script:TotSkip++
+    $L0.Add("$(Cq $n),symlink-skipped,0,0,,,1,False"); $L0p.Add("$(Pq $n)|symlink-skipped|0|0|||1|False"); $script:TotSkip++; $script:SkLnk++
   } elseif ($e -is [System.IO.DirectoryInfo]) {
     Invoke-Walk $e.FullName $n ((Get-Date).AddMinutes($CapMin))
   } else {
@@ -126,7 +126,10 @@ if ($L2w) { $L2w.Close() }
 WriteLf (Join-Path $OutDir 'L0.csv') (($L0 -join "`n") + "`n")
 if ($Level -ne 'L0') { WriteLf (Join-Path $OutDir 'L1.csv') (($L1 -join "`n") + "`n") }
 $gib = [math]::Round($script:TotBytes/1GB,1).ToString('0.0',[Globalization.CultureInfo]::InvariantCulture)
-Write-Host "   done: $($script:TotFiles) files, $gib GiB, skipped $($script:TotSkip), truncated $($script:AnyTrunc)"
+Write-Host "   done: $($script:TotFiles) files, $gib GiB, skipped $($script:TotSkip) (access $($script:SkAcc), links $($script:SkLnk), depth $($script:SkDep)), truncated $($script:AnyTrunc)"
+if ($script:SkDep -gt 0) { Write-Host "   WARNING INCOMPLETE: $($script:SkDep) folder(s) deeper than -Depth $Depth were not read, so their files are not counted. Re-run with a higher -Depth." -ForegroundColor Yellow }
+if ($script:SkAcc -gt 0) { Write-Host "   WARNING INCOMPLETE: $($script:SkAcc) folder(s) could not be read (access denied). Run PowerShell as Administrator and re-run." -ForegroundColor Yellow }
+if ($script:AnyTrunc -eq 'yes') { Write-Host "   WARNING INCOMPLETE: the time cap cut a scan short. Re-run with a higher -CapMin." -ForegroundColor Yellow }
 
 # ---------- contents text ----------
 $b = New-Object System.Text.StringBuilder
@@ -137,7 +140,7 @@ Add-Line "serial: $Serial"; $m = if ($Model) { $Model } else { 'unknown' }; Add-
 $sg = if ($SizeGib) { $SizeGib } else { 'unknown' }; Add-Line "size_gib: $sg"; $fsv = if ($Fs) { $Fs } else { 'unknown' }; Add-Line "filesystem: $fsv"
 Add-Line 'unit: GiB (1 GiB = 2^30 bytes)'; Add-Line 'hidden_files_included: yes'
 Add-Line "level: $Level"; Add-Line "scanned: $NowIso"; Add-Line "site: $Site"; Add-Line "host: $HostName"; Add-Line "tool: $Tool"
-Add-Line "files_total: $($script:TotFiles)"; Add-Line "bytes_total: $($script:TotBytes)"; Add-Line "skipped: $($script:TotSkip)"; Add-Line "truncated: $($script:AnyTrunc)"
+Add-Line "files_total: $($script:TotFiles)"; Add-Line "bytes_total: $($script:TotBytes)"; Add-Line "skipped: $($script:TotSkip)"; Add-Line "skipped_detail: access $($script:SkAcc), links $($script:SkLnk), depth $($script:SkDep)"; Add-Line "truncated: $($script:AnyTrunc)"
 Add-Line "index_ref: $IndexRef"
 Add-Line '[L0] name|kind|files|bytes|oldest|newest|skipped|truncated'; foreach ($r in $L0p) { Add-Line $r }
 if ($Level -ne 'L0') { Add-Line '[L1] path|kind|files|bytes|oldest|newest|skipped|truncated'; foreach ($r in $L1p) { Add-Line $r } }
@@ -187,13 +190,24 @@ if (Test-Path -LiteralPath $oldPath) {
 $cust = Join-Path $Out 'custody.csv'
 if (-not (Test-Path -LiteralPath $cust)) { [IO.File]::AppendAllText($cust, "date,serial,label,site,host,root,level,files,bytes,drift_exit`n", $Utf8) }
 [IO.File]::AppendAllText($cust, "$Today,$Serial,$(Cq $Label),$Site,$HostName,$(Cq $RootFull),$Level,$($script:TotFiles),$($script:TotBytes),$exit`n", $Utf8)
-$sum = '{{"format":"cat9-index-summary/1","tool":"{0}","serial":"{1}","model":"{2}","label":"{3}","site":"{4}","host":"{5}","root":"{6}","level":"{7}","scanned":"{8}","unit":"GiB (2^30)","hidden_files_included":true,"files_total":{9},"bytes_total":{10},"skipped":{11},"truncated":"{12}","contents_sha256":"{13}","drift_exit":{14}}}' -f $Tool,$Serial,$Model,$Label.Replace('"','\"'),$Site,$HostName,$RootFull.Replace('\','\\'),$Level,$NowIso,$script:TotFiles,$script:TotBytes,$script:TotSkip,$script:AnyTrunc,$bodySha,$exit
+$sum = '{{"format":"cat9-index-summary/1","tool":"{0}","serial":"{1}","model":"{2}","label":"{3}","site":"{4}","host":"{5}","root":"{6}","level":"{7}","scanned":"{8}","unit":"GiB (2^30)","hidden_files_included":true,"files_total":{9},"bytes_total":{10},"skipped":{11},"skipped_access":{12},"skipped_links":{13},"skipped_depth":{14},"truncated":"{15}","contents_sha256":"{16}","drift_exit":{17}}}' -f $Tool,$Serial,$Model,$Label.Replace('"','\"'),$Site,$HostName,$RootFull.Replace('\','\\'),$Level,$NowIso,$script:TotFiles,$script:TotBytes,$script:TotSkip,$script:SkAcc,$script:SkLnk,$script:SkDep,$script:AnyTrunc,$bodySha,$exit
 WriteLf (Join-Path $OutDir 'summary.json') ($sum + "`n")
 Write-Host "== local index written to $OutDir (L0.csv$(if($Level -ne 'L0'){', L1.csv'})$(if($Level -eq 'L2'){', L2.csv'}), cat9-contents.txt, summary.json) and $cust"
 
 # ---------- breadcrumbs on the drive (only on request) ----------
 if ($WriteBreadcrumb) {
   if (-not $SerialKnown) { Fail "refusing to write breadcrumbs without a known serial (use -Serial)" }
+  # preflight: can this session write to the drive root? (checked before asking you to type YES)
+  $probe = Join-Path $RootFull ('cat9-write-test-' + [guid]::NewGuid().ToString('N').Substring(0,8) + '.tmp')
+  try {
+    [IO.File]::WriteAllBytes($probe, [byte[]]@(0)); Remove-Item -LiteralPath $probe -Force
+    foreach ($o in $Own) { $op = Join-Path $RootFull $o; if (Test-Path -LiteralPath $op) { $fs = [IO.File]::Open($op,'Open','Write','ReadWrite'); $fs.Close() } }
+  } catch {
+    Write-Host "error: cannot write to $RootFull ($($_.Exception.Message))" -ForegroundColor Red
+    Write-Host "   On Windows this usually means PowerShell is not running as Administrator, or the drive's permissions only allow Administrators." -ForegroundColor Red
+    Write-Host "   Right-click PowerShell, choose 'Run as administrator', and run the same command again. Nothing was written to the drive." -ForegroundColor Red
+    exit 5
+  }
   $murl = if ($ManifestUrl) { $ManifestUrl } else { "the site repo, ops/storage/devices/$SafeId.md" }
   $mdl = if ($Model) { $Model } else { 'unknown' }
   $tag = "Asset: $Label ($Serial)`nSerial: $Serial`nModel: $mdl`nWritten: $Today by $Tool on $HostName (site $Site)`nStatus: dated snapshot, not live. Details: cat9-contents.txt on this drive.`nManifest: $murl`nLast seen: site $Site, host $HostName, $Today`nPattern: https://netstack.org/docs/ops/storage-index/`n"
@@ -203,11 +217,12 @@ if ($WriteBreadcrumb) {
   Write-Host "--- cat9-contents.txt (replaces any existing file): $(($contents -split "`n").Count - 1) lines, level $Level, sha256 $bodySha"
   Write-Host "--- cat9-history.txt (one line appended):"; Write-Host $hist
   if (-not $Yes) { $ans = Read-Host "Type YES to write these three files to $RootFull"; if ($ans -ne 'YES') { Write-Host "declined; nothing written to the drive"; exit 4 } }
-  try {
-    WriteLf (Join-Path $RootFull 'cat9-asset-tag.txt') $tag
-    WriteLf (Join-Path $RootFull 'cat9-contents.txt') $contents
-    [IO.File]::AppendAllText((Join-Path $RootFull 'cat9-history.txt'), $hist + "`n", $Utf8)
-  } catch { Fail "write failed (read-only drive?): $($_.Exception.Message)" }
+  $done = New-Object System.Collections.Generic.List[string]; $failed = ''
+  try { WriteLf (Join-Path $RootFull 'cat9-asset-tag.txt') $tag; $done.Add('cat9-asset-tag.txt')
+        WriteLf (Join-Path $RootFull 'cat9-contents.txt') $contents; $done.Add('cat9-contents.txt')
+        [IO.File]::AppendAllText((Join-Path $RootFull 'cat9-history.txt'), $hist + "`n", $Utf8); $done.Add('cat9-history.txt')
+  } catch { $failed = $_.Exception.Message }
+  if ($failed) { Write-Host "error: write stopped after: $($done -join ', ') ($failed)" -ForegroundColor Red; Write-Host "   Files not listed were not written. Run again as Administrator." -ForegroundColor Red; exit 5 }
   $rb = [IO.File]::ReadAllLines((Join-Path $RootFull 'cat9-contents.txt')); $rbBody = (($rb[0..($rb.Length-2)]) -join "`n") + "`n"
   Write-Host "== written. Read back and verified checksum: $(Sha256Bytes ($Utf8.GetBytes($rbBody)))  (expected $bodySha)"
 }
