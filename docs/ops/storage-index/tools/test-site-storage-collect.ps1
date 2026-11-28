@@ -40,7 +40,7 @@ try {
   Has 'drifted flagged DRIFT' '"id":"drifted".*?"flags":\["DRIFT"\]' $J
   Has 'sick flagged HEALTH' '"id":"sick".*?"flags":\["HEALTH"\]' $J
   Has 'deep flagged INCOMPLETE (folders below the depth cap)' '"id":"deep".*?"flags":\["INCOMPLETE"\]' $J
-  Has 'incomplete: re-run with higher depth' 'higher depth or as an administrator' $V
+  Has 'incomplete: re-run with higher depth' 'some folders were not read' $V
   Has 'pool flagged STALE,OFFLINE' '"id":"cg2-MediaVolume".*?"flags":\["STALE","OFFLINE"\]' $J
   Has 'pool is kind pool, state offline' '"kind":"pool","state":"offline"' $J
   Has 'unregistered X9 listed' '"unregistered":\[\{"index_folder":"X9"' $J

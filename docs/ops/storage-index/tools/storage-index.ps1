@@ -65,7 +65,7 @@ $L0p = New-Object System.Collections.Generic.List[string]; $L1p = New-Object Sys
 $L0.Add('child,kind,files,bytes,oldest,newest,skipped,truncated'); $L1.Add('path,kind,files,bytes,oldest,newest,skipped,truncated')
 $L2w = $null
 if ($Level -eq 'L2') { $L2w = New-Object System.IO.StreamWriter((Join-Path $OutDir 'L2.csv'), $false, $Utf8); $L2w.NewLine = "`n"; $L2w.WriteLine('path,bytes,mtime') }
-$script:TotFiles = [int64]0; $script:TotBytes = [int64]0; $script:TotSkip = 0; $script:SkAcc = 0; $script:SkLnk = 0; $script:SkDep = 0; $script:AnyTrunc = 'no'
+$script:TotFiles = [int64]0; $script:TotBytes = [int64]0; $script:TotSkip = 0; $script:SkAcc = 0; $script:SkSys = 0; $script:SkLnk = 0; $script:SkDep = 0; $script:AnyTrunc = 'no'
 
 function Invoke-Walk([string]$dir, [string]$name, [datetime]$deadline) {
   $groups = @{}; $tc = [int64]0; $tb = [int64]0; $to = ''; $tn = ''; $skipped = 0; $skA = 0; $skL = 0; $skD = 0; $trunc = $false; $tick = 0
@@ -116,7 +116,10 @@ foreach ($n in $names) {
   if ($e.Attributes -band [IO.FileAttributes]::ReparsePoint) {
     $L0.Add("$(Cq $n),symlink-skipped,0,0,,,1,False"); $L0p.Add("$(Pq $n)|symlink-skipped|0|0|||1|False"); $script:TotSkip++; $script:SkLnk++
   } elseif ($e -is [System.IO.DirectoryInfo]) {
+    $before = $script:SkAcc
     Invoke-Walk $e.FullName $n ((Get-Date).AddMinutes($CapMin))
+    # unreadable system folders (System Volume Information, recycle bins) are expected and do not make a scan incomplete
+    if ($n -match $SystemRe) { $d = $script:SkAcc - $before; $script:SkAcc -= $d; $script:SkSys += $d }
   } else {
     $dt = $e.LastWriteTime.ToString('yyyy-MM-dd'); $len = [int64]$e.Length
     $L0.Add("$(Cq $n),file,1,$len,$dt,$dt,0,False"); $L0p.Add("$(Pq $n)|file|1|$len|$dt|$dt|0|False")
@@ -127,9 +130,13 @@ if ($L2w) { $L2w.Close() }
 WriteLf (Join-Path $OutDir 'L0.csv') (($L0 -join "`n") + "`n")
 if ($Level -ne 'L0') { WriteLf (Join-Path $OutDir 'L1.csv') (($L1 -join "`n") + "`n") }
 $gib = [math]::Round($script:TotBytes/1GB,1).ToString('0.0',[Globalization.CultureInfo]::InvariantCulture)
-Write-Host "   done: $($script:TotFiles) files, $gib GiB, skipped $($script:TotSkip) (access $($script:SkAcc), links $($script:SkLnk), depth $($script:SkDep)), truncated $($script:AnyTrunc)"
+Write-Host "   done: $($script:TotFiles) files, $gib GiB, skipped $($script:TotSkip) (access $($script:SkAcc), system $($script:SkSys), links $($script:SkLnk), depth $($script:SkDep)), truncated $($script:AnyTrunc)"
 if ($script:SkDep -gt 0) { Write-Host "   WARNING INCOMPLETE: $($script:SkDep) folder(s) deeper than -Depth $Depth were not read, so their files are not counted. Re-run with a higher -Depth." -ForegroundColor Yellow }
-if ($script:SkAcc -gt 0) { Write-Host "   WARNING INCOMPLETE: $($script:SkAcc) folder(s) could not be read (access denied). Run PowerShell as Administrator and re-run." -ForegroundColor Yellow }
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+if ($script:SkAcc -gt 0) {
+  if ($isAdmin) { Write-Host "   WARNING INCOMPLETE: $($script:SkAcc) folder(s) could not be read even as Administrator (owned by another account, or readable only by SYSTEM). Their files are not counted. Take ownership only if their contents matter." -ForegroundColor Yellow }
+  else { Write-Host "   WARNING INCOMPLETE: $($script:SkAcc) folder(s) could not be read (access denied). Run PowerShell as Administrator and re-run." -ForegroundColor Yellow }
+}
 if ($script:AnyTrunc -eq 'yes') { Write-Host "   WARNING INCOMPLETE: the time cap cut a scan short. Re-run with a higher -CapMin." -ForegroundColor Yellow }
 
 # ---------- contents text ----------
@@ -141,7 +148,7 @@ Add-Line "serial: $Serial"; $m = if ($Model) { $Model } else { 'unknown' }; Add-
 $sg = if ($SizeGib) { $SizeGib } else { 'unknown' }; Add-Line "size_gib: $sg"; $fsv = if ($Fs) { $Fs } else { 'unknown' }; Add-Line "filesystem: $fsv"
 Add-Line 'unit: GiB (1 GiB = 2^30 bytes)'; Add-Line 'hidden_files_included: yes'
 Add-Line "level: $Level"; Add-Line "scanned: $NowIso"; Add-Line "site: $Site"; Add-Line "host: $HostName"; Add-Line "tool: $Tool"
-Add-Line "files_total: $($script:TotFiles)"; Add-Line "bytes_total: $($script:TotBytes)"; Add-Line "skipped: $($script:TotSkip)"; Add-Line "skipped_detail: access $($script:SkAcc), links $($script:SkLnk), depth $($script:SkDep)"; Add-Line "truncated: $($script:AnyTrunc)"
+Add-Line "files_total: $($script:TotFiles)"; Add-Line "bytes_total: $($script:TotBytes)"; Add-Line "skipped: $($script:TotSkip)"; Add-Line "skipped_detail: access $($script:SkAcc), system $($script:SkSys), links $($script:SkLnk), depth $($script:SkDep)"; Add-Line "truncated: $($script:AnyTrunc)"
 Add-Line "index_ref: $IndexRef"
 Add-Line '[L0] name|kind|files|bytes|oldest|newest|skipped|truncated'; foreach ($r in $L0p) { Add-Line $r }
 if ($Level -ne 'L0') { Add-Line '[L1] path|kind|files|bytes|oldest|newest|skipped|truncated'; foreach ($r in $L1p) { Add-Line $r } }
@@ -191,7 +198,7 @@ if (Test-Path -LiteralPath $oldPath) {
 $cust = Join-Path $Out 'custody.csv'
 if (-not (Test-Path -LiteralPath $cust)) { [IO.File]::AppendAllText($cust, "date,serial,label,site,host,root,level,files,bytes,drift_exit`n", $Utf8) }
 [IO.File]::AppendAllText($cust, "$Today,$Serial,$(Cq $Label),$Site,$HostName,$(Cq $RootFull),$Level,$($script:TotFiles),$($script:TotBytes),$exit`n", $Utf8)
-$sum = '{{"format":"cat9-index-summary/1","tool":"{0}","serial":"{1}","model":"{2}","label":"{3}","site":"{4}","host":"{5}","root":"{6}","level":"{7}","scanned":"{8}","unit":"GiB (2^30)","hidden_files_included":true,"files_total":{9},"bytes_total":{10},"skipped":{11},"skipped_access":{12},"skipped_links":{13},"skipped_depth":{14},"truncated":"{15}","contents_sha256":"{16}","drift_exit":{17}}}' -f $Tool,$Serial,$Model,$Label.Replace('"','\"'),$Site,$HostName,$RootFull.Replace('\','\\'),$Level,$NowIso,$script:TotFiles,$script:TotBytes,$script:TotSkip,$script:SkAcc,$script:SkLnk,$script:SkDep,$script:AnyTrunc,$bodySha,$exit
+$sum = '{{"format":"cat9-index-summary/1","tool":"{0}","serial":"{1}","model":"{2}","label":"{3}","site":"{4}","host":"{5}","root":"{6}","level":"{7}","scanned":"{8}","unit":"GiB (2^30)","hidden_files_included":true,"files_total":{9},"bytes_total":{10},"skipped":{11},"skipped_access":{12},"skipped_links":{13},"skipped_depth":{14},"truncated":"{15}","contents_sha256":"{16}","drift_exit":{17},"skipped_system":{18}}}' -f $Tool,$Serial,$Model,$Label.Replace('"','\"'),$Site,$HostName,$RootFull.Replace('\','\\'),$Level,$NowIso,$script:TotFiles,$script:TotBytes,$script:TotSkip,$script:SkAcc,$script:SkLnk,$script:SkDep,$script:AnyTrunc,$bodySha,$exit,$script:SkSys
 WriteLf (Join-Path $OutDir 'summary.json') ($sum + "`n")
 Write-Host "== local index written to $OutDir (L0.csv$(if($Level -ne 'L0'){', L1.csv'})$(if($Level -eq 'L2'){', L2.csv'}), cat9-contents.txt, summary.json) and $cust"
 

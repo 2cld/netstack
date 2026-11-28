@@ -70,4 +70,13 @@ for m in 1 2; do
   chk "fixture $m: L0 row oldest 2006-04-11, newest 2025-05-05" "$(grep '^"f"' "$T"/o11/DATES$m/*/L0.csv | cut -d, -f5,6)" "2006-04-11,2025-05-05"
 done
 
+echo "12 unreadable System Volume Information is not INCOMPLETE"
+if [ "$(id -u)" = 0 ]; then ok "skipped (running as root)"; else
+  SV="$T/svi"; mkdir -p "$SV/System Volume Information/x" "$SV/data"; echo a > "$SV/data/a.txt"; chmod 000 "$SV/System Volume Information"
+  "$HERE/storage-index.sh" "$SV" --site test --serial SVI1 --out "$T/o12" --no-disk-lookup > "$T/o12.txt" 2>&1
+  chmod 755 "$SV/System Volume Information"
+  grep -q 'access 0, system 1' "$T/o12.txt" && ok "counted as system, not access" || bad "not counted as system: $(grep done "$T/o12.txt")"
+  grep -q 'WARNING INCOMPLETE' "$T/o12.txt" && bad "warned INCOMPLETE for a system folder" || ok "no INCOMPLETE warning"
+fi
+
 echo; echo "passed $pass, failed $fail"; [ "$fail" = 0 ]

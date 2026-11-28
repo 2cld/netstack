@@ -90,7 +90,7 @@ function Get-Action([string]$fl,[string]$ni) {
   if ($f.Contains(',DRIFT,')) { $a = $(if ($a) { "$a; " } else { '' }) + 'review what changed, then re-index' }
   if ($f.Contains(',IDENTITY,')) { $a = $(if ($a) { "$a; " } else { '' }) + 'STOP: serial differs from the breadcrumb; confirm which drive this is' }
   if ($f.Contains(',TRUNCATED,')) { $a = $(if ($a) { "$a; " } else { '' }) + 're-run: the last scan was cut off' }
-  if ($f.Contains(',INCOMPLETE,')) { $a = $(if ($a) { "$a; " } else { '' }) + 're-run with a higher depth or as an administrator: the last scan did not read everything' }
+  if ($f.Contains(',INCOMPLETE,')) { $a = $(if ($a) { "$a; " } else { '' }) + 'some folders were not read (see skipped_detail in the scan); re-run as Administrator or with a higher depth, or accept them' }
   if ($f.Contains(',HEALTH,')) { $a = $(if ($a) { "$a; " } else { '' }) + 'check disk health now' }
   $a
 }

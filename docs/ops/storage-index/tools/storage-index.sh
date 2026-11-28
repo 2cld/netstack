@@ -84,7 +84,7 @@ L0="$TMP/L0.csv"; L1="$TMP/L1.csv"; L2="$OUTDIR/L2.csv"; L0P="$TMP/L0.pipe"; L1P
 echo "child,kind,files,bytes,oldest,newest,skipped,truncated" > "$L0"
 echo "path,kind,files,bytes,oldest,newest,skipped,truncated" > "$L1"
 [ "$LEVEL" = "L2" ] && echo "path,bytes,mtime" > "$L2"
-TOTFILES=0; TOTBYTES=0; TOTSKIP=0; SKACC=0; SKLNK=0; SKDEP=0; ANYTRUNC="no"
+TOTFILES=0; TOTBYTES=0; TOTSKIP=0; SKACC=0; SKSYS=0; SKLNK=0; SKDEP=0; ANYTRUNC="no"
 csvq() { sed 's/"/""/g'; }
 pq() { printf '%s' "$1" | sed 's/|/%7C/g'; }
 
@@ -105,7 +105,9 @@ scan_dir() {  # $1 = top-level directory name
   sl="$(find "$dir" -xdev -maxdepth "$DEPTH" -type l 2>/dev/null | wc -l)"
   dd="$(find "$dir" -xdev -mindepth "$DEPTH" -maxdepth "$DEPTH" -type d 2>/dev/null | wc -l)"
   er="$(grep -c . "$TMP/err.$$" 2>/dev/null || true)"; [ "$rc" = 124 ] && er=0
-  skipped=$((sl+dd+er)); SKLNK=$((SKLNK+sl)); SKDEP=$((SKDEP+dd)); SKACC=$((SKACC+er))
+  skipped=$((sl+dd+er)); SKLNK=$((SKLNK+sl)); SKDEP=$((SKDEP+dd))
+  # unreadable system folders (System Volume Information, recycle bins) are expected and do not make a scan incomplete
+  if [[ "$name" =~ $SYSTEM_RE ]]; then SKSYS=$((SKSYS+er)); else SKACC=$((SKACC+er)); fi
   local res; res="$(awk -v l2="$([ "$LEVEL" = L2 ] && echo "$L2")" -v pre="$name" "$AGG" "$raw")"
   local tline; tline="$(echo "$res" | grep '^T' | head -1)"
   local fc bc old new
@@ -139,9 +141,12 @@ while IFS= read -r -d '' e; do
   fi
 done < <(find "$ROOT" -mindepth 1 -maxdepth 1 -print0 | LC_ALL=C sort -z)
 cp "$L0" "$OUTDIR/L0.csv"; [ "$LEVEL" != "L0" ] && cp "$L1" "$OUTDIR/L1.csv"
-echo "   done: $TOTFILES files, $(awk -v b="$TOTBYTES" 'BEGIN{printf "%.1f", b/1073741824}') GiB, skipped $TOTSKIP (access $SKACC, links $SKLNK, depth $SKDEP), truncated $ANYTRUNC"
+echo "   done: $TOTFILES files, $(awk -v b="$TOTBYTES" 'BEGIN{printf "%.1f", b/1073741824}') GiB, skipped $TOTSKIP (access $SKACC, system $SKSYS, links $SKLNK, depth $SKDEP), truncated $ANYTRUNC"
 [ "$SKDEP" -gt 0 ] && echo "   WARNING INCOMPLETE: $SKDEP folder(s) deeper than --depth $DEPTH were not read, so their files are not counted. Re-run with a higher --depth."
-[ "$SKACC" -gt 0 ] && echo "   WARNING INCOMPLETE: $SKACC path(s) could not be read (permission denied). Re-run with enough rights (sudo, or as the owner)."
+if [ "$SKACC" -gt 0 ]; then
+  if [ "$(id -u)" = 0 ]; then echo "   WARNING INCOMPLETE: $SKACC path(s) could not be read even as root (for example a WSL drvfs mount without metadata). Their files are not counted."
+  else echo "   WARNING INCOMPLETE: $SKACC path(s) could not be read (permission denied). Re-run with sudo, or accept them as incomplete."; fi
+fi
 [ "$ANYTRUNC" = yes ] && echo "   WARNING INCOMPLETE: the time cap cut a scan short. Re-run with a higher --cap-min."
 
 # ---------- contents text (the breadcrumb body) ----------
@@ -153,7 +158,7 @@ build_contents() {
     echo "size_gib: ${SIZE_GIB:-unknown}"; echo "filesystem: ${FSTYPE:-unknown}"
     echo "unit: GiB (1 GiB = 2^30 bytes)"; echo "hidden_files_included: yes"
     echo "level: $LEVEL"; echo "scanned: $NOW_ISO"; echo "site: $SITE"; echo "host: $HOST"; echo "tool: $TOOL"
-    echo "files_total: $TOTFILES"; echo "bytes_total: $TOTBYTES"; echo "skipped: $TOTSKIP"; echo "skipped_detail: access $SKACC, links $SKLNK, depth $SKDEP"; echo "truncated: $ANYTRUNC"
+    echo "files_total: $TOTFILES"; echo "bytes_total: $TOTBYTES"; echo "skipped: $TOTSKIP"; echo "skipped_detail: access $SKACC, system $SKSYS, links $SKLNK, depth $SKDEP"; echo "truncated: $ANYTRUNC"
     echo "index_ref: $INDEXREF"
     echo "[L0] name|kind|files|bytes|oldest|newest|skipped|truncated"
     cat "$L0P"
@@ -204,7 +209,7 @@ fi
 [ -f "$OUT/custody.csv" ] || echo "date,serial,label,site,host,root,level,files,bytes,drift_exit" > "$OUT/custody.csv"
 echo "$TODAY,$SERIAL,\"$LABEL\",$SITE,$HOST,\"$ROOT\",$LEVEL,$TOTFILES,$TOTBYTES,$EXIT" >> "$OUT/custody.csv"
 cat > "$OUTDIR/summary.json" <<JSON
-{"format":"cat9-index-summary/1","tool":"$TOOL","serial":"$SERIAL","model":"${MODEL:-}","label":"$LABEL","site":"$SITE","host":"$HOST","root":"$ROOT","level":"$LEVEL","scanned":"$NOW_ISO","unit":"GiB (2^30)","hidden_files_included":true,"files_total":$TOTFILES,"bytes_total":$TOTBYTES,"skipped":$TOTSKIP,"skipped_access":$SKACC,"skipped_links":$SKLNK,"skipped_depth":$SKDEP,"truncated":"$ANYTRUNC","contents_sha256":"$BODYSHA","drift_exit":$EXIT}
+{"format":"cat9-index-summary/1","tool":"$TOOL","serial":"$SERIAL","model":"${MODEL:-}","label":"$LABEL","site":"$SITE","host":"$HOST","root":"$ROOT","level":"$LEVEL","scanned":"$NOW_ISO","unit":"GiB (2^30)","hidden_files_included":true,"files_total":$TOTFILES,"bytes_total":$TOTBYTES,"skipped":$TOTSKIP,"skipped_access":$SKACC,"skipped_system":$SKSYS,"skipped_links":$SKLNK,"skipped_depth":$SKDEP,"truncated":"$ANYTRUNC","contents_sha256":"$BODYSHA","drift_exit":$EXIT}
 JSON
 echo "== local index written to $OUTDIR (L0.csv$([ "$LEVEL" != L0 ] && echo ", L1.csv")$([ "$LEVEL" = L2 ] && echo ", L2.csv"), cat9-contents.txt, summary.json) and $OUT/custody.csv"
 

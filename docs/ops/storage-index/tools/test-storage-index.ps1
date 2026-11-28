@@ -105,6 +105,20 @@ try {
     $row = (Get-Content $l0.FullName | Where-Object { $_ -like '"f",*' }) -split ','
     Chk "fixture ${m}: L0 row oldest 2006-04-11, newest 2025-05-05" "$($row[4]),$($row[5])" '2006-04-11,2025-05-05'
   }
+  Write-Host "12 unreadable System Volume Information is not INCOMPLETE"
+  $SV = Join-Path $T 'svi'; $svi = Join-Path $SV 'System Volume Information'
+  New-Item -ItemType Directory -Force -Path (Join-Path $svi 'x'),(Join-Path $SV 'data') | Out-Null; Text (Join-Path $SV 'data\a.txt') "a`n"
+  $me = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+  & icacls $svi /deny "${me}:(RD)" | Out-Null
+  $listOk = $true; try { [void][IO.Directory]::GetFileSystemEntries($svi) } catch { $listOk = $false }
+  if ($listOk) { & icacls $svi /remove:d $me | Out-Null; Ok 'skipped: this account can still list the folder after the deny' }
+  else {
+    $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$SV,'-Site','test','-Serial','SVI1','-Out',(Join-Path $T 'o12'),'-NoDiskLookup')
+    $o12 = & powershell.exe @a 2>&1 | Out-String
+    & icacls $svi /remove:d $me | Out-Null
+    if ($o12 -match 'access 0, system 1') { Ok 'counted as system, not access' } else { Bad "not counted as system: $(($o12 -split "`n" | Where-Object { $_ -match 'done:' }) -join ' ')" }
+    if ($o12 -match 'WARNING INCOMPLETE') { Bad 'warned INCOMPLETE for a system folder' } else { Ok 'no INCOMPLETE warning' }
+  }
 } finally {
   if (-not $KeepFixture) { Remove-Item -Recurse -Force $T -ErrorAction SilentlyContinue } else { Write-Host "fixture kept: $T" }
 }

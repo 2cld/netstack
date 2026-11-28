@@ -35,7 +35,7 @@ has "never flagged NEVER-INDEXED" '"id":"never".*"flags":\["NEVER-INDEXED"\]' "$
 has "drifted flagged DRIFT" '"id":"drifted".*"flags":\["DRIFT"\]' "$O/storage.json"
 has "sick flagged HEALTH" '"id":"sick".*"flags":\["HEALTH"\]' "$O/storage.json"
 has "deep flagged INCOMPLETE (folders below the depth cap)" '"id":"deep".*"flags":\["INCOMPLETE"\]' "$O/storage.json"
-has "incomplete: re-run with higher depth" 'higher depth or as an administrator' "$O/visit-list.md"
+has "incomplete: re-run with higher depth" 'some folders were not read' "$O/visit-list.md"
 has "pool flagged STALE,OFFLINE" '"id":"cg2-MediaVolume".*"flags":\["STALE","OFFLINE"\]' "$O/storage.json"
 has "pool is kind pool, state offline" '"kind":"pool","state":"offline"' "$O/storage.json"
 has "unregistered X9 listed" '"unregistered":\[{"index_folder":"X9"' "$O/storage.json"
