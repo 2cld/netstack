@@ -15,6 +15,7 @@ function Bytes($path,[int]$n) { [IO.File]::WriteAllBytes($path, (New-Object byte
 function Text($path,[string]$t) { [IO.File]::WriteAllBytes($path, [Text.Encoding]::ASCII.GetBytes($t)) }
 # Runs the tool in a child process so its exit code is observable. Returns exit code; output goes to $script:last.
 function Run([string[]]$extra, [string]$stdin = '') {
+  $ErrorActionPreference = 'Continue'
   $args2 = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$D,'-Site','test','-Serial','SER1','-Label','T','-Out',$O,'-NoDiskLookup') + $extra
   if ($stdin) { $script:last = $stdin | & powershell.exe @args2 2>&1 | Out-String } else { $script:last = & powershell.exe @args2 2>&1 | Out-String }
   $LASTEXITCODE
@@ -64,6 +65,7 @@ try {
   $DD = Join-Path $T 'deep'; $p = Join-Path $DD 'top'; for ($i = 1; $i -le 20; $i++) { $p = Join-Path $p "d$i" }
   New-Item -ItemType Directory -Force -Path $p | Out-Null; Bytes (Join-Path $p 'leaf.bin') 777
   $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$DD,'-Site','test','-Serial','DEEP1','-Out',(Join-Path $T 'o9'),'-NoDiskLookup')
+  $ErrorActionPreference = 'Continue'
   $o9 = & powershell.exe @a 2>&1 | Out-String
   if ($o9 -match 'done: 1 files') { Ok '20 levels deep counted with the default depth' } else { Bad "deep file not counted" }
   $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$DD,'-Site','test','-Serial','DEEP1','-Out',(Join-Path $T 'o9b'),'-NoDiskLookup','-Depth','5')
@@ -74,14 +76,22 @@ try {
 
   Write-Host "10 cannot write: refused before YES, exit 5, nothing written"
   $RO = Join-Path $T 'ro'; New-Item -ItemType Directory -Force -Path (Join-Path $RO 'x') | Out-Null; Text (Join-Path $RO 'x\a.txt') "a`n"
+  # Deny creating files and folders only (WD, AD). Do NOT use the simple right W: it includes SYNCHRONIZE,
+  # which also blocks listing the folder (found on slwin11ops, 2026-11-28).
   $me = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-  & icacls $RO /deny "${me}:(W,AD)" | Out-Null
+  & icacls $RO /deny "${me}:(WD,AD)" | Out-Null
+  $probeOk = $true; try { [IO.File]::WriteAllBytes((Join-Path $RO 'probe.tmp'), [byte[]]@(0)); Remove-Item (Join-Path $RO 'probe.tmp') -Force } catch { $probeOk = $false }
   $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$RO,'-Site','test','-Serial','RO1','-Out',(Join-Path $T 'o10'),'-NoDiskLookup','-WriteBreadcrumb','-Yes')
-  $o10 = & powershell.exe @a 2>&1 | Out-String; $rc = $LASTEXITCODE
-  & icacls $RO /remove:d $me | Out-Null
-  Chk 'exit 5' $rc 5
-  if ($o10 -match 'cannot write') { Ok 'says cannot write' } else { Bad 'no clear message' }
-  Chk 'no breadcrumb on read-only drive' (@(Get-ChildItem $RO -Filter 'cat9-*').Count) 0
+  if ($probeOk) {
+    & icacls $RO /remove:d $me | Out-Null
+    Ok 'skipped: this account can still write after the deny (for example the folder owner); not a tool failure'
+  } else {
+    $o10 = & powershell.exe @a 2>&1 | Out-String; $rc = $LASTEXITCODE
+    & icacls $RO /remove:d $me | Out-Null
+    Chk 'exit 5' $rc 5
+    if ($o10 -match 'cannot write') { Ok 'says cannot write' } else { Bad "no clear message: $($o10.Trim())" }
+    Chk 'no breadcrumb on read-only drive' (@(Get-ChildItem $RO -Filter 'cat9-*').Count) 0
+  }
 } finally {
   if (-not $KeepFixture) { Remove-Item -Recurse -Force $T -ErrorAction SilentlyContinue } else { Write-Host "fixture kept: $T" }
 }

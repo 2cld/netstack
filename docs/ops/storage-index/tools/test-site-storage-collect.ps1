@@ -16,7 +16,7 @@ function Sj($serial,$date,$level,$files,$bytes,$trunc='no',$drift=0,$depth=0) {
   $d = Join-Path (Join-Path $I $serial) $date; New-Item -ItemType Directory -Force -Path $d | Out-Null
   [IO.File]::WriteAllText((Join-Path $d 'summary.json'), "{`"format`":`"cat9-index-summary/1`",`"serial`":`"$serial`",`"label`":`"$serial`",`"level`":`"$level`",`"scanned`":`"${date}T10:00:00-06:00`",`"files_total`":$files,`"bytes_total`":$bytes,`"skipped`":$depth,`"skipped_access`":0,`"skipped_links`":0,`"skipped_depth`":$depth,`"truncated`":`"$trunc`",`"drift_exit`":$drift}`n")
 }
-function Run() { $script:last = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $tool -Site test -Manifests $M -Index $I -Out $O -Health (Join-Path $T 'health.txt') -Now 2026-11-27 2>&1 | Out-String; $LASTEXITCODE }
+function Run() { $ErrorActionPreference = 'Continue'; $script:last = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $tool -Site test -Manifests $M -Index $I -Out $O -Health (Join-Path $T 'health.txt') -Now 2026-11-27 2>&1 | Out-String; $LASTEXITCODE }
 try {
   Mf 'fresh' 'device_id: fresh','serial: A1','label: FRESH','state: attached'
   Mf 'stale' 'device_id: stale','serial: B1','label: STALE','state: attached'

@@ -23,7 +23,7 @@ param(
   [switch]$WriteBreadcrumb, [switch]$Yes, [switch]$NoDiskLookup
 )
 $ErrorActionPreference = 'Stop'
-$Version = '0.1.1'; $Tool = "storage-index.ps1 $Version"
+$Version = '0.1.2'; $Tool = "storage-index.ps1 $Version"
 $SystemRe = '^(\$RECYCLE\.BIN|System Volume Information|RECYCLER|lost\+found|\.Trash-[0-9]+|\.Spotlight-V100|\.fseventsd)$'
 $Own = @('cat9-asset-tag.txt','cat9-contents.txt','cat9-history.txt')
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
@@ -106,7 +106,8 @@ function Invoke-Walk([string]$dir, [string]$name, [datetime]$deadline) {
 
 Write-Host "== scanning $Level (depth cap $Depth, time cap $CapMin min per top-level folder; reparse points are not followed)"
 $ri = New-Object System.IO.DirectoryInfo $RootFull
-$entries = @($ri.EnumerateFileSystemInfos()); $names = [string[]]@($entries | ForEach-Object { $_.Name })
+try { $entries = @($ri.EnumerateFileSystemInfos()) } catch { Fail "cannot list $RootFull ($($_.Exception.Message)). Run PowerShell as Administrator, or check the drive's permissions." }
+$names = [string[]]@($entries | ForEach-Object { $_.Name })
 $byName = @{}; foreach ($e in $entries) { $byName[$e.Name] = $e }
 [Array]::Sort($names, [StringComparer]::Ordinal)
 foreach ($n in $names) {
