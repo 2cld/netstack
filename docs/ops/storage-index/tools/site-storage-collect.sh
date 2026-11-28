@@ -80,7 +80,7 @@ action() {  # flags state next_index -> action text
   case ",$fl," in *,DRIFT,*) a="${a:+$a; }review what changed, then re-index";; esac
   case ",$fl," in *,IDENTITY,*) a="${a:+$a; }STOP: serial differs from the breadcrumb; confirm which drive this is";; esac
   case ",$fl," in *,TRUNCATED,*) a="${a:+$a; }re-run: the last scan was cut off";; esac
-  case ",$fl," in *,INCOMPLETE,*) a="${a:+$a; }re-run with a higher depth or as an administrator: the last scan did not read everything";; esac
+  case ",$fl," in *,INCOMPLETE,*) a="${a:+$a; }some folders were not read (see skipped_detail in the scan); re-run as Administrator or with a higher depth, or accept them";; esac
   case ",$fl," in *,HEALTH,*) a="${a:+$a; }check disk health now";; esac
   echo "$a"
 }

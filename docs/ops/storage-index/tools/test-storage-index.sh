@@ -60,4 +60,23 @@ if [ "$(id -u)" = 0 ]; then ok "skipped (running as root, permissions not enforc
   chmod 755 "$RO"
 fi
 
+echo "11 L0 oldest and newest dates come from the oldest and newest file, whatever the listing order"
+# Two mirrored fixtures with the same names: in at least one, the oldest file is not the last one listed.
+for m in 1 2; do
+  DT="$T/dates$m"; mkdir -p "$DT/f/a" "$DT/f/b"; echo 1 > "$DT/f/a/x.txt"; echo 2 > "$DT/f/b/x.txt"
+  if [ "$m" = 1 ]; then touch -d 2006-04-11 "$DT/f/a/x.txt"; touch -d 2025-05-05 "$DT/f/b/x.txt"
+  else touch -d 2025-05-05 "$DT/f/a/x.txt"; touch -d 2006-04-11 "$DT/f/b/x.txt"; fi
+  "$HERE/storage-index.sh" "$DT" --site test --serial DATES$m --out "$T/o11" --no-disk-lookup >/dev/null
+  chk "fixture $m: L0 row oldest 2006-04-11, newest 2025-05-05" "$(grep '^"f"' "$T"/o11/DATES$m/*/L0.csv | cut -d, -f5,6)" "2006-04-11,2025-05-05"
+done
+
+echo "12 unreadable System Volume Information is not INCOMPLETE"
+if [ "$(id -u)" = 0 ]; then ok "skipped (running as root)"; else
+  SV="$T/svi"; mkdir -p "$SV/System Volume Information/x" "$SV/data"; echo a > "$SV/data/a.txt"; chmod 000 "$SV/System Volume Information"
+  "$HERE/storage-index.sh" "$SV" --site test --serial SVI1 --out "$T/o12" --no-disk-lookup > "$T/o12.txt" 2>&1
+  chmod 755 "$SV/System Volume Information"
+  grep -q 'access 0, system 1' "$T/o12.txt" && ok "counted as system, not access" || bad "not counted as system: $(grep done "$T/o12.txt")"
+  grep -q 'WARNING INCOMPLETE' "$T/o12.txt" && bad "warned INCOMPLETE for a system folder" || ok "no INCOMPLETE warning"
+fi
+
 echo; echo "passed $pass, failed $fail"; [ "$fail" = 0 ]
