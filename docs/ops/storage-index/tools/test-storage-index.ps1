@@ -60,6 +60,28 @@ try {
   Write-Host "8 missing serial refuses to write"
   $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$D,'-Site','test','-Label','T','-Out',$O,'-NoDiskLookup','-WriteBreadcrumb','-Yes')
   & powershell.exe @a *> $null; if ($LASTEXITCODE -ne 0) { Ok 'refused' } else { Bad 'wrote without a serial' }
+  Write-Host "9 deep tree: default depth reads it all; a low -Depth flags INCOMPLETE"
+  $DD = Join-Path $T 'deep'; $p = Join-Path $DD 'top'; for ($i = 1; $i -le 20; $i++) { $p = Join-Path $p "d$i" }
+  New-Item -ItemType Directory -Force -Path $p | Out-Null; Bytes (Join-Path $p 'leaf.bin') 777
+  $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$DD,'-Site','test','-Serial','DEEP1','-Out',(Join-Path $T 'o9'),'-NoDiskLookup')
+  $o9 = & powershell.exe @a 2>&1 | Out-String
+  if ($o9 -match 'done: 1 files') { Ok '20 levels deep counted with the default depth' } else { Bad "deep file not counted" }
+  $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$DD,'-Site','test','-Serial','DEEP1','-Out',(Join-Path $T 'o9b'),'-NoDiskLookup','-Depth','5')
+  $o9b = & powershell.exe @a 2>&1 | Out-String
+  if ($o9b -match 'WARNING INCOMPLETE') { Ok 'low depth warns INCOMPLETE' } else { Bad 'no INCOMPLETE warning' }
+  $sumf = Get-ChildItem (Join-Path $T 'o9b') -Recurse -Filter summary.json | Select-Object -First 1
+  if ((Get-Content $sumf.FullName -Raw) -match '"skipped_depth":1') { Ok 'skipped_depth recorded in summary.json' } else { Bad 'skipped_depth not recorded' }
+
+  Write-Host "10 cannot write: refused before YES, exit 5, nothing written"
+  $RO = Join-Path $T 'ro'; New-Item -ItemType Directory -Force -Path (Join-Path $RO 'x') | Out-Null; Text (Join-Path $RO 'x\a.txt') "a`n"
+  $me = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+  & icacls $RO /deny "${me}:(W,AD)" | Out-Null
+  $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$RO,'-Site','test','-Serial','RO1','-Out',(Join-Path $T 'o10'),'-NoDiskLookup','-WriteBreadcrumb','-Yes')
+  $o10 = & powershell.exe @a 2>&1 | Out-String; $rc = $LASTEXITCODE
+  & icacls $RO /remove:d $me | Out-Null
+  Chk 'exit 5' $rc 5
+  if ($o10 -match 'cannot write') { Ok 'says cannot write' } else { Bad 'no clear message' }
+  Chk 'no breadcrumb on read-only drive' (@(Get-ChildItem $RO -Filter 'cat9-*').Count) 0
 } finally {
   if (-not $KeepFixture) { Remove-Item -Recurse -Force $T -ErrorAction SilentlyContinue } else { Write-Host "fixture kept: $T" }
 }

@@ -12,9 +12,9 @@ function Bad($m) { Write-Host "  FAIL $m" -ForegroundColor Red; $script:fail++ }
 function Has($m,$rx,$file) { if ((Get-Content -LiteralPath $file -Raw) -match $rx) { Ok $m } else { Bad "$m (missing: $rx)" } }
 function HasNot($m,$rx,$file) { if ((Get-Content -LiteralPath $file -Raw) -match $rx) { Bad "$m (found: $rx)" } else { Ok $m } }
 function Mf($name,[string[]]$lines) { [IO.File]::WriteAllText((Join-Path $M "$name.md"), ("---`n" + ($lines -join "`n") + "`n---`n# body`n")) }
-function Sj($serial,$date,$level,$files,$bytes,$trunc='no',$drift=0) {
+function Sj($serial,$date,$level,$files,$bytes,$trunc='no',$drift=0,$depth=0) {
   $d = Join-Path (Join-Path $I $serial) $date; New-Item -ItemType Directory -Force -Path $d | Out-Null
-  [IO.File]::WriteAllText((Join-Path $d 'summary.json'), "{`"format`":`"cat9-index-summary/1`",`"serial`":`"$serial`",`"label`":`"$serial`",`"level`":`"$level`",`"scanned`":`"${date}T10:00:00-06:00`",`"files_total`":$files,`"bytes_total`":$bytes,`"skipped`":0,`"truncated`":`"$trunc`",`"drift_exit`":$drift}`n")
+  [IO.File]::WriteAllText((Join-Path $d 'summary.json'), "{`"format`":`"cat9-index-summary/1`",`"serial`":`"$serial`",`"label`":`"$serial`",`"level`":`"$level`",`"scanned`":`"${date}T10:00:00-06:00`",`"files_total`":$files,`"bytes_total`":$bytes,`"skipped`":$depth,`"skipped_access`":0,`"skipped_links`":0,`"skipped_depth`":$depth,`"truncated`":`"$trunc`",`"drift_exit`":$drift}`n")
 }
 function Run() { $script:last = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $tool -Site test -Manifests $M -Index $I -Out $O -Health (Join-Path $T 'health.txt') -Now 2026-11-27 2>&1 | Out-String; $LASTEXITCODE }
 try {
@@ -23,9 +23,10 @@ try {
   Mf 'never' 'device_id: never','serial: C1','label: NEVER','state: attached'
   Mf 'drifted' 'device_id: drifted','serial: D1','label: DRIFTED','state: attached'
   Mf 'sick' 'device_id: sick','serial: E1','label: SICK','state: attached'
+  Mf 'deep' 'device_id: deep','serial: F1','label: DEEP','state: attached'
   Mf 'pool' 'device_id: cg2-MediaVolume','kind: pool','serial: cg2-MediaVolume','label: MediaVolume','state: offline','power_on_requires: on-site human at wf','last_indexed_date: 2026-05-24','last_indexed_level: L0','members: Z4D0830X, Z4D0825P','redundancy: raidz1, one parity, one failure domain','holds: CAT_MPictures, Media','next_index: L0 + L1 for Media'
   Sj 'A1' '2026-11-20' 'L1' 1000 2147483648; Sj 'B1' '2026-09-01' 'L1' 50 1048576; Sj 'D1' '2026-11-25' 'L1' 70 5368709120 'no' 3
-  Sj 'E1' '2026-11-26' 'L1' 10 1073741824; Sj 'X9' '2026-11-26' 'L0' 5 4096
+  Sj 'E1' '2026-11-26' 'L1' 10 1073741824; Sj 'F1' '2026-11-26' 'L1' 10 1073741824 'no' 0 2052; Sj 'X9' '2026-11-26' 'L0' 5 4096
   [IO.File]::WriteAllText((Join-Path $T 'health.txt'), "disk A1 Healthy OK reads=0 hours=100 temp=30 model=x`ndisk E1 Warning OK reads=7 hours=61000 temp=39 model=y`n")
 
   Write-Host "1 runs and writes the three files"
@@ -38,6 +39,8 @@ try {
   Has 'never flagged NEVER-INDEXED' '"id":"never".*?"flags":\["NEVER-INDEXED"\]' $J
   Has 'drifted flagged DRIFT' '"id":"drifted".*?"flags":\["DRIFT"\]' $J
   Has 'sick flagged HEALTH' '"id":"sick".*?"flags":\["HEALTH"\]' $J
+  Has 'deep flagged INCOMPLETE (folders below the depth cap)' '"id":"deep".*?"flags":\["INCOMPLETE"\]' $J
+  Has 'incomplete: re-run with higher depth' 'higher depth or as an administrator' $V
   Has 'pool flagged STALE,OFFLINE' '"id":"cg2-MediaVolume".*?"flags":\["STALE","OFFLINE"\]' $J
   Has 'pool is kind pool, state offline' '"kind":"pool","state":"offline"' $J
   Has 'unregistered X9 listed' '"unregistered":\[\{"index_folder":"X9"' $J
