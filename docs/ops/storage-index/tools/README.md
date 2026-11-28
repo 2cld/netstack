@@ -1,4 +1,4 @@
-# storage-index tools (index v0.1.1, collector v0.2.1)
+# storage-index tools (index v0.1.2, collector v0.2.1)
 
 Two scripts that do the same job, one for Windows (`storage-index.ps1`) and one for Linux and WSL (`storage-index.sh`). They index a storage device, keep a local index, and **only when asked** leave three small breadcrumb files on the device. Part of [netstack#57](https://github.com/2cld/netstack/issues/57); the process around them is in [media-storage-process](../media-storage-process.md).
 
