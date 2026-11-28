@@ -97,7 +97,7 @@ iwr "$b/test-storage-index.ps1" -OutFile test-storage-index.ps1
 ```
 In WSL (or Linux): `curl -fsSLO "$b/storage-index.sh" -O "$b/test-storage-index.sh"; chmod +x *.sh`.
 
-**1. Test the tool on a fake drive first** (safe, touches only a temp folder). It must say `passed 23, failed 0`:
+**1. Test the tool on a fake drive first** (safe, touches only a temp folder). It must say `passed 25, failed 0`:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\test-storage-index.ps1
 ```
@@ -127,7 +127,7 @@ Read the lines it prints: the serial matches the drive's label and sticker, file
 **To validate bash against PowerShell:** scan the same attached drive with both (Windows `D:\` and WSL `/mnt/d`), same `-Level`, then compare the top-level and second-level files after sorting: `diff <(sort ps/L0.csv) <(sort wsl/L0.csv)`. Differences in `skipped` or in system folders are expected; anything else is a bug to report.
 
 ## Tests
-`test-storage-index.sh` (23 checks) and `test-storage-index.ps1` (23 checks) build a fake drive in a temp folder and check: read-only default, breadcrumb write, checksum, no drift on a second run, system folders ignored, drift on an added file and a removed folder, identity mismatch, a declined write, refusal to write without a serial, a 20-level deep tree read in full with the default depth and flagged `INCOMPLETE` with a low depth, and a drive that cannot be written refused before YES with exit 5. On 2026-11-27 both passed, and both tools produced identical `L0.csv`, `L1.csv`, `L2.csv` and `cat9-contents.txt` (apart from time, host, tool and checksum) on the same fixture. Each tool also accepted and verified a breadcrumb written by the other.
+`test-storage-index.sh` (25 checks) and `test-storage-index.ps1` (25 checks) build a fake drive in a temp folder and check: read-only default, breadcrumb write, checksum, no drift on a second run, system folders ignored, drift on an added file and a removed folder, identity mismatch, a declined write, refusal to write without a serial, a 20-level deep tree read in full with the default depth and flagged `INCOMPLETE` with a low depth, and a drive that cannot be written refused before YES with exit 5. On 2026-11-27 both passed, and both tools produced identical `L0.csv`, `L1.csv`, `L2.csv` and `cat9-contents.txt` (apart from time, host, tool and checksum) on the same fixture. Each tool also accepted and verified a breadcrumb written by the other.
 
 ## Limits (v0.1.0)
 - Windows: run PowerShell **as Administrator**. Without it, writing breadcrumbs fails on drives whose root only lets Administrators create files (found on bs5, 2026-11-28; the tool now says so before YES and exits 5), and some folders are counted as skipped for access. Even elevated, a few folders may be denied (9 on bs5).

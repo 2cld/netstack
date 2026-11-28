@@ -60,4 +60,14 @@ if [ "$(id -u)" = 0 ]; then ok "skipped (running as root, permissions not enforc
   chmod 755 "$RO"
 fi
 
+echo "11 L0 oldest and newest dates come from the oldest and newest file, whatever the listing order"
+# Two mirrored fixtures with the same names: in at least one, the oldest file is not the last one listed.
+for m in 1 2; do
+  DT="$T/dates$m"; mkdir -p "$DT/f/a" "$DT/f/b"; echo 1 > "$DT/f/a/x.txt"; echo 2 > "$DT/f/b/x.txt"
+  if [ "$m" = 1 ]; then touch -d 2006-04-11 "$DT/f/a/x.txt"; touch -d 2025-05-05 "$DT/f/b/x.txt"
+  else touch -d 2025-05-05 "$DT/f/a/x.txt"; touch -d 2006-04-11 "$DT/f/b/x.txt"; fi
+  "$HERE/storage-index.sh" "$DT" --site test --serial DATES$m --out "$T/o11" --no-disk-lookup >/dev/null
+  chk "fixture $m: L0 row oldest 2006-04-11, newest 2025-05-05" "$(grep '^"f"' "$T"/o11/DATES$m/*/L0.csv | cut -d, -f5,6)" "2006-04-11,2025-05-05"
+done
+
 echo; echo "passed $pass, failed $fail"; [ "$fail" = 0 ]

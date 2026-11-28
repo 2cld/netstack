@@ -92,6 +92,19 @@ try {
     if ($o10 -match 'cannot write') { Ok 'says cannot write' } else { Bad "no clear message: $($o10.Trim())" }
     Chk 'no breadcrumb on read-only drive' (@(Get-ChildItem $RO -Filter 'cat9-*').Count) 0
   }
+  Write-Host "11 L0 oldest and newest dates come from the oldest and newest file, whatever the listing order"
+  foreach ($m in 1,2) {
+    $DT = Join-Path $T "dates$m"; New-Item -ItemType Directory -Force -Path (Join-Path $DT 'f\a'),(Join-Path $DT 'f\b') | Out-Null
+    Text (Join-Path $DT 'f\a\x.txt') "1`n"; Text (Join-Path $DT 'f\b\x.txt') "2`n"
+    $old = [datetime]'2006-04-11 12:00'; $new = [datetime]'2025-05-05 12:00'
+    if ($m -eq 1) { (Get-Item (Join-Path $DT 'f\a\x.txt')).LastWriteTime = $old; (Get-Item (Join-Path $DT 'f\b\x.txt')).LastWriteTime = $new }
+    else          { (Get-Item (Join-Path $DT 'f\a\x.txt')).LastWriteTime = $new; (Get-Item (Join-Path $DT 'f\b\x.txt')).LastWriteTime = $old }
+    $a = @('-NoProfile','-ExecutionPolicy','Bypass','-File',$tool,'-Root',$DT,'-Site','test','-Serial',"DATES$m",'-Out',(Join-Path $T 'o11'),'-NoDiskLookup')
+    & powershell.exe @a *> $null
+    $l0 = Get-ChildItem (Join-Path (Join-Path $T 'o11') "DATES$m") -Recurse -Filter L0.csv | Select-Object -First 1
+    $row = (Get-Content $l0.FullName | Where-Object { $_ -like '"f",*' }) -split ','
+    Chk "fixture ${m}: L0 row oldest 2006-04-11, newest 2025-05-05" "$($row[4]),$($row[5])" '2006-04-11,2025-05-05'
+  }
 } finally {
   if (-not $KeepFixture) { Remove-Item -Recurse -Force $T -ErrorAction SilentlyContinue } else { Write-Host "fixture kept: $T" }
 }

@@ -11,7 +11,7 @@
 #             3 drift (drive changed since the breadcrumb), 4 breadcrumb write declined,
 #             5 cannot write to the drive.
 set -u
-VERSION="0.1.1"
+VERSION="0.1.2"
 TOOL="storage-index.sh $VERSION"
 LEVEL="L1"; DEPTH=64; CAPMIN=25; OUT="./storage-index-out"; SITE=""; LABEL=""; SERIAL=""
 INDEXREF="(not set)"; MANIFESTURL=""; WRITE=0; YES=0; ROOT=""; NODISK=0
@@ -64,6 +64,14 @@ identity() {
   [ -n "$LABEL" ] || LABEL="${VOLLABEL:-$(basename "$ROOT")}"
 }
 identity
+# WSL guard: /mnt/<letter> that is not a Windows drive mount is just an empty folder on the WSL disk.
+# Indexing it would record the WSL virtual disk under the wrong name (found on slwin11ops, 2026-11-28).
+if grep -qi microsoft /proc/version 2>/dev/null && [[ "$ROOT" =~ ^/mnt/[a-zA-Z](/|$) ]]; then
+  case "$(findmnt -no FSTYPE -T "$ROOT" 2>/dev/null | head -1)" in
+    9p|drvfs|v9fs) ;;
+    *) die "$ROOT is not a mounted Windows drive (it is a folder on the WSL disk). Mount it first, for drive D: sudo mkdir -p /mnt/d && sudo mount -t drvfs D: /mnt/d";;
+  esac
+fi
 SERIAL_KNOWN=1; [ -n "$SERIAL" ] || { SERIAL="UNKNOWN"; SERIAL_KNOWN=0; }
 SAFE_ID="$(printf '%s' "$SERIAL" | tr -c 'A-Za-z0-9._-' '_')"
 echo "== device: serial=$SERIAL model=${MODEL:-?} label=$LABEL fs=${FSTYPE:-?} size=${SIZE_GIB:-?} GiB  root=$ROOT"
@@ -83,7 +91,7 @@ pq() { printf '%s' "$1" | sed 's/|/%7C/g'; }
 # aggregate lines "F<TAB>size<TAB>date<TAB>relpath" into per-group rows
 AGG='BEGIN{FS="\t"} { sz=$2; d=$3; p=$4; n=split(p,a,"/"); g=(n>1)?a[1]:"(files in this folder)";
   c[g]++; b[g]+=sz; if(!(g in o)||d<o[g])o[g]=d; if(!(g in nw)||d>nw[g])nw[g]=d;
-  tc++; tb+=sz; if(!(1 in to)||d<to1)to1=d; if(d>tn)tn=d;
+  tc++; tb+=sz; if(tc==1||d<to1)to1=d; if(d>tn)tn=d;
   if(l2!=""){q=p; gsub(/"/,"\"\"",q); printf "\"%s/%s\",%s,%s\n", pre, q, sz, d >> l2} }
 END{ for(g in c) printf "G\t%s\t%d\t%d\t%s\t%s\n", g,c[g],b[g],o[g],nw[g]; printf "T\t%d\t%d\t%s\t%s\n", tc,tb,to1,tn }'
 
